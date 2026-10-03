@@ -1,91 +1,71 @@
 # OpenCubes
 
-A community-driven reimplementation of the ideas behind
-[OpenBlocks](https://github.com/OpenMods/OpenBlocks), rebuilt from scratch on modern
-Minecraft and NeoForge APIs.
+The OpenBlocks toolbox, rewritten for Minecraft **1.21.1** / **NeoForge 21.1.247**. Version **1.0**.
 
-This is **not** a source port of the 1.12 mod. The original code is a reference; the
-gameplay is the specification.
+Hang gliders, elevators, tanks, graves, a chest that follows you, and a crane you wear. It is a new mod. It does not load a 1.12 world.
 
-## Source hierarchy
+The in-game guide is a book called World Domination. Craft a book with a clay ball. The book needs Patchouli.
 
-The reference repositories are consulted in a fixed order, each for one purpose only:
+---
 
-```
-Original gameplay → OpenBlocks → Corrections → OpenBlocks Reopened → Implementation → NeoForge 1.21 APIs
-```
+## What's in it
 
-- **OpenBlocks** - reference for the original behaviour.
-- **OpenBlocks Reopened** - reference for bug fixes and gameplay improvements only, read once and recorded as behaviour. No dependency on its code, architecture or tooling.
-- **OpenModsLib** - source of algorithms and utilities, and only where no modern equivalent exists.
+**Getting around.** Elevators (jump to go up, sneak to go down) and rotating elevators. Fans, rope ladders, jaded ladders. The hang glider rides thermals; sneak to dive, V for the variometer. Thermal elytra do the same on vanilla wings. A sleeping bag skips the night without moving your spawn.
 
-Nothing is ported because the original used it. If Java 21, NeoForge or vanilla already
-solves the problem, that is the solution.
+**Building.** The building guide ghosts in a shape so you can follow it. Village highlighters trace a village. Sky blocks are windows onto the sky. Imaginary blocks are sketches only you see, unless you hand out the glasses. Paint, a mixer, brushes, stencils, a drawing table and canvas.
 
-## Ground rules
+**Machines.** Tanks, including liquid XP: drain, shower, bottler, healer. Vacuum hoppers pull in items and XP. Block breaker, block placer, item dropper. Auto anvil and auto enchanting table. The item cannon fires stacks from a chest at whatever you point at. Sprinklers water crops.
 
-Settled before the first line of code. Full text in
-[§0 of the inventory](docs/FEATURE-INVENTORY.md).
+**The rest.** Graves keep your inventory. Luggage follows you and picks up drops; lightning doubles its size. The crane backpack lifts blocks from a distance. Trophies drop from mobs you kill and react when you right-click them. Golden egg, bear trap, sponges, sonic glasses, flags, big buttons, height maps and a projector.
 
-- **No Mixin without a documented exception, no reflection at all.** Access Transformers are fine - NeoForge's are declarative and build-time. The order is public API, then vanilla API, then AT, then a justified Mixin.
-- **We commit to visible behaviour and to recipes.** We do not commit to 1.12 world compatibility, and we do not ship a public API for other mods.
-- **All textures are new**, drawn for the project. Models are updated and reused where the shape still holds; sounds are judged one at a time; translation strings are not art and are reused.
-- **A feature is finished when it passes its in-game checklist**, not when it compiles. Every feature ships with one.
+Right-click a paint can with the hang glider or the thermal elytra to colour the fabric. The wooden frame stays wood. A painted glider keeps its colour through the smithing recipe.
 
-## Target
+---
 
-| | |
-| --- | --- |
-| Minecraft | 1.21.1 |
-| NeoForge | 21.1.247 |
-| Java | 21 |
-| Mod id | `opencubes` |
-| Licence | MIT |
+## Requirements
 
-## Status
+| Dependency | Required | Version |
+| --- | --- | --- |
+| Minecraft | yes | 1.21.1 |
+| NeoForge | yes | 21.1.0+ |
+| Java | yes | 21 |
+| [Patchouli](https://www.curseforge.com/minecraft/mc-mods/patchouli) | no | 1.21.1-90+ (the guide book) |
+| [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) | no | 9.5.0+ (crane backpack, grave loot slots) |
+| [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) | no | 19.21.0+ |
+| [Jade](https://www.curseforge.com/minecraft/mc-mods/jade) | no | 15.10.0+ |
 
-Early development. The build runs, the mod loads, and the first two features are in.
+Built against NeoForge 21.1.247, Patchouli 1.21.1-93, Curios 9.5.1, JEI 19.43.0 and Jade 15.10.5.
 
-| Step | State |
-| --- | --- |
-| Feature inventory of the original mods | Done - [`docs/FEATURE-INVENTORY.md`](docs/FEATURE-INVENTORY.md) |
-| Project policies | Done - §0 of the inventory |
-| Design decisions | Done - §14, nothing blocking |
-| Project skeleton (Gradle, registries, datagen) | Done - phase 0 of §13 |
-| Elevator and Rotating Elevator | Code done - smoke-tested |
-| Big Button, 13 materials | Code done - smoke-test at will |
-| Jaded Ladder, Rope Ladder, Fan, Bear Trap, Flag | Code done - smoke-test at will |
-| Liquid XP + Tank (single-block render) | Code done - smoke-test at will |
-| XP Drain, XP Shower, XP Bottler | Code done - smoke-test at will |
-| Vacuum Hopper, Item Dropper, Block Breaker, Block Placer | Code done - smoke-test at will |
-| Auto Anvil, Auto Enchantment Table | Code done - smoke-test at will |
-| Grave + `/opencubes inventory` | Code done - smoke-test at will |
-| Trophy (datapack types + behaviours) | Code done - smoke-test at will |
-| Phase 9 items (Luggage, /dev/null, Sleeping Bag, Slimalyzer, Pedometer, Wrench, Golden Eye) | Code done - smoke-test at will |
-| Phase 10 painting (Canvas, Mixer, Brush, Stencil, Drawing Table, Glyph…) | Code done - smoke-test at will |
-| Phase 11 Building Guide + Enhanced Guide + shape generators | Code done - smoke-test at will |
-| Phase 12 height maps (Empty/Height Map, Cartographer, Projector) | Code done - smoke-test at will |
-| Phase 13 crane (Backpack, Control, Magnet, Mounted Block) | Code done - smoke-test at will |
-
-81+ blocks + paint tools + Glyph + building guides + height maps. Full checklists wait until the whole mod is in; quick smoke tests as we go.
+---
 
 ## Building
 
-```
-./gradlew build        # the mod jar, in build/libs
-./gradlew runClient    # a development client
-./gradlew runData      # regenerate everything under src/generated
+```bash
+./gradlew jar
 ```
 
-Gradle provisions its own JDK 21 if the machine does not have one. Generated resources are
-committed, so `runData` should produce no diff unless you meant it to.
+On Windows: `gradlew.bat jar`.
+
+The jar lands in `build/libs/opencubes-1.0.jar`.
+
+```bash
+./gradlew runClient
+./gradlew runData
+```
+
+`runData` regenerates `src/generated`. Those files are committed, so a clean run should not change them.
+
+---
+
+## Links
+
+- Source: https://github.com/WoXayZ/open-cubes
+- Issues: https://github.com/WoXayZ/open-cubes/issues
 
 ## Credits
 
-OpenBlocks and OpenModsLib are MIT licensed, © the OpenMods team. OpenCubes reuses their
-ideas, their algorithms and some of their model geometry, with gratitude. All textures are
-original to this project.
+Inspired by [OpenBlocks](https://github.com/OpenMods/OpenBlocks) and OpenModsLib, MIT, © the OpenMods team, and by [OpenBlocks Reopened](https://github.com/ACGaming/OpenBlocksReopened). OpenCubes shares no code with either. Not an official continuation.
 
-[OpenBlocks Reopened](https://github.com/ACGaming/OpenBlocksReopened) by ACGaming and
-contributors is the maintained 1.12.2 fork. Its bug reports and fixes tell us which
-original behaviours were wrong. OpenCubes shares no code with it.
+## License
+
+MIT.

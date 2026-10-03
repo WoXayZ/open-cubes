@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
-issueTrackerURL = "https://github.com/opencubes/open-cubes/issues"
+issueTrackerURL = "https://github.com/WoXayZ/open-cubes/issues"
 
 [[mods]]
 modId = "${mod_id}"
