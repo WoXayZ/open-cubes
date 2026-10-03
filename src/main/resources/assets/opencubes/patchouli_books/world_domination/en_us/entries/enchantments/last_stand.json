@@ -1,0 +1,12 @@
+{
+  "name": "Last Stand",
+  "icon": "minecraft:golden_apple",
+  "category": "opencubes:enchantments",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Last Stand$() spends XP instead of letting a hit kill you below half a heart.$(br2)Cost uses $(italic)post-mitigation$() damage: $(code)ceil(damage × lastStandXpPerDamage / level)$()."
+    }
+  ]
+}

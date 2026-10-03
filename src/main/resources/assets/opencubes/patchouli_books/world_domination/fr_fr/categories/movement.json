@@ -1,0 +1,6 @@
+{
+  "name": "Déplacement et vol",
+  "description": "Ascenseurs, échelles, échafaudages, ventilateurs et planeurs.",
+  "icon": "opencubes:purple_elevator",
+  "sortnum": 1
+}

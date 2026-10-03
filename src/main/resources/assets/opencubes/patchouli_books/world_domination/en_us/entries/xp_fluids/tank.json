@@ -1,0 +1,22 @@
+{
+  "name": "Tank",
+  "icon": "opencubes:tank",
+  "category": "opencubes:xp_fluids",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/tank.png",
+      "title": "Tank"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Glass tanks hold fluids including Liquid XP. They connect vertically and can balance levels.$(br2)Empty buckets pull XP juice as an $(item)XP Bucket$() - it never places a world fluid source."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:tank",
+      "text": ""
+    }
+  ]
+}

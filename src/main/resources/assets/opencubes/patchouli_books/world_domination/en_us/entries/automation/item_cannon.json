@@ -1,0 +1,31 @@
+{
+  "name": "Item Cannon",
+  "icon": "opencubes:item_cannon",
+  "category": "opencubes:automation",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:item_cannon",
+      "text": "Fires stacks from an adjacent chest at any block you pick with the $(item)Pointer$(), as long as it gets a redstone signal."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "1. Place the cannon and put a chest (or hopper) against any of its six faces, with items inside.$(br)2. Hold the $(item)Pointer$(), sneak and right-click the cannon: it is now selected.$(br)3. Right-click any far away block without sneaking: the cannon aims there and the trajectory arc shows while you hold the Pointer."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "4. Give the cannon a redstone signal. It fires one stack from the chest every few ticks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:item_cannon",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pointer",
+      "text": ""
+    }
+  ]
+}

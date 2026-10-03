@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "l": {
+      "item": "opencubes:glider_wing_left"
+    },
+    "r": {
+      "item": "opencubes:glider_wing_right"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "lsr"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:hang_glider"
+  }
+}

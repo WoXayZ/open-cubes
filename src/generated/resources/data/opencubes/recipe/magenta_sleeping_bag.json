@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "opencubes:sleeping_bag",
+  "key": {
+    "s": {
+      "item": "opencubes:magenta_wool_slab"
+    }
+  },
+  "pattern": [
+    "sss"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:magenta_sleeping_bag"
+  }
+}

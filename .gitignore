@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+out/
+repo/
+
+# ModDevGradle / NeoForge runs
+run/
+runs/
+run-data/
+
+# Data generation output is committed: it is part of the shipped jar and a diff on it is
+# the easiest way to review what a change did to the assets. Only the hash cache is noise.
+src/generated/resources/.cache/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.eclipse/
+*.launch
+.settings/
+.classpath
+.project
+bin/
+docs/
+tools/
+scripts/
+
+# OS
+.DS_Store
+Thumbs.db

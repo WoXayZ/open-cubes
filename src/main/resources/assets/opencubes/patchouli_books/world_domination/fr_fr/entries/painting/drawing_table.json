@@ -1,0 +1,38 @@
+{
+  "name": "Table à dessin",
+  "icon": "opencubes:drawing_table",
+  "category": "opencubes:painting",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/drawing_table.png",
+      "title": "Table à dessin"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Découper un pochoir",
+      "text": "Mettez un $(item)Pochoir non préparé$() à gauche.$(br2)Choisissez quoi découper dans le panneau de droite : l'onglet $(l)Pochoirs$() contient les 15 masques de peinture, l'onglet $(l)Glyphes$() les lettres. Le slot de droite en montre l'aperçu.$(br2)$(l)Couper$() le fabrique."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Peindre avec",
+      "text": "Clic droit sur un bloc avec le pochoir pour le poser, orienté vers vous comme la terre cuite émaillée. Le bloc devient une toile.$(br2)Un autre clic droit le tourne d'un quart.$(br2)Peignez par-dessus avec un $(item)Pinceau$() chargé : seuls les trous prennent la couleur."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Accroupi, clic droit avec un pochoir pour le reprendre. Le motif reste peint.$(br2)Posez un autre pochoir et changez de couleur pour superposer les dessins sur la même face.$(br2)La $(item)Raclette$() nettoie une face et rend le pochoir encore posé dessus."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Glyphes",
+      "text": "Un $(item)Glyphe$() est une lettre à coller au mur. Tenez-en un face à un mur : un cadre montre où ira la lettre, centrée sur le pixel visé.$(br2)Clic droit pour la coller, frappez-la pour la reprendre. Alignez-en plusieurs pour écrire des noms et des étiquettes."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:drawing_table",
+      "recipe2": "opencubes:unprepared_stencil",
+      "text": ""
+    }
+  ]
+}

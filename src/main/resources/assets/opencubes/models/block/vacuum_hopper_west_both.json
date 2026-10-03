@@ -1,0 +1,7 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "opencubes:block/vacuum_hopper_west",
+  "textures": {
+    "texture": "opencubes:block/vacuum_hopper_both"
+  }
+}

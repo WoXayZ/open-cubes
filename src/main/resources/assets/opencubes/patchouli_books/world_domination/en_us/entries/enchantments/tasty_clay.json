@@ -1,0 +1,17 @@
+{
+  "name": "Tasty Clay & the B Key",
+  "icon": "opencubes:tasty_clay",
+  "category": "opencubes:enchantments",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Eat $(item)Tasty Clay$() to owe bricks. With $(code)weAreSeriousPeople=false$(), press $(thing)B$() to burp out a brick. Death dumps any remaining debt.$(br2)Serious servers leave the default alone and never think about this again."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:tasty_clay",
+      "text": ""
+    }
+  ]
+}

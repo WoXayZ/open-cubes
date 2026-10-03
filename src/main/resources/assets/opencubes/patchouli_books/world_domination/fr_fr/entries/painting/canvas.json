@@ -1,0 +1,27 @@
+{
+  "name": "Toile et pinceau",
+  "icon": "opencubes:canvas",
+  "category": "opencubes:painting",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/canvas.png",
+      "title": "Toile"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Toile$() et $(item)Toile de verre$() se peignent. Chargez un $(item)Pinceau$() dans un $(item)Pot de peinture$(), puis peignez. La $(item)Raclette$() efface."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:canvas",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_brush",
+      "text": ""
+    }
+  ]
+}

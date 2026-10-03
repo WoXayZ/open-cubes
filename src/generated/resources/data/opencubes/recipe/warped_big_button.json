@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "opencubes:big_button",
+  "key": {
+    "b": {
+      "item": "minecraft:warped_button"
+    }
+  },
+  "pattern": [
+    "bb",
+    "bb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:warped_big_button"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Ladders & Scaffolding",
+  "icon": "opencubes:rope_ladder",
+  "category": "opencubes:movement",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Rope Ladder$() is a placeable climbable that unrolls downward when configured.$(br2)$(item)Temporary Scaffolding$() climbs and stacks like vanilla scaffolding, but despawns on random ticks and drops nothing."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:rope_ladder",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:temporary_scaffolding",
+      "text": ""
+    }
+  ]
+}

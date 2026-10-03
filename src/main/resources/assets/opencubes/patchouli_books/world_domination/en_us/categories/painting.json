@@ -1,0 +1,6 @@
+{
+  "name": "Painting",
+  "description": "Canvas, paint, stencils, glyphs, and the Drawing Table.",
+  "icon": "opencubes:paint_brush",
+  "sortnum": 5
+}

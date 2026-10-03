@@ -1,0 +1,22 @@
+{
+  "name": "Introduction",
+  "icon": "opencubes:info_book",
+  "category": "opencubes:getting_started",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/intro.png",
+      "title": "Domination mondiale"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)OpenCubes$() réimplémente les idées d'OpenBlocks sur NeoForge 1.21.$(br2)Ce livre est un guide Patchouli. Craft : un $(item)Livre$() et une $(item)Boule d'argile$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Crédits$()$(br)Référence de comportement : OpenBlocks et OpenBlocks Reopened.$(br)Grammaire des lore épiques : OpenModsLib.$(br)Implémentation : les contributeurs OpenCubes.$(br2)Ce n'est pas un convertisseur de mondes 1.12."
+    }
+  ],
+  "priority": true
+}

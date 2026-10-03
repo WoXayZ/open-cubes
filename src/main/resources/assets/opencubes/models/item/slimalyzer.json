@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "opencubes:item/slimalyzer" },
+  "overrides": [
+    { "predicate": { "opencubes:active": 1 }, "model": "opencubes:item/slimalyzer_active" }
+  ]
+}

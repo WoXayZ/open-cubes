@@ -1,0 +1,22 @@
+{
+  "name": "Lunettes",
+  "icon": "opencubes:sonic_glasses",
+  "category": "opencubes:gadgets",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sonic_glasses.png",
+      "title": "Lunettes soniques"
+    },
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/imaginary.png",
+      "title": "Imaginaire"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les $(item)Lunettes soniques$() assombrissent le monde et marquent les sons proches.$(br2)$(item)Crayon$() / $(item)Crayon de couleur$() placent de la géométrie imaginaire visible avec les lunettes assorties (Technicolor / Badass voient plus)."
+    }
+  ]
+}

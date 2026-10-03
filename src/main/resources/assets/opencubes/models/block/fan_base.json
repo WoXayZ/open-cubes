@@ -1,0 +1,36 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "textures": {
+        "all": "opencubes:block/fan_frame",
+        "particle": "opencubes:block/fan_frame"
+    },
+    "elements": [
+        {
+            "name": "base",
+            "from": [5, 0, 5],
+            "to": [11, 1, 11],
+            "faces": {
+                "north": {"uv": [0, 6, 6, 7], "texture": "#all"},
+                "east": {"uv": [0, 6, 6, 7], "texture": "#all"},
+                "south": {"uv": [0, 6, 6, 7], "texture": "#all"},
+                "west": {"uv": [0, 6, 6, 7], "texture": "#all"},
+                "up": {"uv": [0, 0, 6, 6], "texture": "#all"},
+                "down": {"uv": [0, 0, 6, 6], "texture": "#all", "cullface": "down"}
+            }
+        },
+        {
+            "name": "post",
+            "from": [7.5, 1, 7.5],
+            "to": [8.5, 6, 8.5],
+            "faces": {
+                "north": {"uv": [7, 0, 8, 5], "texture": "#all"},
+                "east": {"uv": [7, 0, 8, 5], "texture": "#all"},
+                "south": {"uv": [7, 0, 8, 5], "texture": "#all"},
+                "west": {"uv": [7, 0, 8, 5], "texture": "#all"},
+                "up": {"uv": [8, 0, 9, 1], "texture": "#all"},
+                "down": {"uv": [8, 0, 9, 1], "texture": "#all"}
+            }
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "opencubes:block/rotating_elevator",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "opencubes:block/rotating_elevator"
+    },
+    "facing=south": {
+      "model": "opencubes:block/rotating_elevator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "opencubes:block/rotating_elevator",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,waterlogged=false": {
+      "model": "opencubes:block/trophy_base",
+      "y": 90
+    },
+    "facing=east,waterlogged=true": {
+      "model": "opencubes:block/trophy_base",
+      "y": 90
+    },
+    "facing=north,waterlogged=false": {
+      "model": "opencubes:block/trophy_base"
+    },
+    "facing=north,waterlogged=true": {
+      "model": "opencubes:block/trophy_base"
+    },
+    "facing=south,waterlogged=false": {
+      "model": "opencubes:block/trophy_base",
+      "y": 180
+    },
+    "facing=south,waterlogged=true": {
+      "model": "opencubes:block/trophy_base",
+      "y": 180
+    },
+    "facing=west,waterlogged=false": {
+      "model": "opencubes:block/trophy_base",
+      "y": 270
+    },
+    "facing=west,waterlogged=true": {
+      "model": "opencubes:block/trophy_base",
+      "y": 270
+    }
+  }
+}

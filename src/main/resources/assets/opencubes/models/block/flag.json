@@ -1,0 +1,35 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "ambientocclusion": false,
+    "textures": {
+        "pole": "opencubes:block/flag_pole",
+        "flag": "opencubes:block/flag",
+        "particle": "opencubes:block/flag_pole"
+    },
+    "elements": [
+        {
+            "name": "pole",
+            "from": [7.5, 0, 7.5],
+            "to": [8.5, 16, 8.5],
+            "faces": {
+                "north": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "south": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "west": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "east": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "up": {"uv": [0, 0, 1, 1], "texture": "#pole"},
+                "down": {"uv": [0, 0, 1, 1], "texture": "#pole", "cullface": "down"}
+            }
+        },
+        {
+            "name": "cloth",
+            "shade": false,
+            "from": [8.5, 8.5, 8],
+            "to": [15.5, 14, 8],
+            "faces": {
+                "north": {"uv": [13, 0, 0, 10], "texture": "#flag", "tintindex": 0},
+                "south": {"uv": [0, 0, 13, 10], "texture": "#flag", "tintindex": 0}
+            }
+        }
+    ]
+}

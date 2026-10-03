@@ -1,0 +1,16 @@
+{
+  "name": "Commandes et config",
+  "icon": "minecraft:command_block",
+  "category": "opencubes:getting_started",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)/opencubes inventory store|restore$()$(br)Sauvegarde ou restaure un inventaire (niveau 4).$(br2)$(bold)/opencubes flimflam <joueur> [effet]$()$(br)Force un effet de bêtise."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)/opencubes luck <joueur> [valeur]$()$(br)Lit ou modifie la chance flim-flam.$(br2)La plupart des options sont dans $(code)opencubes-common.toml$().$(br2)Les bêtises sont activées par défaut, mais la blague des briques reste off tant que $(code)weAreSeriousPeople$() n'est pas $(code)false$()."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Archery Target",
+  "icon": "opencubes:archery_target",
+  "category": "opencubes:gadgets",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:archery_target",
+      "text": "The $(item)Archery Target$() lies flat on the face you place it on. Power it with redstone and it stands up, ready for practice."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every arrow that hits it sends a short redstone pulse: the closer to the bullseye, the stronger the signal, up to 15.$(br2)Read the strength with a comparator to build score boards, locks that only open for good shots, or a shooting gallery that resets on its own."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:archery_target",
+      "text": ""
+    }
+  ]
+}

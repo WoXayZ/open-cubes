@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "opencubes:sleeping_bag",
+  "key": {
+    "s": {
+      "item": "opencubes:lime_wool_slab"
+    }
+  },
+  "pattern": [
+    "sss"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:lime_sleeping_bag"
+  }
+}

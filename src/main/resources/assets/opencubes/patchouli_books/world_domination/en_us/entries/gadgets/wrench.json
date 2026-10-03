@@ -1,0 +1,22 @@
+{
+  "name": "Wrench",
+  "icon": "opencubes:wrench",
+  "category": "opencubes:gadgets",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:wrench",
+      "text": "Right-click a block with the $(item)Wrench$() to turn it a quarter turn around the vertical axis: stairs, furnaces, machines and most blocks that face a direction."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Blocks that open a menu or react to clicks (chests, levers, buttons) need a sneak-right-click so normal use still works."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:wrench",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "opencubes:opencubes/root",
+  "display": {
+    "icon": {
+      "id": "opencubes:dev_null"
+    },
+    "title": {
+      "translate": "advancements.opencubes.stack_overflow.title"
+    },
+    "description": {
+      "translate": "advancements.opencubes.stack_overflow.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "nested": {
+      "trigger": "opencubes:stack_overflow"
+    }
+  }
+}

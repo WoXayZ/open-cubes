@@ -1,0 +1,22 @@
+{
+  "name": "Glasses",
+  "icon": "opencubes:sonic_glasses",
+  "category": "opencubes:gadgets",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sonic_glasses.png",
+      "title": "Sonic Glasses"
+    },
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/imaginary.png",
+      "title": "Imaginary"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Sonic Glasses$() darken the world and label nearby sounds.$(br2)$(item)Pencil$() / $(item)Crayon$() place imaginary geometry only visible with matching glasses (Technicolor / Badass Glasses see more)."
+    }
+  ]
+}

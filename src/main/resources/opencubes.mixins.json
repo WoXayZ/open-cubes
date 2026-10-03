@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "dev.opencubes.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "LivingEntityBedOrientationMixin"
+  ],
+  "client": [
+    "HumanoidModelSleepMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

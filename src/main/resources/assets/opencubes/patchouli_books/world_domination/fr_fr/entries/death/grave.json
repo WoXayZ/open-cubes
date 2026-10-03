@@ -1,0 +1,22 @@
+{
+  "name": "Tombe",
+  "icon": "opencubes:grave",
+  "category": "opencubes:death",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/grave.png",
+      "title": "Tombe"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "À la mort (si activé), une tombe stocke vos objets. Les dumps d'inventaire se restaurent avec $(code)/opencubes inventory$(). Game rule : $(code)opencubes:spawn_graves$()."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:grave",
+      "text": "Les tombes apparaissent à la mort selon la config - pas de recette de craft."
+    }
+  ]
+}

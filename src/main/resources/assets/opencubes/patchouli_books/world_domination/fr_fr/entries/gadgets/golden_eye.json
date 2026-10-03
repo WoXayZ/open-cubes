@@ -1,0 +1,26 @@
+{
+  "name": "Œil doré",
+  "icon": "opencubes:golden_eye",
+  "category": "opencubes:gadgets",
+  "sortnum": 16,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:golden_eye",
+      "text": "Sneak + clic droit avec l'$(item)Œil doré$() pour le verrouiller sur la structure la plus proche : villages, forteresses, monuments, manoirs et d'autres. L'infobulle affiche sa cible."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Clic droit pour le lancer : il file vers cette structure comme un œil de l'Ender, puis retombe sous forme d'objet."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Chaque lancer use un peu de durabilité. Rechargez-le dans une grille de craft avec des $(item)Perles de l'Ender$()."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:golden_eye",
+      "text": ""
+    }
+  ]
+}

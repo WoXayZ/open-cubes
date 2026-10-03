@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.15,
+  "ingredient": {
+    "item": "opencubes:wet_sponge_on_a_stick"
+  },
+  "result": {
+    "count": 1,
+    "id": "opencubes:sponge_on_a_stick"
+  }
+}

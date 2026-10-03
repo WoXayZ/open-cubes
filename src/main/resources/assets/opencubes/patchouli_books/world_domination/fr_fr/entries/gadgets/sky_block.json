@@ -1,0 +1,27 @@
+{
+  "name": "Bloc ciel",
+  "icon": "opencubes:sky_block",
+  "category": "opencubes:gadgets",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sky_block.png",
+      "title": "Bloc ciel"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sans redstone, le $(item)Bloc ciel$() est une simple coque métallique. Alimentez-le et chaque face devient une fenêtre sur le ciel : vous voyez le vrai ciel derrière lui, de jour comme de nuit, et le bloc reste solide.$(br2)Le $(item)Bloc ciel inversé$() fait l'inverse : il montre le ciel tant qu'il ne reçoit pas de signal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:sky_block",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:inverted_sky_block",
+      "text": ""
+    }
+  ]
+}

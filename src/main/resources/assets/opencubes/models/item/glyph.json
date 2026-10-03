@@ -1,0 +1,326 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "opencubes:item/glyph/0041"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "opencubes:glyph": 0.0
+      },
+      "model": "opencubes:item/glyph/0041"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.015625
+      },
+      "model": "opencubes:item/glyph/0042"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.03125
+      },
+      "model": "opencubes:item/glyph/0043"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.046875
+      },
+      "model": "opencubes:item/glyph/0044"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.0625
+      },
+      "model": "opencubes:item/glyph/0045"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.078125
+      },
+      "model": "opencubes:item/glyph/0046"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.09375
+      },
+      "model": "opencubes:item/glyph/0047"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.109375
+      },
+      "model": "opencubes:item/glyph/0048"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.125
+      },
+      "model": "opencubes:item/glyph/0049"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.140625
+      },
+      "model": "opencubes:item/glyph/004a"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.15625
+      },
+      "model": "opencubes:item/glyph/004b"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.171875
+      },
+      "model": "opencubes:item/glyph/004c"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.1875
+      },
+      "model": "opencubes:item/glyph/004d"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.203125
+      },
+      "model": "opencubes:item/glyph/004e"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.21875
+      },
+      "model": "opencubes:item/glyph/004f"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.234375
+      },
+      "model": "opencubes:item/glyph/0050"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.25
+      },
+      "model": "opencubes:item/glyph/0051"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.265625
+      },
+      "model": "opencubes:item/glyph/0052"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.28125
+      },
+      "model": "opencubes:item/glyph/0053"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.296875
+      },
+      "model": "opencubes:item/glyph/0054"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.3125
+      },
+      "model": "opencubes:item/glyph/0055"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.328125
+      },
+      "model": "opencubes:item/glyph/0056"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.34375
+      },
+      "model": "opencubes:item/glyph/0057"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.359375
+      },
+      "model": "opencubes:item/glyph/0058"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.375
+      },
+      "model": "opencubes:item/glyph/0059"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.390625
+      },
+      "model": "opencubes:item/glyph/005a"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.40625
+      },
+      "model": "opencubes:item/glyph/0030"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.421875
+      },
+      "model": "opencubes:item/glyph/0031"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.4375
+      },
+      "model": "opencubes:item/glyph/0032"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.453125
+      },
+      "model": "opencubes:item/glyph/0033"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.46875
+      },
+      "model": "opencubes:item/glyph/0034"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.484375
+      },
+      "model": "opencubes:item/glyph/0035"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.5
+      },
+      "model": "opencubes:item/glyph/0036"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.515625
+      },
+      "model": "opencubes:item/glyph/0037"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.53125
+      },
+      "model": "opencubes:item/glyph/0038"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.546875
+      },
+      "model": "opencubes:item/glyph/0039"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.5625
+      },
+      "model": "opencubes:item/glyph/0021"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.578125
+      },
+      "model": "opencubes:item/glyph/003f"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.59375
+      },
+      "model": "opencubes:item/glyph/002e"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.609375
+      },
+      "model": "opencubes:item/glyph/002c"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.625
+      },
+      "model": "opencubes:item/glyph/003a"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.640625
+      },
+      "model": "opencubes:item/glyph/0027"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.65625
+      },
+      "model": "opencubes:item/glyph/002d"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.671875
+      },
+      "model": "opencubes:item/glyph/002b"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.6875
+      },
+      "model": "opencubes:item/glyph/003d"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.703125
+      },
+      "model": "opencubes:item/glyph/0026"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.71875
+      },
+      "model": "opencubes:item/glyph/0023"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.734375
+      },
+      "model": "opencubes:item/glyph/0040"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.75
+      },
+      "model": "opencubes:item/glyph/0028"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.765625
+      },
+      "model": "opencubes:item/glyph/0029"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.78125
+      },
+      "model": "opencubes:item/glyph/002f"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.796875
+      },
+      "model": "opencubes:item/glyph/002a"
+    },
+    {
+      "predicate": {
+        "opencubes:glyph": 0.8125
+      },
+      "model": "opencubes:item/glyph/0025"
+    }
+  ]
+}

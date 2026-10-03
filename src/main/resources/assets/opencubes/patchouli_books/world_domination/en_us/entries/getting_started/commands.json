@@ -1,0 +1,16 @@
+{
+  "name": "Commands & Config",
+  "icon": "minecraft:command_block",
+  "category": "opencubes:getting_started",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)/opencubes inventory store|restore$()$(br)Dump or restore a player inventory (permission level 4).$(br2)$(bold)/opencubes flimflam <player> [effect]$()$(br)Force a tomfoolery effect."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)/opencubes luck <player> [amount]$()$(br)Read or modify flim-flam luck.$(br2)Most features have server config under $(code)opencubes-common.toml$().$(br2)Tomfoolery defaults to on, but the brick joke stays off until $(code)weAreSeriousPeople$() is set to $(code)false$()."
+    }
+  ]
+}

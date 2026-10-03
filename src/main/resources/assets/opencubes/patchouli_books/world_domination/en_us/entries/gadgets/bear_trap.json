@@ -1,0 +1,26 @@
+{
+  "name": "Bear Trap",
+  "icon": "opencubes:bear_trap",
+  "category": "opencubes:gadgets",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/bear_trap.png",
+      "title": "Bear Trap"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Bear Trap$() is placed closed. Right-click it to arm it.$(br2)Any mob or player walking into an armed trap gets caught and cannot move until someone opens the trap again with a right-click."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A comparator next to the trap tells you when it holds something, handy for alarm systems and mob farms."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:bear_trap",
+      "text": ""
+    }
+  ]
+}

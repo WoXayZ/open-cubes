@@ -1,0 +1,22 @@
+{
+  "name": "Flags",
+  "icon": "opencubes:purple_flag",
+  "category": "opencubes:gadgets",
+  "sortnum": 17,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:purple_flag,opencubes:white_flag,opencubes:orange_flag,opencubes:magenta_flag,opencubes:light_blue_flag,opencubes:yellow_flag,opencubes:lime_flag,opencubes:pink_flag,opencubes:gray_flag,opencubes:light_gray_flag,opencubes:cyan_flag,opencubes:blue_flag,opencubes:brown_flag,opencubes:green_flag,opencubes:red_flag,opencubes:black_flag",
+      "text": "$(item)Flags$() come in all sixteen colours. Plant one on the ground or on a fence post, or attach it to the side of a block."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Stack two flags of the same colour on top of each other and they merge into one tall flag."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_flag",
+      "text": ""
+    }
+  ]
+}

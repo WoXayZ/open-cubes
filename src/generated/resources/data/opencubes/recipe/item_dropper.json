@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "d": {
+      "item": "minecraft:dropper"
+    },
+    "g": {
+      "tag": "c:ingots/gold"
+    }
+  },
+  "pattern": [
+    " g ",
+    "gdg",
+    " g "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:item_dropper"
+  }
+}

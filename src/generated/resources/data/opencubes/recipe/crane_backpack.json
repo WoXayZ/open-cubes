@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "opencubes:crane_engine"
+    },
+    {
+      "item": "opencubes:crane_magnet"
+    },
+    {
+      "item": "opencubes:beam"
+    },
+    {
+      "item": "opencubes:beam"
+    },
+    {
+      "item": "opencubes:line"
+    },
+    {
+      "item": "opencubes:line"
+    },
+    {
+      "item": "opencubes:line"
+    },
+    {
+      "tag": "c:leathers"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:crane_backpack"
+  }
+}

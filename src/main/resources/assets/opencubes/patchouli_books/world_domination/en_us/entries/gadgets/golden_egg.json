@@ -1,0 +1,27 @@
+{
+  "name": "Golden Egg",
+  "icon": "opencubes:golden_egg",
+  "category": "opencubes:gadgets",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/golden_egg.png",
+      "title": "Golden Egg"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:golden_egg",
+      "text": "Place the egg, then right-click to begin hatching. It incubates, floats while spinning and pulling nearby blocks, then drops them and spawns your Mini Me clone before vanishing in a small blast."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The egg remembers its placer as owner. During the float phase it may magnet nearby blocks if enabled in config. Watch for END_ROD particles while it works. Mini Me inherits your skin and follows you like a tiny helper."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:golden_egg",
+      "text": ""
+    }
+  ]
+}

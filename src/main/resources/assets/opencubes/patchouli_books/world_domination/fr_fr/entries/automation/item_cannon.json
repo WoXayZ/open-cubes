@@ -1,0 +1,31 @@
+{
+  "name": "Canon à objets",
+  "icon": "opencubes:item_cannon",
+  "category": "opencubes:automation",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:item_cannon",
+      "text": "Tire les piles d'un coffre voisin vers le bloc choisi au $(item)Pointeur$(), tant qu'il reçoit un signal redstone."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "1. Posez le canon et collez un coffre (ou une trémie) sur une de ses six faces, avec des objets dedans.$(br)2. Prenez le $(item)Pointeur$(), sneak + clic droit sur le canon : il est sélectionné.$(br)3. Clic droit sans sneak sur un bloc lointain : le canon vise là-bas et la trajectoire s'affiche tant que vous tenez le Pointeur."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "4. Alimentez le canon en redstone. Il tire une pile du coffre toutes les quelques ticks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:item_cannon",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pointer",
+      "text": ""
+    }
+  ]
+}

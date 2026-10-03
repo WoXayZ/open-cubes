@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "minecraft:crafting_table"
+    },
+    "p": {
+      "tag": "minecraft:planks"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "sss",
+    "pcp",
+    "ppp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:drawing_table"
+  }
+}

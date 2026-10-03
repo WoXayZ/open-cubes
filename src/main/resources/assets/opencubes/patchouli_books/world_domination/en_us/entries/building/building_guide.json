@@ -1,0 +1,31 @@
+{
+  "name": "Building Guide",
+  "icon": "opencubes:building_guide",
+  "category": "opencubes:building",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/building_guide.png",
+      "title": "Building Guide"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Projects coloured ghost markers. Right-click with an empty hand to open the guide screen: pick the shape, set each half extent, rotate, and choose the marker colour.$(br2)The $(item)Enhanced Building Guide$() places one cell when you right-click it with a block (powered)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Creative mode with obsidian on top fills the whole shape. Blocks are taken from adjacent inventories matching the held type."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:building_guide",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:enhanced_building_guide",
+      "text": ""
+    }
+  ]
+}

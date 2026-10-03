@@ -1,0 +1,6 @@
+{
+  "parent": "opencubes:block/cube_all_tinted",
+  "textures": {
+    "all": "opencubes:block/elevator"
+  }
+}

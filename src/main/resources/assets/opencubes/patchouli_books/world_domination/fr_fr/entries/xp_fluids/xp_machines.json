@@ -1,0 +1,32 @@
+{
+  "name": "Machines d'XP",
+  "icon": "opencubes:xp_drain",
+  "category": "opencubes:xp_fluids",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/xp_machines.png",
+      "title": "Ligne XP"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Drain d'XP$() convertit l'expérience en liquide.$(br)$(item)Douche d'XP$() projette des orbes non homing.$(br)$(item)Embouteilleur d'XP$() remplit des bouteilles depuis un réservoir.$(br2)L'$(item)Entonnoir à vide$() aspire objets et XP avec sorties par face."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_drain",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_shower",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_bottler",
+      "text": ""
+    }
+  ]
+}

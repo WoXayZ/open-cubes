@@ -1,0 +1,22 @@
+{
+  "name": "Height Map Projector",
+  "icon": "opencubes:height_map_projector",
+  "category": "opencubes:cartography",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/projector.png",
+      "title": "Projector"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Insert a Height Map to project a terrain hologram. Rotate with the GUI buttons."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:height_map_projector",
+      "text": ""
+    }
+  ]
+}

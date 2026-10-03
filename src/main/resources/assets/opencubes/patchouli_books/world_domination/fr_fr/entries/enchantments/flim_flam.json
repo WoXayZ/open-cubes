@@ -1,0 +1,17 @@
+{
+  "name": "Flim Flam",
+  "icon": "opencubes:epic_eraser",
+  "category": "opencubes:enchantments",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Flim Flam$() accumule la mauvaise chance en PvP puis déclenche une farce pondérée - mélange d'inventaire, lore épique, creepers factices, plateformes de glace, etc.$(br2)Listes safe/unsafe et $(code)safeOnly$() dans la config. Les ops forcent avec $(code)/opencubes flimflam$()."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:epic_eraser",
+      "text": "Retire le lore épique généré d'un objet dans la grille de craft."
+    }
+  ]
+}

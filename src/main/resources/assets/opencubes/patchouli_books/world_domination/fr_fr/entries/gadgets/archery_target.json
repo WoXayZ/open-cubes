@@ -1,0 +1,22 @@
+{
+  "name": "Cible de tir",
+  "icon": "opencubes:archery_target",
+  "category": "opencubes:gadgets",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:archery_target",
+      "text": "La $(item)Cible de tir$() se pose à plat sur la face visée. Alimentez-la en redstone et elle se redresse, prête pour l'entraînement."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Chaque flèche qui la touche envoie une courte impulsion : plus le tir est proche du centre, plus le signal est fort, jusqu'à 15.$(br2)Lisez la force avec un comparateur pour faire des tableaux de score, des portes qui ne s'ouvrent qu'aux bons tireurs ou un stand de tir qui se réarme seul."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:archery_target",
+      "text": ""
+    }
+  ]
+}

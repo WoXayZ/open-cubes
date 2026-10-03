@@ -1,0 +1,22 @@
+{
+  "name": "Surligneur de village",
+  "icon": "opencubes:village_highlighter",
+  "category": "opencubes:building",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/village_highlighter.png",
+      "title": "Surligneur de village"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Alimenté, il dessine une boîte et sort un signal fort quand les villageois sont moins nombreux que lits × 0,35 (place pour se reproduire)."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:village_highlighter",
+      "text": ""
+    }
+  ]
+}

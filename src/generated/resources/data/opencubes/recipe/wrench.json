@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "b": {
+      "tag": "c:dyes/blue"
+    },
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "r": {
+      "tag": "c:dyes/red"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    " r ",
+    " cb",
+    "s  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:wrench"
+  }
+}

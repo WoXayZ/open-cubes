@@ -1,0 +1,22 @@
+{
+  "name": "Sleeping Bag",
+  "icon": "opencubes:purple_sleeping_bag",
+  "category": "opencubes:gadgets",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:purple_sleeping_bag,opencubes:white_sleeping_bag,opencubes:orange_sleeping_bag,opencubes:magenta_sleeping_bag,opencubes:light_blue_sleeping_bag,opencubes:yellow_sleeping_bag,opencubes:lime_sleeping_bag,opencubes:pink_sleeping_bag,opencubes:gray_sleeping_bag,opencubes:light_gray_sleeping_bag,opencubes:cyan_sleeping_bag,opencubes:blue_sleeping_bag,opencubes:brown_sleeping_bag,opencubes:green_sleeping_bag,opencubes:red_sleeping_bag,opencubes:black_sleeping_bag",
+      "text": "Wearable chest piece that lets you sleep anywhere. Right-click to swap it with your chestplate, then sleep normally: the night passes and your respawn point stays where it was."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every dye colour has its own bag, they all work the same. The bag has to be worn in the chest slot to skip the night."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_sleeping_bag",
+      "text": "Each colour uses the matching wool."
+    }
+  ]
+}

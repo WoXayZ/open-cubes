@@ -1,0 +1,98 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "opencubes:item/stencil/creeper_face"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "opencubes:pattern": 0.0
+      },
+      "model": "opencubes:item/stencil/creeper_face"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.015625
+      },
+      "model": "opencubes:item/stencil/border"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.03125
+      },
+      "model": "opencubes:item/stencil/stripes"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.046875
+      },
+      "model": "opencubes:item/stencil/corner"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.0625
+      },
+      "model": "opencubes:item/stencil/corner2"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.078125
+      },
+      "model": "opencubes:item/stencil/corner3"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.09375
+      },
+      "model": "opencubes:item/stencil/hole"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.109375
+      },
+      "model": "opencubes:item/stencil/spiral"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.125
+      },
+      "model": "opencubes:item/stencil/thickstripes"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.140625
+      },
+      "model": "opencubes:item/stencil/splat"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.15625
+      },
+      "model": "opencubes:item/stencil/storage"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.171875
+      },
+      "model": "opencubes:item/stencil/heart"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.1875
+      },
+      "model": "opencubes:item/stencil/heart2"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.203125
+      },
+      "model": "opencubes:item/stencil/music"
+    },
+    {
+      "predicate": {
+        "opencubes:pattern": 0.21875
+      },
+      "model": "opencubes:item/stencil/balloon"
+    }
+  ]
+}

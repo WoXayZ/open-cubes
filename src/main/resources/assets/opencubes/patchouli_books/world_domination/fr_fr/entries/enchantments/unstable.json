@@ -1,0 +1,12 @@
+{
+  "name": "Instable",
+  "icon": "minecraft:gunpowder",
+  "category": "opencubes:enchantments",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Instable$() sur l'armure : porter de la poudre à canon en chutant fort ou en se faisant frapper peut faire exploser. Niveau 3 peut grief si configuré."
+    }
+  ]
+}

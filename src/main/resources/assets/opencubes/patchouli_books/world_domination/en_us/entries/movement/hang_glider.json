@@ -1,0 +1,22 @@
+{
+  "name": "Hang Glider",
+  "icon": "opencubes:hang_glider",
+  "category": "opencubes:movement",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/hang_glider.png",
+      "title": "Hang Glider"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Craft $(item)Glider Wings$(), then the Hang Glider. Right-click to engage, jump off high ground, sneak to dive.$(br2)Overworld daytime thermals give lift; rain can sink you. Press $(thing)V$() for the variometer."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:hang_glider",
+      "text": "Right-click a $(item)Paint Can$() while holding the glider to paint its sail. One dose per coat; the frame stays wood."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Argile savoureuse et touche B",
+  "icon": "opencubes:tasty_clay",
+  "category": "opencubes:enchantments",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Mangez de l'$(item)Argile savoureuse$() pour devoir des briques. Avec $(code)weAreSeriousPeople=false$(), pressez $(thing)B$() pour en lâcher une. La mort solde la dette restante.$(br2)Les serveurs sérieux laissent le défaut et n'y pensent plus."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:tasty_clay",
+      "text": ""
+    }
+  ]
+}

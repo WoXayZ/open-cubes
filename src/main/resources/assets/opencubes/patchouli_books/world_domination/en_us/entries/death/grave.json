@@ -1,0 +1,22 @@
+{
+  "name": "Grave",
+  "icon": "opencubes:grave",
+  "category": "opencubes:death",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/grave.png",
+      "title": "Grave"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "On death (when enabled), a grave stores your items. Inventory dumps can also be restored with $(code)/opencubes inventory$()."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:grave",
+      "text": "Graves appear on death when enabled in config - they are not a crafting recipe."
+    }
+  ]
+}

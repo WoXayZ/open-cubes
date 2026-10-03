@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "f": {
+      "item": "minecraft:scaffolding"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    " s ",
+    "sfs",
+    " s "
+  ],
+  "result": {
+    "count": 2,
+    "id": "opencubes:temporary_scaffolding"
+  }
+}

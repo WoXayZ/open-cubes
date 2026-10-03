@@ -1,0 +1,22 @@
+{
+  "name": "Epic Eraser",
+  "icon": "opencubes:epic_eraser",
+  "category": "opencubes:gadgets",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:epic_eraser",
+      "text": "Removes cursed Flim-Flam lore from items. Combine the eraser with any item that carries epic lore in a crafting grid to strip the fake enchantment text and restore a clean tooltip."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The eraser has limited durability. It clears both OpenCubes epic lore data and vanilla lore lines when present. Useful after pranks, villager trades, or unstable enchantment mishaps."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:epic_eraser",
+      "text": ""
+    }
+  ]
+}

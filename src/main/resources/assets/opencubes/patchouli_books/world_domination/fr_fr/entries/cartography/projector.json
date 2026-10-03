@@ -1,0 +1,22 @@
+{
+  "name": "Projecteur de carte",
+  "icon": "opencubes:height_map_projector",
+  "category": "opencubes:cartography",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/projector.png",
+      "title": "Projecteur"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Insérez une carte de hauteur pour projeter un hologramme. Boutons du GUI pour tourner."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:height_map_projector",
+      "text": ""
+    }
+  ]
+}

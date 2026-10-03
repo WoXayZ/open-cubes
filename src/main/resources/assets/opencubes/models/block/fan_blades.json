@@ -1,0 +1,20 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "textures": {
+        "blades": "opencubes:block/fan_blades",
+        "particle": "opencubes:block/fan_blades"
+    },
+    "elements": [
+        {
+            "name": "blades",
+            "shade": false,
+            "from": [4.5, 6.5, 8],
+            "to": [11.5, 13.5, 8],
+            "faces": {
+                "north": {"uv": [0, 0, 16, 16], "texture": "#blades"},
+                "south": {"uv": [16, 0, 0, 16], "texture": "#blades"}
+            }
+        }
+    ]
+}

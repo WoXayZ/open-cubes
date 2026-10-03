@@ -1,0 +1,29 @@
+{
+  "multipart": [
+    {"apply": {"model": "opencubes:block/vacuum_hopper_body"}},
+
+    {"when": {"north": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_north_items"}},
+    {"when": {"north": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_north_fluids"}},
+    {"when": {"north": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_north_both"}},
+
+    {"when": {"south": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_south_items"}},
+    {"when": {"south": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_south_fluids"}},
+    {"when": {"south": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_south_both"}},
+
+    {"when": {"east": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_east_items"}},
+    {"when": {"east": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_east_fluids"}},
+    {"when": {"east": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_east_both"}},
+
+    {"when": {"west": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_west_items"}},
+    {"when": {"west": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_west_fluids"}},
+    {"when": {"west": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_west_both"}},
+
+    {"when": {"up": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_up_items"}},
+    {"when": {"up": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_up_fluids"}},
+    {"when": {"up": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_up_both"}},
+
+    {"when": {"down": "items"}, "apply": {"model": "opencubes:block/vacuum_hopper_down_items"}},
+    {"when": {"down": "fluids"}, "apply": {"model": "opencubes:block/vacuum_hopper_down_fluids"}},
+    {"when": {"down": "both"}, "apply": {"model": "opencubes:block/vacuum_hopper_down_both"}}
+  ]
+}

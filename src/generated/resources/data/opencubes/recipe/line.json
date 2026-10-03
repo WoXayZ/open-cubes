@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "tag": "c:strings"
+    },
+    "x": {
+      "tag": "c:slime_balls"
+    }
+  },
+  "pattern": [
+    " s ",
+    "sxs",
+    " s "
+  ],
+  "result": {
+    "count": 2,
+    "id": "opencubes:line"
+  }
+}

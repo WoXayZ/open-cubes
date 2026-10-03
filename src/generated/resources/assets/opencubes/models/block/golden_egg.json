@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/dragon_egg",
+  "textures": {
+    "all": "opencubes:block/golden_egg",
+    "particle": "opencubes:block/golden_egg"
+  }
+}

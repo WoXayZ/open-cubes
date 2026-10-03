@@ -1,0 +1,12 @@
+{
+  "name": "Dernier combat",
+  "icon": "minecraft:golden_apple",
+  "category": "opencubes:enchantments",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Dernier combat$() dépense de l'XP au lieu de vous laisser mourir sous un demi-cœur.$(br2)Coût sur les dégâts $(italic)après mitigation$() : $(code)ceil(dégâts × lastStandXpPerDamage / niveau)$()."
+    }
+  ]
+}

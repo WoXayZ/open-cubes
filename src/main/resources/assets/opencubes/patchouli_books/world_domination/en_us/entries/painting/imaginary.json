@@ -1,0 +1,27 @@
+{
+  "name": "Imaginary Blocks",
+  "icon": "opencubes:pencil",
+  "category": "opencubes:painting",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:pencil",
+      "text": "The $(item)Sketching Pencil$() and $(item)Crayon$() place client-side imaginary voxels only you (or glasses wearers) can see. Pencil shapes are grey; crayons carry dye colour."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Scroll or sneak to change placement mode: block, slab, stairs, panel, and more. Imaginary blocks have no collision until made real by other mods or admin tools. $(item)Imagination Glasses$() let friends see your sketches."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pencil",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crayon",
+      "text": "Upgrade a pencil with dye for coloured crayons."
+    }
+  ]
+}

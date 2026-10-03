@@ -1,0 +1,22 @@
+{
+  "name": "Introduction",
+  "icon": "opencubes:info_book",
+  "category": "opencubes:getting_started",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/intro.png",
+      "title": "World Domination"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)OpenCubes$() reimplements the ideas behind OpenBlocks on NeoForge 1.21.$(br2)This book is a Patchouli guide. Craft it with a $(item)Book$() and a $(item)Clay Ball$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Credits$()$(br)Behaviour reference: OpenBlocks and OpenBlocks Reopened.$(br)Word grammar for epic lore: OpenModsLib.$(br)Implementation: the OpenCubes contributors.$(br2)This is not a drop-in world converter for 1.12 saves."
+    }
+  ],
+  "priority": true
+}

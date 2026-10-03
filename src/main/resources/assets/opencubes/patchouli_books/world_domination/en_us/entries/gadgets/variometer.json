@@ -1,0 +1,21 @@
+{
+  "name": "Variometer",
+  "icon": "opencubes:hang_glider",
+  "category": "opencubes:gadgets",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The variometer is built into hang glider flight. While gliding with the Hang Glider engaged or while elytra-flying with a Thermal Elytra, press $(thing)V$() to toggle audio feedback for vertical speed."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rising air beeps faster and at a higher pitch; sinking air slows and lowers the tone. Bind $(thing)Variometer Volume Up$() and $(thing)Variometer Volume Down$() in controls to adjust loudness. Thermals in the Overworld daytime help you climb; rain can pull you down."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:hang_glider",
+      "text": "Craft the glider first, then use $(thing)V$() in flight."
+    }
+  ]
+}

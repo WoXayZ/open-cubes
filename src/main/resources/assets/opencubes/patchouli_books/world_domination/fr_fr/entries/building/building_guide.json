@@ -1,0 +1,31 @@
+{
+  "name": "Guide de construction",
+  "icon": "opencubes:building_guide",
+  "category": "opencubes:building",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/building_guide.png",
+      "title": "Guide de construction"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Projette des marqueurs colorés. Clic droit à main vide pour ouvrir l'interface : choix de la forme, taille de chaque demi-axe, rotation et couleur des marqueurs.$(br2)Le $(item)Guide amélioré$() place une cellule au clic droit avec un bloc (alimenté)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "En créatif avec de l'obsidienne au-dessus, il remplit toute la forme. Les blocs sont pris dans les inventaires adjacents du même type."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:building_guide",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:enhanced_building_guide",
+      "text": ""
+    }
+  ]
+}

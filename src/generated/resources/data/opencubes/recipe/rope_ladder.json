@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "l": {
+      "item": "minecraft:ladder"
+    },
+    "s": {
+      "tag": "c:strings"
+    }
+  },
+  "pattern": [
+    "sls",
+    "sls",
+    "sls"
+  ],
+  "result": {
+    "count": 3,
+    "id": "opencubes:rope_ladder"
+  }
+}

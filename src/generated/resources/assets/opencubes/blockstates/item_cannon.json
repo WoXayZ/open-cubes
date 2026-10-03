@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "opencubes:block/item_cannon",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "opencubes:block/item_cannon"
+    },
+    "facing=south": {
+      "model": "opencubes:block/item_cannon",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "opencubes:block/item_cannon",
+      "y": 270
+    }
+  }
+}

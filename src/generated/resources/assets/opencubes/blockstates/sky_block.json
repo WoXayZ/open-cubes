@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "inverted=false,powered=false": {
+      "model": "opencubes:block/sky_block"
+    },
+    "inverted=false,powered=true": {
+      "model": "opencubes:block/sky_block"
+    },
+    "inverted=true,powered=false": {
+      "model": "opencubes:block/sky_block"
+    },
+    "inverted=true,powered=true": {
+      "model": "opencubes:block/sky_block"
+    }
+  }
+}

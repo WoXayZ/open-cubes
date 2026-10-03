@@ -1,0 +1,22 @@
+{
+  "name": "Enclume auto",
+  "icon": "opencubes:auto_anvil",
+  "category": "opencubes:automation",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/auto_anvil.png",
+      "title": "Enclume auto"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Automatise les combinaisons d'enclume avec de l'XP liquide. Configurez les faces Entrée / Sortie / XP dans le GUI."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:auto_anvil",
+      "text": ""
+    }
+  ]
+}

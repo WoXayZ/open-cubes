@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "s": {
+      "item": "opencubes:liquid_sponge"
+    },
+    "t": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "  s",
+    " t "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:liquid_sponge_on_a_stick"
+  }
+}

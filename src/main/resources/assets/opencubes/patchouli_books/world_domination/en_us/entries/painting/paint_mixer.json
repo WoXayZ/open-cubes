@@ -1,0 +1,22 @@
+{
+  "name": "Paint Mixer",
+  "icon": "opencubes:paint_mixer",
+  "category": "opencubes:painting",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/paint_mixer.png",
+      "title": "Paint Mixer"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Mix dyes into paint cans. Cycle the palette and press Mix."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_mixer",
+      "text": ""
+    }
+  ]
+}

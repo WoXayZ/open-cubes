@@ -1,0 +1,22 @@
+{
+  "name": "Vacuum Hopper",
+  "icon": "opencubes:vacuum_hopper",
+  "category": "opencubes:automation",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:vacuum_hopper",
+      "text": "Pulls nearby item entities and experience orbs into internal storage, then pushes items and XP fluid out selected sides. Open the GUI to set output faces and inspect tanks."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sneak-click with an empty hand on the block to toggle vacuuming on or off. Range and tick rate follow config. Item and XP outputs use separate side masks so you can route loot and juice independently."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:vacuum_hopper",
+      "text": ""
+    }
+  ]
+}

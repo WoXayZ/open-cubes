@@ -1,0 +1,22 @@
+{
+  "name": "Mélangeur de peinture",
+  "icon": "opencubes:paint_mixer",
+  "category": "opencubes:painting",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/paint_mixer.png",
+      "title": "Mélangeur"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Mélangez des teintures en pots de peinture. Parcourez la palette et appuyez sur Mélanger."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_mixer",
+      "text": ""
+    }
+  ]
+}

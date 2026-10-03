@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "minecraft:target"
+    },
+    {
+      "item": "minecraft:bow"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:archery_target"
+  }
+}

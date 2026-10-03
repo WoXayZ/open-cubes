@@ -1,0 +1,22 @@
+{
+  "name": "Ascenseurs",
+  "icon": "opencubes:purple_elevator",
+  "category": "opencubes:movement",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/elevator.png",
+      "title": "Ascenseurs"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Debout sur un Ascenseur, sautez ou accroupissez-vous pour rejoindre le suivant de même couleur.$(br2)Les $(item)Ascenseurs rotatifs$() vous tournent aussi vers l'orientation du bloc.$(br2)Coût d'XP et correspondance de couleur sont configurables."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_elevator",
+      "text": "Teignez après craft, ou crafttez directement la variante colorée."
+    }
+  ]
+}

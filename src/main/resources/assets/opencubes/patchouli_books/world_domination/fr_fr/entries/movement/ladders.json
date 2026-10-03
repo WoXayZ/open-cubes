@@ -1,0 +1,22 @@
+{
+  "name": "Échelles et échafaudage",
+  "icon": "opencubes:rope_ladder",
+  "category": "opencubes:movement",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "L'$(item)Échelle de corde$() se place et se grimpe. Elle peut se dérouler vers le bas selon la config.$(br2)L'$(item)Échafaudage temporaire$() se grimpe et s'empile comme l'échafaudage vanilla, mais disparaît au hasard des ticks et ne drop rien."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:rope_ladder",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:temporary_scaffolding",
+      "text": ""
+    }
+  ]
+}

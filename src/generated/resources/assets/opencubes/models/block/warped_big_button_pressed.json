@@ -1,0 +1,6 @@
+{
+  "parent": "opencubes:block/big_button_pressed",
+  "textures": {
+    "texture": "minecraft:block/warped_planks"
+  }
+}

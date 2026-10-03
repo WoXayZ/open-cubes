@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "opencubes:item/paint_brush",
+    "layer1": "opencubes:item/paint_brush_tip"
+  }
+}

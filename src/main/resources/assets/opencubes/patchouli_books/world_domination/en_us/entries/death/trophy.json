@@ -1,0 +1,33 @@
+{
+  "name": "Trophy",
+  "icon": "opencubes:trophy",
+  "category": "opencubes:death",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/trophies.png",
+      "title": "Trophies"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Mobs you kill yourself sometimes drop their $(item)Trophy$(). $(thing)Looting$() raises the odds; the base chance is in the server config.$(br2)Place it as a small statue and right-click it: many trophies react, like the chicken laying an egg or the creeper hissing. Each reaction has a cooldown."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Trophies are $(bold)data-driven$(): a datapack adds one with a single JSON file in$(br)$(code)data/<namespace>/opencubes/trophy/<name>.json$()$(br2)Killing that entity can then drop it. Trophies load with the world, so restart the world after editing them ($(code)/reload$() is not enough)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(code)entity$(): entity id, required.$(br)$(code)scale$(): statue size, default 0.4.$(br)$(code)vertical_offset$(): lift in blocks, default 0.$(br)$(code)behavior$(): right-click reaction, default $(code)opencubes:none$().$(br)$(code)drop$(): used by $(code)opencubes:item_drop$(), with $(code)item$(), $(code)count$() (1), $(code)cooldown$() in ticks (20000) and $(code)sound$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Example$()$(br)$(code){$(br) \"entity\": \"minecraft:chicken\",$(br) \"behavior\": \"opencubes:item_drop\",$(br) \"drop\": {$(br)  \"item\": \"minecraft:egg\",$(br)  \"cooldown\": 10000$(br) }$(br)}$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Built-in reactions: none, item_drop, blaze, breeze, cave_spider, creeper, enderman, evoker, guardian, guardian_spike, iron_golem, llama, mooshroom, pufferfish, rabbit, shulker, skeleton, snowman, squid, villager, witch."
+    }
+  ]
+}

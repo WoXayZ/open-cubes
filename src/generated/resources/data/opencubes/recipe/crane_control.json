@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "g": {
+      "tag": "c:dusts/glowstone"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    },
+    "l": {
+      "tag": "c:nuggets/gold"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "ili",
+    "grg",
+    "iri"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:crane_control"
+  }
+}

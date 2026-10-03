@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "base=false,facing=east": {
+      "model": "opencubes:block/grave_free",
+      "y": 270
+    },
+    "base=false,facing=north": {
+      "model": "opencubes:block/grave_free",
+      "y": 180
+    },
+    "base=false,facing=south": {
+      "model": "opencubes:block/grave_free"
+    },
+    "base=false,facing=west": {
+      "model": "opencubes:block/grave_free",
+      "y": 90
+    },
+    "base=true,facing=east": {
+      "model": "opencubes:block/grave_ground",
+      "y": 270
+    },
+    "base=true,facing=north": {
+      "model": "opencubes:block/grave_ground",
+      "y": 180
+    },
+    "base=true,facing=south": {
+      "model": "opencubes:block/grave_ground"
+    },
+    "base=true,facing=west": {
+      "model": "opencubes:block/grave_ground",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Healer",
+  "icon": "opencubes:healer",
+  "category": "opencubes:xp_fluids",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:healer",
+      "text": "Pipe Liquid XP into the Healer and stand on it for regeneration and saturation while XP drains."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:healer",
+      "text": ""
+    }
+  ]
+}

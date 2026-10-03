@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "d": {
+      "item": "minecraft:golden_apple"
+    },
+    "g": {
+      "tag": "c:ingots/gold"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gdg",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:healer"
+  }
+}

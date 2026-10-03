@@ -1,0 +1,1 @@
+{ "entity": "minecraft:wither_skeleton", "behavior": "opencubes:item_drop", "drop": { "item": "minecraft:wither_skeleton_skull", "cooldown": 50000 } }

@@ -1,0 +1,16 @@
+{
+  "type": "opencubes:coloured_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "opencubes:crayon"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:crayon_glasses"
+  }
+}

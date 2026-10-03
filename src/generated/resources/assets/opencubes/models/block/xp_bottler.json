@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "opencubes:block/xp_bottler_front",
+    "side": "minecraft:block/furnace_side",
+    "top": "minecraft:block/furnace_top"
+  }
+}

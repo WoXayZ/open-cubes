@@ -1,0 +1,22 @@
+{
+  "name": "Village Highlighter",
+  "icon": "opencubes:village_highlighter",
+  "category": "opencubes:building",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/village_highlighter.png",
+      "title": "Village Highlighter"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "When powered near a village meeting point, draws a green box and outputs a strong redstone signal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:village_highlighter",
+      "text": ""
+    }
+  ]
+}

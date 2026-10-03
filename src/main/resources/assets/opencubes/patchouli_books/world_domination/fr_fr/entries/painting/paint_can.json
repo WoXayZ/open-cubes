@@ -1,0 +1,22 @@
+{
+  "name": "Pot de peinture",
+  "icon": "opencubes:paint_can",
+  "category": "opencubes:painting",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:paint_can",
+      "text": "Stocke peinture RVB et quantité. Fabriquez des pots au Mélangeur, posez-les ou transportez-les. L'icône affiche des pastilles R, V et B dans le coin quand vous le tenez."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Clic droit avec un Pinceau ou chargez des machines depuis le pot. Toile, Toile de verre et pochoirs consomment la peinture. L'info-bulle indique la couleur hex et le volume restant."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_mixer",
+      "text": "Mélangez des teintures au Mélangeur pour remplir les pots."
+    }
+  ]
+}

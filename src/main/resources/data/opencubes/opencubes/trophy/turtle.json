@@ -1,0 +1,1 @@
+{ "entity": "minecraft:turtle", "scale": 0.4, "behavior": "opencubes:item_drop", "drop": { "item": "minecraft:turtle_scute", "cooldown": 25000 } }

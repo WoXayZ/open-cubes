@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "g": {
+      "tag": "c:glass_panes"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    },
+    "s": {
+      "tag": "c:slime_balls"
+    }
+  },
+  "pattern": [
+    "cgc",
+    "csc",
+    "crc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:slimalyzer"
+  }
+}

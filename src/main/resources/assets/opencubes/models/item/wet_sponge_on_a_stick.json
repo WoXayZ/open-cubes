@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "opencubes:item/wet_sponge_on_a_stick"
+  }
+}

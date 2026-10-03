@@ -1,0 +1,27 @@
+{
+  "name": "Grue",
+  "icon": "opencubes:crane_backpack",
+  "category": "opencubes:crane",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/crane.png",
+      "title": "Grue"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Équipez le $(item)Sac à dos grue$() et tenez le $(item)Contrôle de grue$(). Montez/descendez l'aimant, attrapez mobs/objets/blocs, relâchez pour placer."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_backpack",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_control",
+      "text": ""
+    }
+  ]
+}

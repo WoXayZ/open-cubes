@@ -1,0 +1,27 @@
+{
+  "name": "Canvas & Brush",
+  "icon": "opencubes:canvas",
+  "category": "opencubes:painting",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/canvas.png",
+      "title": "Canvas"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Canvas$() and $(item)Glass Canvas$() take paint. Load a $(item)Paint Brush$() from a $(item)Paint Can$(), then paint faces. $(item)Squeegee$() clears paint."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:canvas",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_brush",
+      "text": ""
+    }
+  ]
+}

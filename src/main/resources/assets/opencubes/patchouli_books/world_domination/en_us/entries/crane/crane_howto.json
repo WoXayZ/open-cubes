@@ -1,0 +1,26 @@
+{
+  "name": "Crane Controls",
+  "icon": "opencubes:crane_control",
+  "category": "opencubes:crane",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "1. Craft and equip the $(item)Crane Backpack$() in your chest slot.$(br2)2. Hold the $(item)Crane Control$() in your main hand.$(br2)3. Hold right-click to $(bold)lower$() the magnet; sneak+hold to $(bold)raise$() it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "4. Left-click (air, block, or entity) while holding the control to toggle the magnet: grab mobs, items, or blocks, then left-click again to release.$(br2)The tip hangs ~2 blocks ahead of you at yaw height — lower it onto the target before grabbing."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_backpack",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_control",
+      "text": ""
+    }
+  ]
+}

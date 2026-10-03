@@ -1,0 +1,27 @@
+{
+  "name": "Blocs imaginaires",
+  "icon": "opencubes:pencil",
+  "category": "opencubes:painting",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:pencil",
+      "text": "Le $(item)Crayon à croquis$() et le $(item)Pastel$() posent des voxels imaginaires visibles seulement pour vous (ou les porteurs de lunettes). Le crayon est gris ; les pastels portent une couleur de teinture."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Molette ou sneak pour changer le mode : bloc, dalle, escaliers, panneau, etc. Les blocs imaginaires n'ont pas de collision jusqu'à ce qu'ils deviennent réels. Les $(item)Lunettes d'imagination$() laissent vos amis voir vos croquis."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pencil",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crayon",
+      "text": "Améliorez un crayon avec une teinture pour des pastels colorés."
+    }
+  ]
+}

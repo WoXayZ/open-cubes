@@ -1,0 +1,37 @@
+{
+  "parent": "block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "opencubes:block/paint_can_side",
+    "north": "opencubes:block/paint_can_front",
+    "east": "opencubes:block/paint_can_left",
+    "south": "opencubes:block/paint_can_side",
+    "west": "opencubes:block/paint_can_right",
+    "bottom": "opencubes:block/paint_can_bottom",
+    "top": "opencubes:block/paint_can_top",
+    "spill": "opencubes:block/paint_can_side2"
+  },
+  "elements": [
+    {
+      "name": "can",
+      "from": [4, 0, 4],
+      "to": [12, 11, 12],
+      "faces": {
+        "north": {"uv": [4, 5, 12, 16], "texture": "#north"},
+        "east": {"uv": [4, 5, 12, 16], "texture": "#east"},
+        "south": {"uv": [4, 5, 12, 16], "texture": "#south"},
+        "west": {"uv": [4, 5, 12, 16], "texture": "#west"},
+        "down": {"uv": [4, 4, 12, 12], "texture": "#bottom", "cullface": "down"}
+      }
+    },
+    {
+      "name": "paint",
+      "from": [4, 0, 4],
+      "to": [12, 11, 12],
+      "faces": {
+        "south": {"uv": [4, 5, 12, 16], "texture": "#spill", "tintindex": 0},
+        "up": {"uv": [4, 4, 12, 12], "texture": "#top", "tintindex": 0}
+      }
+    }
+  ]
+}

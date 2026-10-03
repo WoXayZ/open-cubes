@@ -1,0 +1,22 @@
+{
+  "name": "Clé",
+  "icon": "opencubes:wrench",
+  "category": "opencubes:gadgets",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:wrench",
+      "text": "Clic droit sur un bloc avec la $(item)Clé$() pour le tourner d'un quart de tour autour de l'axe vertical : escaliers, fourneaux, machines et la plupart des blocs orientés."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les blocs qui ouvrent un menu ou réagissent au clic (coffres, leviers, boutons) demandent un sneak + clic droit pour garder leur usage normal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:wrench",
+      "text": ""
+    }
+  ]
+}

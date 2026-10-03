@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "bottom=false": {
+      "model": "opencubes:block/temporary_scaffolding"
+    },
+    "bottom=true": {
+      "model": "opencubes:block/temporary_scaffolding_unstable"
+    }
+  }
+}

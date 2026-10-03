@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "opencubes:item/hang_glider",
+    "layer1": "opencubes:item/hang_glider_frame"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "opencubes:deployed": 1
+      },
+      "model": "opencubes:item/hang_glider_hidden"
+    }
+  ]
+}

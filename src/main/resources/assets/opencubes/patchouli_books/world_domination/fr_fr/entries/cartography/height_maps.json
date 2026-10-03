@@ -1,0 +1,27 @@
+{
+  "name": "Cartes de hauteur",
+  "icon": "opencubes:empty_map",
+  "category": "opencubes:cartography",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/height_map.png",
+      "title": "Cartographe"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Fabriquez une $(item)Carte vide$() et déployez un $(item)Cartographe$(). Donnez-lui la carte vide en sneakant ; une fois assez de chunks scannés, sneakez main vide pour récupérer la $(item)Carte de hauteur$() remplie.$(br2)$(l)Cloner$() : carte remplie + carte vide de même échelle.$(br)$(l)Dézoomer$() : carte vide + 4 pépites d'or."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:empty_map",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:cartographer",
+      "text": ""
+    }
+  ]
+}

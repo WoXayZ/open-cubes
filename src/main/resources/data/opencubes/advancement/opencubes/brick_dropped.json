@@ -1,0 +1,23 @@
+{
+  "parent": "opencubes:opencubes/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:brick"
+    },
+    "title": {
+      "translate": "advancements.opencubes.brick_dropped.title"
+    },
+    "description": {
+      "translate": "advancements.opencubes.brick_dropped.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "brick": {
+      "trigger": "opencubes:brick_dropped"
+    }
+  }
+}

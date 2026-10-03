@@ -1,0 +1,41 @@
+{
+  "name": "Trophée",
+  "icon": "opencubes:trophy",
+  "category": "opencubes:death",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/trophies.png",
+      "title": "Trophées"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les mobs que vous tuez vous-même lâchent parfois leur $(item)Trophée$(). $(thing)Butin$() augmente les chances ; la chance de base se règle dans la config serveur.$(br2)Posez-le comme une petite statue et faites clic droit :"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "beaucoup de trophées réagissent, comme la poule qui pond un œuf ou le creeper qui siffle. Chaque réaction a un délai."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les trophées sont $(bold)data-driven$() : un datapack en ajoute un avec un seul fichier JSON dans$(br)$(code)data/<namespace>/opencubes/trophy/<nom>.json$()$(br2)Tuer cette entité peut alors le faire tomber. Les trophées se chargent avec le monde :"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "relancez le monde après les avoir modifiés ($(code)/reload$() ne suffit pas)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(code)entity$() : id de l'entité, obligatoire.$(br)$(code)scale$() : taille de la statue, 0.4 par défaut.$(br)$(code)vertical_offset$() : décalage vertical en blocs, 0 par défaut.$(br)$(code)behavior$() : réaction au clic droit, $(code)opencubes:none$() par défaut.$(br)$(code)drop$() : utilisé par $(code)opencubes:item_drop$(), avec $(code)item$(), $(code)count$() (1), $(code)cooldown$() en ticks (20000) et $(code)sound$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Exemple$()$(br)$(code){$(br) \"entity\": \"minecraft:chicken\",$(br) \"behavior\": \"opencubes:item_drop\",$(br) \"drop\": {$(br)  \"item\": \"minecraft:egg\",$(br)  \"cooldown\": 10000$(br) }$(br)}$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Réactions fournies : none, item_drop, blaze, breeze, cave_spider, creeper, enderman, evoker, guardian, guardian_spike, iron_golem, llama, mooshroom, pufferfish, rabbit, shulker, skeleton, snowman, squid, villager, witch."
+    }
+  ]
+}

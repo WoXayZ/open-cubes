@@ -1,0 +1,22 @@
+{
+  "name": "Gomme épique",
+  "icon": "opencubes:epic_eraser",
+  "category": "opencubes:gadgets",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:epic_eraser",
+      "text": "Retire la fausse lore Flim-Flam des objets. Combinez la gomme avec un objet portant une lore épique dans une grille de craft pour effacer le texte d'enchantement bidon et restaurer une info-bulle propre."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "La gomme a une durabilité limitée. Elle efface à la fois la lore épique OpenCubes et les lignes de lore vanilla si présentes. Utile après farces, échanges de villageois ou enchantements instables."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:epic_eraser",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "opencubes:block/height_map_projector"
+    },
+    "active=true": {
+      "model": "opencubes:block/height_map_projector_active"
+    }
+  }
+}

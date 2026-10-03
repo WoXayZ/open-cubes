@@ -1,0 +1,22 @@
+{
+  "name": "Drapeaux",
+  "icon": "opencubes:purple_flag",
+  "category": "opencubes:gadgets",
+  "sortnum": 17,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:purple_flag,opencubes:white_flag,opencubes:orange_flag,opencubes:magenta_flag,opencubes:light_blue_flag,opencubes:yellow_flag,opencubes:lime_flag,opencubes:pink_flag,opencubes:gray_flag,opencubes:light_gray_flag,opencubes:cyan_flag,opencubes:blue_flag,opencubes:brown_flag,opencubes:green_flag,opencubes:red_flag,opencubes:black_flag",
+      "text": "Les $(item)Drapeaux$() existent dans les seize couleurs. Plantez-en un au sol ou sur un poteau de barrière, ou fixez-le sur le côté d'un bloc."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Empilez deux drapeaux de la même couleur et ils fusionnent en un grand drapeau."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_flag",
+      "text": ""
+    }
+  ]
+}

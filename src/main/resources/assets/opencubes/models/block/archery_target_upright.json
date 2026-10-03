@@ -1,0 +1,25 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "textures": {
+        "front": "opencubes:block/archery_target_front",
+        "back": "opencubes:block/archery_target_back",
+        "leg": "opencubes:block/archery_target_leg",
+        "particle": "opencubes:block/archery_target_back"
+    },
+    "elements": [
+        {
+            "name": "target",
+            "from": [0, 0, 12],
+            "to": [16, 16, 16],
+            "faces": {
+                "north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+                "south": {"uv": [0, 0, 16, 16], "texture": "#back", "cullface": "south"},
+                "west":  {"uv": [0, 0, 16, 4], "texture": "#leg", "rotation": 90},
+                "east":  {"uv": [0, 0, 16, 4], "texture": "#leg", "rotation": 270},
+                "up":    {"uv": [0, 0, 16, 4], "texture": "#leg"},
+                "down":  {"uv": [0, 0, 16, 4], "texture": "#leg", "cullface": "down"}
+            }
+        }
+    ]
+}

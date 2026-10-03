@@ -1,0 +1,18 @@
+{
+  "name": "Ventilateur",
+  "icon": "opencubes:fan",
+  "category": "opencubes:movement",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:fan",
+      "text": "Pousse les entités quand il est alimenté (configurable). Orientez-le dans le sens du vent."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:fan",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "opencubes:wool_from_slabs",
+  "key": {
+    "s": {
+      "item": "opencubes:pink_wool_slab"
+    }
+  },
+  "pattern": [
+    "s",
+    "s"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:pink_wool"
+  }
+}

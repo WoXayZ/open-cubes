@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "opencubes:elevator",
+  "key": {
+    "e": {
+      "tag": "c:ender_pearls"
+    },
+    "w": {
+      "item": "minecraft:light_blue_wool"
+    }
+  },
+  "pattern": [
+    "www",
+    "wew",
+    "www"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:light_blue_elevator"
+  }
+}

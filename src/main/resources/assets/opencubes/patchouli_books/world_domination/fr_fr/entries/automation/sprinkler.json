@@ -1,0 +1,22 @@
+{
+  "name": "Arroseur",
+  "icon": "opencubes:sprinkler",
+  "category": "opencubes:automation",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sprinkler.png",
+      "title": "Arroseur"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Placez-le au-dessus d'une source / d'un réservoir d'eau. Hydrate, fait pousser, et peut consommer de la poudre d'os via son GUI."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:sprinkler",
+      "text": ""
+    }
+  ]
+}

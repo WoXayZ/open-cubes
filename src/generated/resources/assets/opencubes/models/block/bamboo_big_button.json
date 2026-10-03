@@ -1,0 +1,6 @@
+{
+  "parent": "opencubes:block/big_button",
+  "textures": {
+    "texture": "minecraft:block/bamboo_planks"
+  }
+}

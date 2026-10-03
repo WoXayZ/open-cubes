@@ -1,0 +1,6 @@
+{
+  "name": "Automation",
+  "description": "Auto Anvil, Auto Enchanter, breakers, placers, droppers, cannons, sprinklers.",
+  "icon": "opencubes:auto_anvil",
+  "sortnum": 3
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Éponge à liquides",
+  "icon": "opencubes:liquid_sponge",
+  "category": "opencubes:gadgets",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:liquid_sponge",
+      "text": "L'$(item)Éponge à liquides$() absorbe tous les liquides proches, pas seulement l'eau (la lave devient du feu). L'$(item)Éponge à liquides sur un bâton$() est la version mobile à durabilité."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pour le comportement vanilla, fabriquez l'$(item)Éponge sur un bâton$() classique : elle n'absorbe que l'eau, devient mouillée, et se sèche au four."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:liquid_sponge",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:liquid_sponge_on_a_stick",
+      "recipe2": "opencubes:sponge_on_a_stick",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "d": {
+      "tag": "c:dyes/purple"
+    },
+    "l": {
+      "tag": "c:leathers"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "lsd",
+    "lls",
+    "lll"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:glider_wing_right"
+  }
+}

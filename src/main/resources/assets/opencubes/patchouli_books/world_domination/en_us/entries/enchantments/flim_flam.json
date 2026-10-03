@@ -1,0 +1,17 @@
+{
+  "name": "Flim Flam",
+  "icon": "opencubes:epic_eraser",
+  "category": "opencubes:enchantments",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Flim Flam$() builds bad luck in PvP and eventually fires a weighted prank - inventory shuffle, epic lore, dummy creepers, skyblock ice platforms, and more.$(br2)Safe/unsafe lists and $(code)safeOnly$() live in config. Ops can force effects with $(code)/opencubes flimflam$()."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:epic_eraser",
+      "text": "Strips generated epic lore from an item in the crafting grid."
+    }
+  ]
+}

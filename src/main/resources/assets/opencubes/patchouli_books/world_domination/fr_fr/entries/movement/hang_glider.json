@@ -1,0 +1,22 @@
+{
+  "name": "Deltaplane",
+  "icon": "opencubes:hang_glider",
+  "category": "opencubes:movement",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/hang_glider.png",
+      "title": "Deltaplane"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Crafttez des $(item)Ailes de planeur$(), puis le Deltaplane. Clic droit pour engager, sautez de haut, sneak pour piquer.$(br2)Les thermiques diurnes Overworld donnent de la portance ; la pluie peut vous faire descendre. Touche $(thing)V$() pour le variomètre."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:hang_glider",
+      "text": "Clic droit sur un $(item)Pot de peinture$() avec le deltaplane en main pour peindre la voile. Une dose par couche ; l'armature reste en bois."
+    }
+  ]
+}

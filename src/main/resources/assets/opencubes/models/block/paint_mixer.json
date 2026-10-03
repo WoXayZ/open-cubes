@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "opencubes:block/paint_mixer_front",
+    "top": "minecraft:block/furnace_top",
+    "side": "minecraft:block/furnace_side",
+    "front": "opencubes:block/paint_mixer_front",
+    "overlay": "opencubes:block/paint_mixer_front_overlay"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#front", "cullface": "north"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "south"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "west"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "east"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "up"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "down"}
+      }
+    },
+    {
+      "name": "front_overlay",
+      "from": [0, 0, -0.02],
+      "to": [16, 16, 0.02],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#overlay", "tintindex": 0}
+      }
+    }
+  ]
+}

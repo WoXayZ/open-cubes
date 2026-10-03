@@ -1,0 +1,27 @@
+{
+  "name": "Luggage",
+  "icon": "opencubes:luggage",
+  "category": "opencubes:gadgets",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/luggage.png",
+      "title": "Luggage"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A walking chest that follows you and eats items lying on the ground.$(br2)Right-click to open it: it opens its mouth like a chest. Sneak-right-click to pick it up with everything inside."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Charged Luggage",
+      "text": "Struck by lightning, the luggage becomes $(l)charged$(): its skin changes and it holds $(l)54$() stacks instead of 27.$(br2)Keep it within 3 blocks of a $(item)Lightning Rod$() during a thunderstorm and wait for the rod to be struck."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:luggage",
+      "text": ""
+    }
+  ]
+}

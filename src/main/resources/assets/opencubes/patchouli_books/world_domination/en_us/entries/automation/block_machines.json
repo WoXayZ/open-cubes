@@ -1,0 +1,31 @@
+{
+  "name": "Breaker, Placer, Dropper",
+  "icon": "opencubes:block_breaker",
+  "category": "opencubes:automation",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Block Breaker$() mines the block in front of it on a redstone pulse and drops the result behind.$(br2)$(item)Block Placer$() places blocks from its inventory in front of it on each pulse."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Advanced Dropper$() flings items with a configurable speed, optionally scaled by the redstone signal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:block_breaker",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:block_placer",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:item_dropper",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "b": {
+      "tag": "c:slime_balls"
+    },
+    "s": {
+      "item": "minecraft:sponge"
+    }
+  },
+  "pattern": [
+    " b ",
+    "bsb",
+    " b "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:liquid_sponge"
+  }
+}

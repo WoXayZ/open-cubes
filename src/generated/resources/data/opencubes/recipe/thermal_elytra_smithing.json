@@ -1,0 +1,16 @@
+{
+  "type": "opencubes:painted_smithing_transform",
+  "addition": {
+    "item": "opencubes:hang_glider"
+  },
+  "base": {
+    "item": "minecraft:elytra"
+  },
+  "result": {
+    "count": 1,
+    "id": "opencubes:thermal_elytra"
+  },
+  "template": {
+    "item": "minecraft:phantom_membrane"
+  }
+}

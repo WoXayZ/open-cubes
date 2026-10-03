@@ -1,0 +1,22 @@
+{
+  "name": "Sac de couchage",
+  "icon": "opencubes:purple_sleeping_bag",
+  "category": "opencubes:gadgets",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:purple_sleeping_bag,opencubes:white_sleeping_bag,opencubes:orange_sleeping_bag,opencubes:magenta_sleeping_bag,opencubes:light_blue_sleeping_bag,opencubes:yellow_sleeping_bag,opencubes:lime_sleeping_bag,opencubes:pink_sleeping_bag,opencubes:gray_sleeping_bag,opencubes:light_gray_sleeping_bag,opencubes:cyan_sleeping_bag,opencubes:blue_sleeping_bag,opencubes:brown_sleeping_bag,opencubes:green_sleeping_bag,opencubes:red_sleeping_bag,opencubes:black_sleeping_bag",
+      "text": "Pièce de torse portable pour dormir n'importe où. Clic droit pour l'échanger avec votre plastron, puis dormez normalement : la nuit passe et votre point de réapparition ne bouge pas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Chaque couleur de teinture a son sac, ils fonctionnent tous pareil. Le sac doit être porté sur le torse pour passer la nuit."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_sleeping_bag",
+      "text": "Chaque couleur utilise la laine assortie."
+    }
+  ]
+}

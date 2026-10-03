@@ -1,0 +1,18 @@
+{
+  "name": "/dev/null",
+  "icon": "opencubes:dev_null",
+  "category": "opencubes:gadgets",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:dev_null",
+      "text": "Poche à un slot qui vide. Assignez un objet ; les pickups suivants de cet objet disparaissent. Nesting limité."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:dev_null",
+      "text": ""
+    }
+  ]
+}

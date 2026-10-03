@@ -1,0 +1,22 @@
+{
+  "name": "Paint Can",
+  "icon": "opencubes:paint_can",
+  "category": "opencubes:painting",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:paint_can",
+      "text": "Stores mixed RGB paint and amount. Craft cans in the Paint Mixer, place them in the world, or carry them as items. The icon shows R, G, and B channel swatches in the corner when held."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Right-click a Paint Brush or load paint into machines from the can. Canvas, Glass Canvas, and stencils consume paint over time. Tooltip shows hex colour and remaining millilitres."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:paint_mixer",
+      "text": "Mix dyes in the Paint Mixer to fill cans."
+    }
+  ]
+}

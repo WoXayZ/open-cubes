@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "s": {
+      "tag": "c:rods/wooden"
+    },
+    "w": {
+      "item": "minecraft:white_wool"
+    }
+  },
+  "pattern": [
+    " w",
+    "s "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:paint_brush"
+  }
+}

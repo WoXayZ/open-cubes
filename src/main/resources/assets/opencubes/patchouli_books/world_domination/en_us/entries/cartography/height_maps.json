@@ -1,0 +1,27 @@
+{
+  "name": "Height Maps",
+  "icon": "opencubes:empty_map",
+  "category": "opencubes:cartography",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/height_map.png",
+      "title": "Cartographer"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Craft an $(item)Empty Map$() and deploy a $(item)Cartographer$(). Sneak-give it the empty map; once enough chunks are sampled, sneak with an empty hand to get the filled $(item)Height Map$() back.$(br2)$(l)Clone$(): filled map + empty map of the same scale.$(br)$(l)Zoom out$(): empty map + 4 gold nuggets."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:empty_map",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:cartographer",
+      "text": ""
+    }
+  ]
+}

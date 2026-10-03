@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,lit=false": {
+      "model": "opencubes:block/xp_bottler",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "opencubes:block/xp_bottler_on",
+      "y": 90
+    },
+    "facing=north,lit=false": {
+      "model": "opencubes:block/xp_bottler"
+    },
+    "facing=north,lit=true": {
+      "model": "opencubes:block/xp_bottler_on"
+    },
+    "facing=south,lit=false": {
+      "model": "opencubes:block/xp_bottler",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "opencubes:block/xp_bottler_on",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "opencubes:block/xp_bottler",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "opencubes:block/xp_bottler_on",
+      "y": 270
+    }
+  }
+}

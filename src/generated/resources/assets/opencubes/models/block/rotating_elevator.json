@@ -1,0 +1,7 @@
+{
+  "parent": "opencubes:block/cube_top_tinted",
+  "textures": {
+    "side": "opencubes:block/elevator",
+    "top": "opencubes:block/elevator_rot"
+  }
+}

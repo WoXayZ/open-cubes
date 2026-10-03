@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=east,shape=block": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=east,shape=half_panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=east,shape=panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=east,shape=stairs": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=north,shape=block": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=north,shape=half_panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=north,shape=panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=north,shape=stairs": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=south,shape=block": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=south,shape=half_panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=south,shape=panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=south,shape=stairs": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=west,shape=block": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=west,shape=half_panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=west,shape=panel": {
+      "model": "opencubes:block/imaginary_block"
+    },
+    "facing=west,shape=stairs": {
+      "model": "opencubes:block/imaginary_block"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "ambientocclusion": false,
+    "textures": {
+        "front": "opencubes:block/rope_ladder",
+        "particle": "opencubes:block/rope_ladder"
+    },
+    "elements": [
+        {
+            "from": [ 0.0, 0.0, 15.2 ],
+            "to": [ 16.0, 16.0, 15.2 ],
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#front", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "south": { "texture": "#front", "uv": [ 16.0, 0.0, 0.0, 16.0 ] }
+            }
+        }
+    ]
+}

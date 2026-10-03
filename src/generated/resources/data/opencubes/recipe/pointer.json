@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "e": {
+      "item": "minecraft:ender_eye"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    " e ",
+    " s ",
+    " s "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:pointer"
+  }
+}

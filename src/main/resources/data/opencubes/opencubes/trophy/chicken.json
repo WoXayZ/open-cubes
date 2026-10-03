@@ -1,0 +1,1 @@
+{ "entity": "minecraft:chicken", "behavior": "opencubes:item_drop", "drop": { "item": "minecraft:egg", "cooldown": 10000, "sound": "minecraft:entity.chicken.egg" } }

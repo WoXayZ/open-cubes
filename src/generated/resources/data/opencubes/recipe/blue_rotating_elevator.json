@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "opencubes:rotating_elevator",
+  "key": {
+    "e": {
+      "tag": "c:ender_pearls"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    },
+    "w": {
+      "item": "minecraft:blue_wool"
+    }
+  },
+  "pattern": [
+    "wiw",
+    "wew",
+    "wiw"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:blue_rotating_elevator"
+  }
+}

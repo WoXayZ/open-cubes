@@ -1,0 +1,22 @@
+{
+  "name": "Pédomètre",
+  "icon": "opencubes:pedometer",
+  "category": "opencubes:gadgets",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:pedometer",
+      "text": "Mesure vos déplacements tant qu'il est dans la barre d'action. Clic droit pour démarrer. Clic droit à nouveau pour afficher vitesse, distance et temps écoulé dans le chat."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Shift + clic droit réinitialise la session. Les stats incluent vitesse actuelle, moyenne, distance totale, distance à vol d'oiseau depuis le départ et durées du dernier relevé. Gardez-le dans un slot de la barre d'action pour qu'il se mette à jour chaque tick."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pedometer",
+      "text": ""
+    }
+  ]
+}

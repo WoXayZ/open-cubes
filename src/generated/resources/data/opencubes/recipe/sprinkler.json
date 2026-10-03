@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "ccc",
+    " c ",
+    "crc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:sprinkler"
+  }
+}

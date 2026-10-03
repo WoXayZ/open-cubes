@@ -1,0 +1,16 @@
+{
+  "name": "item.opencubes.info_book",
+  "landing_text": "book.opencubes.world_domination.landing",
+  "subtitle": "book.opencubes.world_domination.subtitle",
+  "creative_tab": "opencubes:main",
+  "use_resource_pack": true,
+  "dont_generate_book": true,
+  "custom_book_item": "opencubes:info_book",
+  "model": "opencubes:info_book",
+  "index_icon": "opencubes:info_book",
+  "version": "1",
+  "show_progress": false,
+  "macros": {
+    "$(code)": "$(#6B3FA0)"
+  }
+}

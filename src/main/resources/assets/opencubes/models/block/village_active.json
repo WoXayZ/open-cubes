@@ -1,0 +1,7 @@
+{
+  "parent": "opencubes:block/village",
+  "textures": {
+    "side": "opencubes:block/village_side_active",
+    "back": "opencubes:block/village_back_active"
+  }
+}

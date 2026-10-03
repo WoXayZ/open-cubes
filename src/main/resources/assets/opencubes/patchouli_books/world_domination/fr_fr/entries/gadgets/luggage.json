@@ -1,0 +1,27 @@
+{
+  "name": "Bagage",
+  "icon": "opencubes:luggage",
+  "category": "opencubes:gadgets",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/luggage.png",
+      "title": "Bagage"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Un coffre sur pattes qui vous suit et mange les objets qui traînent au sol.$(br2)Clic droit pour l'ouvrir : il ouvre la bouche comme un coffre. Accroupi, clic droit pour le ramasser avec tout son contenu."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Bagage chargé",
+      "text": "Frappé par la foudre, le bagage devient $(l)chargé$() : son apparence change et il contient $(l)54$() piles au lieu de 27.$(br2)Gardez-le à moins de 3 blocs d'un $(item)Paratonnerre$() pendant un orage et attendez que la foudre frappe le paratonnerre."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:luggage",
+      "text": ""
+    }
+  ]
+}

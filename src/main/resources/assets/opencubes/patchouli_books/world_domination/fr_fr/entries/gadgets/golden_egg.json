@@ -1,0 +1,27 @@
+{
+  "name": "Œuf d'or",
+  "icon": "opencubes:golden_egg",
+  "category": "opencubes:gadgets",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/golden_egg.png",
+      "title": "Œuf doré"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:golden_egg",
+      "text": "Posez l'œuf, puis clic droit pour lancer l'éclosion. Il incube, flotte en tournant en attirant des blocs proches, les relâche puis fait apparaître votre Mini Moi avant de disparaître dans une petite détonation."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "L'œuf retient son poseur comme propriétaire. Pendant la phase de flottement il peut aimanter des blocs si activé dans la config. Des particules END_ROD trahissent l'activité. Mini Moi reprend votre skin et vous suit comme un petit assistant."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:golden_egg",
+      "text": ""
+    }
+  ]
+}

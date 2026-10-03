@@ -1,0 +1,149 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.143'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+        content {
+            includeGroup 'vazkii.patchouli'
+            includeGroup 'mezz.jei'
+        }
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+    maven {
+        name = 'Curios'
+        url = 'https://maven.theillusivec4.top/'
+    }
+}
+
+neoForge {
+    version = neo_version
+
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', mod_id,
+                    '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', ''
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "$mod_id" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    // Soft dependency: API at compile time; full jar only on the dev runtime classpath.
+    compileOnly("vazkii.patchouli:Patchouli:${project.patchouli_version}:api") {
+        transitive = false
+    }
+    localRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}") {
+        transitive = false
+    }
+
+    // JEI (optional): subtypes + trophy variants in the ingredient list.
+    compileOnly("mezz.jei:jei-1.21.1-common-api:${project.jei_version}")
+    compileOnly("mezz.jei:jei-1.21.1-neoforge-api:${project.jei_version}")
+    localRuntime("mezz.jei:jei-1.21.1-neoforge:${project.jei_version}")
+
+    // Jade (optional): trophy tooltip (type, cooldown, drop).
+    compileOnly("maven.modrinth:jade:${project.jade_version}")
+    localRuntime("maven.modrinth:jade:${project.jade_version}")
+
+    // Curios (optional): back-slot crane backpack and grave curio loot.
+    compileOnly("top.theillusivec4.curios:curios-neoforge:${project.curios_version}:api")
+    localRuntime("top.theillusivec4.curios:curios-neoforge:${project.curios_version}")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+// mods.toml and pack.mcmeta read their versions from gradle.properties rather than
+// repeating them, so a version bump happens in exactly one place.
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replacements = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replacements
+    expand replacements
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('repo')
+        }
+    }
+}

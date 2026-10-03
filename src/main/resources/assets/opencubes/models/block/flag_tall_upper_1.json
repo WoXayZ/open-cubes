@@ -1,0 +1,25 @@
+{
+    "parent": "block/block",
+    "render_type": "minecraft:cutout",
+    "ambientocclusion": false,
+    "textures": {
+        "pole": "opencubes:block/flag_pole",
+        "particle": "opencubes:block/flag_pole"
+    },
+    "elements": [
+        {
+            "name": "pole",
+            "from": [7.5, 0, 7.5],
+            "to": [8.5, 16, 8.5],
+            "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": -22.5},
+            "faces": {
+                "north": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "south": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "west": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "east": {"uv": [0, 0, 1, 16], "texture": "#pole"},
+                "up": {"uv": [0, 0, 1, 1], "texture": "#pole", "cullface": "up"},
+                "down": {"uv": [0, 0, 1, 1], "texture": "#pole"}
+            }
+        }
+    ]
+}

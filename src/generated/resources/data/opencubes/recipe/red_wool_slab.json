@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "opencubes:wool_slab",
+  "key": {
+    "w": {
+      "item": "minecraft:red_wool"
+    }
+  },
+  "pattern": [
+    "www"
+  ],
+  "result": {
+    "count": 6,
+    "id": "opencubes:red_wool_slab"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Sky Block",
+  "icon": "opencubes:sky_block",
+  "category": "opencubes:gadgets",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sky_block.png",
+      "title": "Sky Block"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Unpowered, the $(item)Sky Block$() is a plain metal shell. Give it redstone and every face turns into a window onto the sky: you see the real sky behind it, day or night, and the block stays solid.$(br2)The $(item)Inverted Sky Block$() works the other way round: it shows the sky until it receives power."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:sky_block",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:inverted_sky_block",
+      "text": ""
+    }
+  ]
+}

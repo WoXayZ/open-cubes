@@ -1,0 +1,26 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "opencubes:block/item_dropper_vertical",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "opencubes:block/item_dropper",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "opencubes:block/item_dropper"
+    },
+    "facing=south": {
+      "model": "opencubes:block/item_dropper",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "opencubes:block/item_dropper_vertical"
+    },
+    "facing=west": {
+      "model": "opencubes:block/item_dropper",
+      "y": 270
+    }
+  }
+}

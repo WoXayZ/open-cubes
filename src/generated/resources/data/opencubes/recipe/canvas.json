@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "f": {
+      "tag": "c:strings"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "ppp",
+    "pfp",
+    "ppp"
+  ],
+  "result": {
+    "count": 9,
+    "id": "opencubes:canvas"
+  }
+}

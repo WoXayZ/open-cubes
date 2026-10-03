@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "opencubes:block/xp_shower",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "opencubes:block/xp_shower",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "opencubes:block/xp_shower"
+    },
+    "facing=west": {
+      "model": "opencubes:block/xp_shower",
+      "y": 90
+    }
+  }
+}

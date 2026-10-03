@@ -1,0 +1,22 @@
+{
+  "name": "Auto Enchanting Table",
+  "icon": "opencubes:auto_enchanting_table",
+  "category": "opencubes:automation",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/auto_enchanting_table.png",
+      "title": "Auto Enchanting Table"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "An enchanting table that runs on $(item)Liquid XP$(). Pipe XP into its tank, put the item in the input slot and pick the level you want: the table enchants on its own and pushes the result to the output.$(br2)Bookshelves around it still count for the maximum level, like the vanilla table."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:auto_enchanting_table",
+      "text": ""
+    }
+  ]
+}

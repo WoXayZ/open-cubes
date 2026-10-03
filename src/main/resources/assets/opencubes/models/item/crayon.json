@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "opencubes:item/crayon_1",
+    "layer1": "opencubes:item/crayon_2"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Élytres thermiques",
+  "icon": "opencubes:thermal_elytra",
+  "category": "opencubes:movement",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/thermal_elytra.png",
+      "title": "Élytres thermiques"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Améliorez des $(item)Élytres$() avec un $(item)Deltaplane$() et une $(item)Membrane de phantom$() à la table de forge. Portez-les au torse et sautez dans le vide pour voler : les thermiques vous portent exactement comme le deltaplane."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "opencubes:thermal_elytra_smithing",
+      "text": "Table de forge : membrane en modèle, élytres en base, deltaplane en ajout. Les ailes gardent la couleur du deltaplane et se repeignent au pot de peinture."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "components": [
+    {
+      "type": "patchouli:header",
+      "text": "#title",
+      "x": -1,
+      "y": -3
+    },
+    {
+      "type": "patchouli:custom",
+      "class": "dev.opencubes.compat.patchouli.FittedImageComponent",
+      "image": "#image",
+      "y": 7
+    }
+  ]
+}

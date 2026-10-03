@@ -1,0 +1,6 @@
+{
+  "parent": "opencubes:item/glasses_base",
+  "textures": {
+    "layer0": "opencubes:item/glasses_crayon"
+  }
+}

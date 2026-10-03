@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "c:glass_panes"
+    },
+    "o": {
+      "tag": "c:obsidians"
+    }
+  },
+  "pattern": [
+    "ogo",
+    "ggg",
+    "ogo"
+  ],
+  "result": {
+    "count": 2,
+    "id": "opencubes:tank"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Réservoir",
+  "icon": "opencubes:tank",
+  "category": "opencubes:xp_fluids",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/tank.png",
+      "title": "Réservoir"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les réservoirs en verre stockent les fluides, dont l'XP liquide. Ils se connectent verticalement et peuvent s'équilibrer.$(br2)Un seau vide tire du jus d'XP en $(item)Seau d'XP$() - jamais de source fluide dans le monde."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:tank",
+      "text": ""
+    }
+  ]
+}

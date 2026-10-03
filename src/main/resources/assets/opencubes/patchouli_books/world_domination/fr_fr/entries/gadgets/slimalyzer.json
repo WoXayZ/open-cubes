@@ -1,0 +1,26 @@
+{
+  "name": "Slimalyseur",
+  "icon": "opencubes:slimalyzer",
+  "category": "opencubes:gadgets",
+  "sortnum": 18,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:slimalyzer",
+      "text": "Le $(item)Slimalyseur$() s'allume et sonne dès que vous entrez dans un chunk à slimes, ceux où les slimes apparaissent sous terre quelle que soit la lumière."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Il marche depuis n'importe quel emplacement de l'inventaire, et même posé au sol."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Promenez-vous avec pour repérer les chunks à slimes, puis creusez votre ferme sous l'un d'eux."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:slimalyzer",
+      "text": ""
+    }
+  ]
+}

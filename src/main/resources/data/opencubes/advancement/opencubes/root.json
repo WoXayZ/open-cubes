@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "opencubes:info_book"
+    },
+    "title": {
+      "translate": "advancements.opencubes.root.title"
+    },
+    "description": {
+      "translate": "advancements.opencubes.root.description"
+    },
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

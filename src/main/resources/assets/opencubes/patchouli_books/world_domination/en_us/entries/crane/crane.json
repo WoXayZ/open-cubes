@@ -1,0 +1,27 @@
+{
+  "name": "Crane",
+  "icon": "opencubes:crane_backpack",
+  "category": "opencubes:crane",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/crane.png",
+      "title": "Crane"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Equip the $(item)Crane Backpack$() and hold the $(item)Crane Control$(). Raise/lower the magnet tip, grab mobs/items/blocks, and release to place. Shift modifies control when configured."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_backpack",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:crane_control",
+      "text": ""
+    }
+  ]
+}

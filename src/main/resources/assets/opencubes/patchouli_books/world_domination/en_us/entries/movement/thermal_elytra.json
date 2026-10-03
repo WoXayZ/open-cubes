@@ -1,0 +1,22 @@
+{
+  "name": "Thermal Elytra",
+  "icon": "opencubes:thermal_elytra",
+  "category": "opencubes:movement",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/thermal_elytra.png",
+      "title": "Thermal Elytra"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Upgrade an $(item)Elytra$() with a $(item)Hang Glider$() and a $(item)Phantom Membrane$() at a smithing table. Wear it on your chest and fall to start flying: thermals lift you exactly like they lift the glider."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "opencubes:thermal_elytra_smithing",
+      "text": "Smithing table: membrane as template, elytra as base, glider as addition. The wings keep the glider's colour and repaint at a paint can."
+    }
+  ]
+}

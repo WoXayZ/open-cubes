@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "opencubes:flag",
+  "key": {
+    "c": {
+      "item": "minecraft:pink_carpet"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "scc",
+    "sc ",
+    "s  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:pink_flag"
+  }
+}

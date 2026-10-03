@@ -1,0 +1,6 @@
+{
+  "name": "Height Maps",
+  "description": "Empty Maps, the Cartographer and the Projector.",
+  "icon": "opencubes:height_map_projector",
+  "sortnum": 6
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Auto Anvil",
+  "icon": "opencubes:auto_anvil",
+  "category": "opencubes:automation",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/auto_anvil.png",
+      "title": "Auto Anvil"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Automates anvil combines using Liquid XP from an internal tank."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:auto_anvil",
+      "text": ""
+    }
+  ]
+}

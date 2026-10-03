@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "opencubes:block/drawing_table",
+    "east": "opencubes:block/drawing_table",
+    "north": "opencubes:block/drawing_table_front",
+    "particle": "opencubes:block/drawing_table",
+    "south": "opencubes:block/drawing_table",
+    "up": "opencubes:block/drawing_table_top",
+    "west": "opencubes:block/drawing_table"
+  }
+}

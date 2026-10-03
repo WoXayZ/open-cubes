@@ -1,0 +1,22 @@
+{
+  "name": "Entonnoir à vide",
+  "icon": "opencubes:vacuum_hopper",
+  "category": "opencubes:automation",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:vacuum_hopper",
+      "text": "Aspire les objets et orbes d'XP proches dans son stockage, puis pousse items et fluide d'XP vers les faces choisies. Ouvrez l'interface pour régler les sorties et le réservoir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sneak + clic main vide sur le bloc pour activer ou couper l'aspiration. Portée et fréquence suivent la config. Items et XP utilisent des masques de faces séparés pour router le butin et le jus indépendamment."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:vacuum_hopper",
+      "text": ""
+    }
+  ]
+}

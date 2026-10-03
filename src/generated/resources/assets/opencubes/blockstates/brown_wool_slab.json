@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "opencubes:block/brown_wool_slab"
+    },
+    "type=double": {
+      "model": "minecraft:block/brown_wool"
+    },
+    "type=top": {
+      "model": "opencubes:block/brown_wool_slab_top"
+    }
+  }
+}

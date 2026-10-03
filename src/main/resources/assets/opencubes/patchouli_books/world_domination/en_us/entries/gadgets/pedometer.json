@@ -1,0 +1,22 @@
+{
+  "name": "Pedometer",
+  "icon": "opencubes:pedometer",
+  "category": "opencubes:gadgets",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:pedometer",
+      "text": "Tracks movement while it sits in your hotbar. Right-click to start measuring. Right-click again to print speed, distance, and elapsed time to chat."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Shift-right-click resets the session. Stats include current speed, average speed, total path length, straight-line distance from the start point, and timing for the last check. Keep it in a hotbar slot so it can update every tick."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:pedometer",
+      "text": ""
+    }
+  ]
+}

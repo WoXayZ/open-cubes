@@ -1,0 +1,31 @@
+{
+  "name": "Briseur, placeur, lanceur",
+  "icon": "opencubes:block_breaker",
+  "category": "opencubes:automation",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Le $(item)Briseur de blocs$() casse le bloc devant lui à chaque impulsion redstone et rejette le résultat derrière.$(br2)Le $(item)Placeur de blocs$() pose les blocs de son inventaire devant lui à chaque impulsion."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Le $(item)Lanceur avancé$() éjecte les objets à une vitesse réglable, éventuellement selon la force du signal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:block_breaker",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:block_placer",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:item_dropper",
+      "text": ""
+    }
+  ]
+}

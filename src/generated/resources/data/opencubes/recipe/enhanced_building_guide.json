@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "e": {
+      "tag": "c:ender_pearls"
+    },
+    "g": {
+      "item": "opencubes:building_guide"
+    }
+  },
+  "pattern": [
+    " e ",
+    "ege",
+    " e "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:enhanced_building_guide"
+  }
+}

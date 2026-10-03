@@ -1,0 +1,23 @@
+{
+  "parent": "block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "top": "opencubes:block/xp_drain",
+    "side": "opencubes:block/xp_drain_side",
+    "particle": "opencubes:block/xp_drain"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 1, 16],
+      "faces": {
+        "down": { "texture": "#top", "cullface": "down" },
+        "up": { "texture": "#top" },
+        "north": { "texture": "#side", "uv": [0, 0, 16, 1], "cullface": "north" },
+        "south": { "texture": "#side", "uv": [0, 0, 16, 1], "cullface": "south" },
+        "west": { "texture": "#side", "uv": [0, 0, 16, 1], "cullface": "west" },
+        "east": { "texture": "#side", "uv": [0, 0, 16, 1], "cullface": "east" }
+      }
+    }
+  ]
+}

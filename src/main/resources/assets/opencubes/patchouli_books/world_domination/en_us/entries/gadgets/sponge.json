@@ -1,0 +1,28 @@
+{
+  "name": "Liquid Sponge",
+  "icon": "opencubes:liquid_sponge",
+  "category": "opencubes:gadgets",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:liquid_sponge",
+      "text": "The $(item)Liquid Sponge$() clears every nearby liquid, not just water (lava becomes fire). $(item)Liquid Sponge on a Stick$() is the mobile, durability-limited version."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "If you only want vanilla behaviour, craft the plain $(item)Sponge on a Stick$(): it soaks water only and turns wet, and you dry it back out in a furnace."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:liquid_sponge",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:liquid_sponge_on_a_stick",
+      "recipe2": "opencubes:sponge_on_a_stick",
+      "text": ""
+    }
+  ]
+}

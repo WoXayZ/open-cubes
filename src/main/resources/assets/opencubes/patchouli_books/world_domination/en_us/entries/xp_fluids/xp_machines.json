@@ -1,0 +1,32 @@
+{
+  "name": "XP Machines",
+  "icon": "opencubes:xp_drain",
+  "category": "opencubes:xp_fluids",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/xp_machines.png",
+      "title": "XP line"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)XP Drain$() pulls experience into liquid form.$(br)$(item)XP Shower$() sprays non-homing XP orbs.$(br)$(item)XP Bottler$() fills bottles from a tank.$(br2)$(item)Vacuum Hopper$() collects items and XP with per-face outputs."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_drain",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_shower",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:xp_bottler",
+      "text": ""
+    }
+  ]
+}

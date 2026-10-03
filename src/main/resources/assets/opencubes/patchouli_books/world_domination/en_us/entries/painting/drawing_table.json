@@ -1,0 +1,38 @@
+{
+  "name": "Drawing Table",
+  "icon": "opencubes:drawing_table",
+  "category": "opencubes:painting",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/drawing_table.png",
+      "title": "Drawing Table"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Cutting a stencil",
+      "text": "Put an $(item)Unprepared Stencil$() in the left slot.$(br2)Pick what to cut in the panel on the right: the $(l)Stencils$() tab holds the 15 paint masks, the $(l)Glyphs$() tab the letters. The right slot previews it.$(br2)$(l)Cut$() makes it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Painting with it",
+      "text": "Right-click a block face with the stencil to lay it on, turned the way you face, like glazed terracotta. The block becomes a canvas.$(br2)Right-click again to turn it a quarter.$(br2)Paint over it with a loaded $(item)Paint Brush$(): only the holes take the colour."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sneak-right-click with a stencil to lift it back. The pattern stays painted.$(br2)Lay another stencil and change colour to stack designs on the same face.$(br2)The $(item)Squeegee$() wipes a face clean and returns a stencil still lying on it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Glyphs",
+      "text": "A $(item)Glyph$() is a letter to stick on a wall. Hold one and aim at a wall: an outline shows where the letter will go, centred on the pixel you aim at.$(br2)Right-click to stick it, punch it to take it back. Line several up to write names and labels."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:drawing_table",
+      "recipe2": "opencubes:unprepared_stencil",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "opencubes:wool_stairs",
+  "key": {
+    "w": {
+      "item": "minecraft:light_blue_wool"
+    }
+  },
+  "pattern": [
+    "w  ",
+    "ww ",
+    "www"
+  ],
+  "result": {
+    "count": 4,
+    "id": "opencubes:light_blue_wool_stairs"
+  }
+}

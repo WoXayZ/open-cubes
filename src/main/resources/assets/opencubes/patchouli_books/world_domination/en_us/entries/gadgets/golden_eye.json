@@ -1,0 +1,26 @@
+{
+  "name": "Golden Eye",
+  "icon": "opencubes:golden_eye",
+  "category": "opencubes:gadgets",
+  "sortnum": 16,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:golden_eye",
+      "text": "Sneak-right-click the $(item)Golden Eye$() to lock it onto the nearest structure: villages, strongholds, monuments, mansions and more. The tooltip shows its target."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Right-click to throw it: it flies toward that structure like an Eye of Ender, then drops back as an item."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Each throw uses some durability. Recharge it in a crafting grid with $(item)Ender Pearls$()."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:golden_eye",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Unstable",
+  "icon": "minecraft:gunpowder",
+  "category": "opencubes:enchantments",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Unstable$() on armor: carrying gunpowder while falling hard or being hit can detonate. Level 3 may grief blocks when configured."
+    }
+  ]
+}

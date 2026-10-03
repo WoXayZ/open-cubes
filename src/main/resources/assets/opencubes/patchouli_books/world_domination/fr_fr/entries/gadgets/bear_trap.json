@@ -1,0 +1,26 @@
+{
+  "name": "Piège à ours",
+  "icon": "opencubes:bear_trap",
+  "category": "opencubes:gadgets",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/bear_trap.png",
+      "title": "Piège à ours"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Le $(item)Piège à ours$() se pose fermé. Faites clic droit dessus pour l'armer.$(br2)Tout mob ou joueur qui marche dans un piège armé est attrapé et ne peut plus bouger jusqu'à ce qu'on rouvre le piège d'un clic droit."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Un comparateur à côté du piège indique s'il retient quelque chose, pratique pour les alarmes et les fermes à mobs."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:bear_trap",
+      "text": ""
+    }
+  ]
+}

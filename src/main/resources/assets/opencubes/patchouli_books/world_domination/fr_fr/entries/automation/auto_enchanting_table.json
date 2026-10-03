@@ -1,0 +1,26 @@
+{
+  "name": "Table d'enchantement auto",
+  "icon": "opencubes:auto_enchanting_table",
+  "category": "opencubes:automation",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/auto_enchanting_table.png",
+      "title": "Table d'enchantement auto"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Une table d'enchantement alimentée en $(item)XP liquide$(). Remplissez son réservoir, posez l'objet dans l'entrée et choisissez le niveau voulu : la table enchante toute seule et pousse le résultat en sortie."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Les bibliothèques autour comptent toujours pour le niveau maximum, comme pour la table vanilla."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:auto_enchanting_table",
+      "text": ""
+    }
+  ]
+}

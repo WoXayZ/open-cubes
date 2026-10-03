@@ -1,0 +1,22 @@
+{
+  "name": "Sprinkler",
+  "icon": "opencubes:sprinkler",
+  "category": "opencubes:automation",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/sprinkler.png",
+      "title": "Sprinkler"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Place above a water supply / tank. Hydrates farmland, grows crops, and can burn bone meal from its GUI."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:sprinkler",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "f": {
+      "item": "minecraft:iron_bars"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "fif",
+    "fif",
+    "fif"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:bear_trap"
+  }
+}

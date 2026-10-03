@@ -1,0 +1,26 @@
+{
+  "name": "Slimalyzer",
+  "icon": "opencubes:slimalyzer",
+  "category": "opencubes:gadgets",
+  "sortnum": 18,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:slimalyzer",
+      "text": "The $(item)Slimalyzer$() lights up and pings as soon as you enter a slime chunk, the chunks where slimes spawn underground at any light level."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "It works from anywhere in your inventory, and even when dropped on the ground."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Walk around with it to map the slime chunks, then dig your slime farm below one of them."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:slimalyzer",
+      "text": ""
+    }
+  ]
+}

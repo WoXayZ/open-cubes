@@ -1,0 +1,22 @@
+{
+  "name": "Curseur",
+  "icon": "opencubes:cursor",
+  "category": "opencubes:gadgets",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:cursor",
+      "text": "Activateur de bloc à distance. Sneak + clic sur un bloc pour lier le Curseur à cette position et face. Clic droit dans les airs ou sur un bloc pour déclencher une utilisation distante, comme si vous cliquiez sur place."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "La liaison est limitée à la même dimension et à une portée configurable. L'XP est consommée pour les clics lointains sauf en créatif. L'objet brille tant qu'il est lié. Sneak + clic sur un autre bloc pour relier."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:cursor",
+      "text": ""
+    }
+  ]
+}

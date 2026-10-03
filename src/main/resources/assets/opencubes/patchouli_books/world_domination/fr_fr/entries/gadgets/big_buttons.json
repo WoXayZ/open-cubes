@@ -1,0 +1,31 @@
+{
+  "name": "Gros boutons",
+  "icon": "opencubes:oak_big_button",
+  "category": "opencubes:gadgets",
+  "sortnum": 14,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:oak_big_button,opencubes:spruce_big_button,opencubes:birch_big_button,opencubes:jungle_big_button,opencubes:acacia_big_button,opencubes:dark_oak_big_button,opencubes:mangrove_big_button,opencubes:cherry_big_button,opencubes:bamboo_big_button,opencubes:crimson_big_button,opencubes:warped_big_button,opencubes:stone_big_button,opencubes:polished_blackstone_big_button",
+      "text": "Les gros boutons couvrent toute la face sur laquelle ils sont posés. Il en existe un par matériau de bouton vanilla ; quatre boutons vanilla identiques donnent un gros bouton."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Ceux en bois réagissent aux flèches, ceux en pierre seulement à la main."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sneak + clic droit main vide pour ouvrir son inventaire : l'appui dure un tick par objet stocké dedans. Remplissez-le pour obtenir un minuteur de la durée voulue."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:oak_big_button",
+      "text": ""
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:stone_big_button",
+      "text": ""
+    }
+  ]
+}

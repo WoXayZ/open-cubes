@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:slabs",
+    "#minecraft:trapdoors",
+    "#minecraft:wool_carpets",
+    "#minecraft:climbable",
+    "minecraft:snow"
+  ]
+}

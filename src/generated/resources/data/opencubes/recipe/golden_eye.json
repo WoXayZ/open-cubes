@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "e": {
+      "item": "minecraft:ender_eye"
+    },
+    "g": {
+      "tag": "c:nuggets/gold"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "geg",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:golden_eye"
+  }
+}

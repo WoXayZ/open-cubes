@@ -1,0 +1,45 @@
+{
+  "block.bear_trap.close": {
+    "sounds": [
+      "opencubes:bear_trap_close",
+      "opencubes:bear_trap_close_b"
+    ],
+    "subtitle": "subtitles.opencubes.block.bear_trap.close"
+  },
+  "block.bear_trap.open": {
+    "sounds": [
+      "opencubes:bear_trap_open"
+    ],
+    "subtitle": "subtitles.opencubes.block.bear_trap.open"
+  },
+  "block.bottler.done": {
+    "sounds": [
+      "opencubes:bottler_done"
+    ],
+    "subtitle": "subtitles.opencubes.block.bottler.done"
+  },
+  "block.elevator.activate": {
+    "sounds": [
+      "opencubes:elevator_activate"
+    ],
+    "subtitle": "subtitles.opencubes.block.elevator.activate"
+  },
+  "block.grave.rob": {
+    "sounds": [
+      "opencubes:grave_rob"
+    ],
+    "subtitle": "subtitles.opencubes.block.grave.rob"
+  },
+  "item.pedometer.use": {
+    "sounds": [
+      "opencubes:beep"
+    ],
+    "subtitle": "subtitles.opencubes.item.pedometer.use"
+  },
+  "item.slimalyzer.ping": {
+    "sounds": [
+      "opencubes:beep"
+    ],
+    "subtitle": "subtitles.opencubes.item.slimalyzer.ping"
+  }
+}

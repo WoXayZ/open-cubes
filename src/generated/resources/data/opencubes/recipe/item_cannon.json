@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    }
+  },
+  "pattern": [
+    "ccc",
+    "cpc",
+    "ccc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:item_cannon"
+  }
+}

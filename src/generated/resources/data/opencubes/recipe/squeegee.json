@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "s": {
+      "item": "minecraft:sponge"
+    },
+    "t": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "sss",
+    " t ",
+    " t "
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:squeegee"
+  }
+}

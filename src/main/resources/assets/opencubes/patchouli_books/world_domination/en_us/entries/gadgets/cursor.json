@@ -1,0 +1,22 @@
+{
+  "name": "Cursor",
+  "icon": "opencubes:cursor",
+  "category": "opencubes:gadgets",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "opencubes:cursor",
+      "text": "Remote block activator. Sneak-use a block to bind the Cursor to that position and face. Right-click in air or on a block to trigger a remote use on the bound target, as if you clicked it yourself."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Binding is same-dimension only and respects a configurable range. XP is consumed for long-distance clicks unless you are in creative. The item glows while bound. Sneak-use again on a new block to rebind."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:cursor",
+      "text": ""
+    }
+  ]
+}

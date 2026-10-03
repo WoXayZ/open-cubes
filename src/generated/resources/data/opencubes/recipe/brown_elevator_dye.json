@@ -1,0 +1,64 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "opencubes:elevator",
+  "ingredients": [
+    [
+      {
+        "item": "opencubes:white_elevator"
+      },
+      {
+        "item": "opencubes:orange_elevator"
+      },
+      {
+        "item": "opencubes:magenta_elevator"
+      },
+      {
+        "item": "opencubes:light_blue_elevator"
+      },
+      {
+        "item": "opencubes:yellow_elevator"
+      },
+      {
+        "item": "opencubes:lime_elevator"
+      },
+      {
+        "item": "opencubes:pink_elevator"
+      },
+      {
+        "item": "opencubes:gray_elevator"
+      },
+      {
+        "item": "opencubes:light_gray_elevator"
+      },
+      {
+        "item": "opencubes:cyan_elevator"
+      },
+      {
+        "item": "opencubes:purple_elevator"
+      },
+      {
+        "item": "opencubes:blue_elevator"
+      },
+      {
+        "item": "opencubes:brown_elevator"
+      },
+      {
+        "item": "opencubes:green_elevator"
+      },
+      {
+        "item": "opencubes:red_elevator"
+      },
+      {
+        "item": "opencubes:black_elevator"
+      }
+    ],
+    {
+      "item": "minecraft:brown_dye"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:brown_elevator"
+  }
+}

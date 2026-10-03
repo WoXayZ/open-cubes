@@ -1,0 +1,22 @@
+{
+  "name": "Elevators",
+  "icon": "opencubes:purple_elevator",
+  "category": "opencubes:movement",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "opencubes:fitted_image",
+      "image": "opencubes:textures/gui/book/screens/elevator.png",
+      "title": "Elevators"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Stand on an Elevator and jump or sneak to travel to the next matching elevator.$(br2)$(item)Rotating Elevators$() also turn you to face the block's orientation.$(br2)Optional XP cost and colour matching are configurable."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:purple_elevator",
+      "text": "Dye any colour after crafting, or craft the dyed variant directly."
+    }
+  ]
+}

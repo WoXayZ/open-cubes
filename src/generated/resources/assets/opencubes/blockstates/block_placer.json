@@ -1,0 +1,48 @@
+{
+  "variants": {
+    "facing=down,powered=false": {
+      "model": "opencubes:block/block_placer_vertical",
+      "x": 180
+    },
+    "facing=down,powered=true": {
+      "model": "opencubes:block/block_placer_vertical",
+      "x": 180
+    },
+    "facing=east,powered=false": {
+      "model": "opencubes:block/block_placer",
+      "y": 90
+    },
+    "facing=east,powered=true": {
+      "model": "opencubes:block/block_placer",
+      "y": 90
+    },
+    "facing=north,powered=false": {
+      "model": "opencubes:block/block_placer"
+    },
+    "facing=north,powered=true": {
+      "model": "opencubes:block/block_placer"
+    },
+    "facing=south,powered=false": {
+      "model": "opencubes:block/block_placer",
+      "y": 180
+    },
+    "facing=south,powered=true": {
+      "model": "opencubes:block/block_placer",
+      "y": 180
+    },
+    "facing=up,powered=false": {
+      "model": "opencubes:block/block_placer_vertical"
+    },
+    "facing=up,powered=true": {
+      "model": "opencubes:block/block_placer_vertical"
+    },
+    "facing=west,powered=false": {
+      "model": "opencubes:block/block_placer",
+      "y": 270
+    },
+    "facing=west,powered=true": {
+      "model": "opencubes:block/block_placer",
+      "y": 270
+    }
+  }
+}

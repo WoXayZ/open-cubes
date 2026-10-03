@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "opencubes:canvas"
+    },
+    "g": {
+      "tag": "c:glass_blocks"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gcg",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "opencubes:glass_canvas"
+  }
+}

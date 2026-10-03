@@ -1,0 +1,21 @@
+{
+  "name": "Variomètre",
+  "icon": "opencubes:hang_glider",
+  "category": "opencubes:gadgets",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Le variomètre est intégré au vol en deltaplane. En planant avec le deltaplane engagé ou en vol élytra avec une Élytre thermique, appuyez sur $(thing)V$() pour activer le retour sonore de la vitesse verticale."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "L'air ascendant bip plus vite et plus aigu ; la descente ralentit et abaisse le ton. Liez $(thing)Volume variomètre +$() et $(thing)Volume variomètre -$() dans les contrôles pour ajuster le volume. Les thermiques de l'Overworld en journée aident à monter ; la pluie peut vous tirer vers le bas."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "opencubes:hang_glider",
+      "text": "Fabriquez d'abord le deltaplane, puis utilisez $(thing)V$() en vol."
+    }
+  ]
+}
