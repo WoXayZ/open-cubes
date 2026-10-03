@@ -45,8 +45,8 @@ public class OCFrenchLanguageProvider extends LanguageProvider {
         add("itemGroup." + OCConstants.MOD_ID + ".main", "OpenCubes");
         add(OCItems.INFO_BOOK.get(), "Domination mondiale");
         add("book.opencubes.world_domination.landing",
-                "Bienvenue dans OpenCubes - ascenseurs, XP liquide, grues, peinture, planeurs et bêtises soigneusement contenues.$(br2)"
-                        + "Les pages noires sont des placeholders de captures (256x256). Remplacez les PNG quand vous aurez de vraies photos.");
+                "Ascenseurs, grues, XP liquide, peinture, planeurs et le reste.$(br2)"
+                        + "Chaque entrée décrit le craft et le comportement.");
         add("book.opencubes.world_domination.subtitle", "Manuel de terrain pratique");
         add("opencubes.misc.info_book_missing_patchouli",
                 "Installez Patchouli pour lire ce livre.");

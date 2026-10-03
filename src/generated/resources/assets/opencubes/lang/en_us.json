@@ -134,7 +134,7 @@
   "block.opencubes.yellow_rotating_elevator": "Yellow Rotating Elevator",
   "block.opencubes.yellow_wool_slab": "Yellow Wool Slab",
   "block.opencubes.yellow_wool_stairs": "Yellow Wool Stairs",
-  "book.opencubes.world_domination.landing": "Welcome to OpenCubes - elevators, liquid XP, cranes, paint, gliders, and carefully contained tomfoolery.$(br2)Black pages are screenshot placeholders (256x256). Swap the PNGs when you have real shots.",
+  "book.opencubes.world_domination.landing": "Elevators, cranes, liquid XP, paint, gliders and the rest.$(br2)Each entry covers the craft and how it behaves.",
   "book.opencubes.world_domination.subtitle": "A practical field manual",
   "commands.opencubes.flimflam.fail": "Could not flim-flam %s with %s",
   "commands.opencubes.flimflam.ok": "Flim-flammed %s with %s",

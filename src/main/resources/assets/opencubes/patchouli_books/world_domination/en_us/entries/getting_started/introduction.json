@@ -11,7 +11,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)OpenCubes$() reimplements the ideas behind OpenBlocks on NeoForge 1.21.$(br2)This book is a Patchouli guide. Craft it with a $(item)Book$() and a $(item)Clay Ball$()."
+      "text": "$(bold)OpenCubes$() reimplements the ideas behind OpenBlocks.$(br2)This book is a Patchouli guide. Craft it with a $(item)Book$() and a $(item)Clay Ball$()."
     },
     {
       "type": "patchouli:text",

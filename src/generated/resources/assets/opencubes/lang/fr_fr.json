@@ -134,7 +134,7 @@
   "block.opencubes.yellow_rotating_elevator": "Ascenseur rotatif jaune",
   "block.opencubes.yellow_wool_slab": "Dalle de laine jaune",
   "block.opencubes.yellow_wool_stairs": "Escalier en laine jaune",
-  "book.opencubes.world_domination.landing": "Bienvenue dans OpenCubes - ascenseurs, XP liquide, grues, peinture, planeurs et bêtises soigneusement contenues.$(br2)Les pages noires sont des placeholders de captures (256x256). Remplacez les PNG quand vous aurez de vraies photos.",
+  "book.opencubes.world_domination.landing": "Ascenseurs, grues, XP liquide, peinture, planeurs et le reste.$(br2)Chaque entrée décrit le craft et le comportement.",
   "book.opencubes.world_domination.subtitle": "Manuel de terrain pratique",
   "commands.opencubes.flimflam.fail": "Impossible de flim-flammer %s avec %s",
   "commands.opencubes.flimflam.ok": "%s flim-flammé avec %s",

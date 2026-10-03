@@ -19,8 +19,8 @@ public class OCLanguageProvider extends LanguageProvider {
         add("itemGroup." + OCConstants.MOD_ID + ".main", "OpenCubes");
         add(OCItems.INFO_BOOK.get(), "World Domination");
         add("book.opencubes.world_domination.landing",
-                "Welcome to OpenCubes - elevators, liquid XP, cranes, paint, gliders, and carefully contained tomfoolery.$(br2)"
-                        + "Black pages are screenshot placeholders (256x256). Swap the PNGs when you have real shots.");
+                "Elevators, cranes, liquid XP, paint, gliders and the rest.$(br2)"
+                        + "Each entry covers the craft and how it behaves.");
         add("book.opencubes.world_domination.subtitle", "A practical field manual");
         add("opencubes.misc.info_book_missing_patchouli",
                 "Install Patchouli to read this book.");

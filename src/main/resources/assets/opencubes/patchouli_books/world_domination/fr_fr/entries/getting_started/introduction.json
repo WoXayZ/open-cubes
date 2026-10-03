@@ -11,7 +11,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)OpenCubes$() réimplémente les idées d'OpenBlocks sur NeoForge 1.21.$(br2)Ce livre est un guide Patchouli. Craft : un $(item)Livre$() et une $(item)Boule d'argile$()."
+      "text": "$(bold)OpenCubes$() réimplémente les idées d'OpenBlocks.$(br2)Ce livre est un guide Patchouli. Craft : un $(item)Livre$() et une $(item)Boule d'argile$()."
     },
     {
       "type": "patchouli:text",
