@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/red_elevator",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 11546150
+      }
+    ]
+  }
+}

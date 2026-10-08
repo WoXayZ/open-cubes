@@ -1,5 +1,7 @@
 package dev.opencubes.content.inventory;
 
+import dev.opencubes.util.ServerLevels;
+
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -14,6 +16,9 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
@@ -48,9 +53,9 @@ public final class PlayerInventoryStore {
     public Path storePlayerInventory(ServerPlayer player, String type) {
         Inventory inventory = player.getInventory();
         ItemStackHandler copy = copyInventory(inventory);
-        return storeHandler(copy, player.getGameProfile().getName(), type, player.serverLevel(), meta -> {
-            meta.putString(TAG_PLAYER_NAME, player.getGameProfile().getName());
-            meta.putString(TAG_PLAYER_UUID, player.getGameProfile().getId().toString());
+        return storeHandler(copy, player.getGameProfile().name(), type, ServerLevels.of(player), meta -> {
+            meta.putString(TAG_PLAYER_NAME, player.getGameProfile().name());
+            meta.putString(TAG_PLAYER_UUID, player.getGameProfile().id().toString());
             meta.putDouble("X", player.getX());
             meta.putDouble("Y", player.getY());
             meta.putDouble("Z", player.getZ());
@@ -61,8 +66,9 @@ public final class PlayerInventoryStore {
                              Consumer<CompoundTag> extras, HolderLookup.Provider registries) {
         String safeName = SAFE_CHARS.matcher(name).replaceAll("_");
         Path file = newDumpFile(level.getServer(), safeName, type);
-        CompoundTag root = new CompoundTag();
-        root.put(TAG_INVENTORY, inventory.serializeNBT(registries));
+        TagValueOutput output = TagValueOutput.createWithContext(new ProblemReporter.Collector(), registries);
+        inventory.serialize(output.child(TAG_INVENTORY));
+        CompoundTag root = output.buildResult();
         root.putLong("Created", System.currentTimeMillis());
         root.putString("Type", type);
         extras.accept(root);
@@ -78,13 +84,15 @@ public final class PlayerInventoryStore {
     }
 
     public boolean restoreInventory(ServerPlayer player, String fileId) {
-        CompoundTag root = loadTag(player.serverLevel().getServer(), fileId);
+        CompoundTag root = loadTag(ServerLevels.of(player).getServer(), fileId);
         if (root == null || !root.contains(TAG_INVENTORY)) {
             return false;
         }
 
         ItemStackHandler stored = new ItemStackHandler(0);
-        stored.deserializeNBT(player.registryAccess(), root.getCompound(TAG_INVENTORY));
+        TagValueInput.create(new ProblemReporter.Collector(), player.registryAccess(), root)
+                .child(TAG_INVENTORY)
+                .ifPresent(stored::deserialize);
 
         Inventory inventory = player.getInventory();
         inventory.clearContent();

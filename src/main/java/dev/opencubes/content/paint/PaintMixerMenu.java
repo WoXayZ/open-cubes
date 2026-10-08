@@ -106,7 +106,7 @@ public class PaintMixerMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (mixer.getLevel() == null || mixer.getLevel().isClientSide) {
+        if (mixer.getLevel() == null || mixer.getLevel().isClientSide()) {
             return false;
         }
         if (id == BUTTON_MIX) {

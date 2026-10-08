@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -106,9 +108,9 @@ public class DrawingTableBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
         if (isStencil(selection)) {
             tag.putString("Pattern", StencilPattern.values()[selection].id());
         } else {
@@ -117,16 +119,16 @@ public class DrawingTableBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        String glyph = tag.getString("Glyph");
-        if (!glyph.isEmpty() && !tag.contains("Pattern")) {
+        String glyph = tag.getStringOr("Glyph", "");
+        if (!glyph.isEmpty() && !tag.keySet().contains("Pattern")) {
             selection = PATTERN_COUNT + GlyphItem.index(glyph.charAt(0));
         } else {
-            selection = StencilPattern.byId(tag.getString("Pattern")).ordinal();
+            selection = StencilPattern.byId(tag.getStringOr("Pattern", "")).ordinal();
         }
         writeData();
     }

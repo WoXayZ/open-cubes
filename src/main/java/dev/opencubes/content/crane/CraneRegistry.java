@@ -86,12 +86,12 @@ public final class CraneRegistry {
         if (existing != null) {
             existing.discard();
         }
-        MagnetEntity magnet = OCEntities.MAGNET.get().create(serverLevel);
+        MagnetEntity magnet = OCEntities.MAGNET.get().create(serverLevel, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
         if (magnet == null) {
             return;
         }
         magnet.setOwner(player);
-        magnet.moveTo(player.getX(), player.getY() + player.getBbHeight(), player.getZ());
+        magnet.setPos(player.getX(), player.getY() + player.getBbHeight(), player.getZ());
         serverLevel.addFreshEntity(magnet);
         bindMagnet(player, magnet);
     }

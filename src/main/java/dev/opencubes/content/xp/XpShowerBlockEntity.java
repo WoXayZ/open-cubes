@@ -1,6 +1,7 @@
 package dev.opencubes.content.xp;
 
 import dev.opencubes.registry.OCBlockEntities;
+import dev.opencubes.util.FluidHandlerBridge;
 import dev.opencubes.util.XpFluidUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,6 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 /**
@@ -40,8 +43,9 @@ public class XpShowerBlockEntity extends BlockEntity {
         }
 
         Direction back = state.getValue(XpShowerBlock.FACING).getOpposite();
-        IFluidHandler source = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(back), back.getOpposite());
-        if (source != null) {
+        var found = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
+        if (found != null) {
+            IFluidHandler source = FluidHandlerBridge.asTanks(found);
             FluidStack drained = source.drain(PULL_PER_CYCLE, IFluidHandler.FluidAction.SIMULATE);
             if (XpFluidUtil.isXpJuice(drained)) {
                 int filled = shower.buffer.fill(drained, IFluidHandler.FluidAction.EXECUTE);
@@ -80,16 +84,16 @@ public class XpShowerBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Buffer")) {
-            buffer.readFromNBT(registries, tag.getCompound("Buffer"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Buffer")) {
+            tag.child("Buffer").ifPresent(buffer::deserialize);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Buffer", buffer.writeToNBT(registries, new CompoundTag()));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.putChild("Buffer", buffer);
     }
 }

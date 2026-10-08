@@ -9,6 +9,7 @@ import dev.opencubes.content.luggage.LuggageEntity;
 import dev.opencubes.content.paint.GlyphEntity;
 import dev.opencubes.content.egg.MiniMeEntity;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.bus.api.IEventBus;
@@ -28,21 +29,21 @@ public final class OCEntities {
             REGISTRY.register("luggage", () -> EntityType.Builder.<LuggageEntity>of(LuggageEntity::new, MobCategory.CREATURE)
                     .sized(0.6F, 0.6F)
                     .clientTrackingRange(10)
-                    .build(OCConstants.id("luggage").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("luggage"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GoldenEyeEntity>> GOLDEN_EYE =
             REGISTRY.register("golden_eye", () -> EntityType.Builder.<GoldenEyeEntity>of(GoldenEyeEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(OCConstants.id("golden_eye").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("golden_eye"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GlyphEntity>> GLYPH =
             REGISTRY.register("glyph", () -> EntityType.Builder.<GlyphEntity>of(GlyphEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(10)
                     .updateInterval(Integer.MAX_VALUE)
-                    .build(OCConstants.id("glyph").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("glyph"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<CartographerEntity>> CARTOGRAPHER =
             REGISTRY.register("cartographer", () -> EntityType.Builder.<CartographerEntity>of(
@@ -50,7 +51,7 @@ public final class OCEntities {
                     .sized(0.75F, 0.75F)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(OCConstants.id("cartographer").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("cartographer"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MagnetEntity>> MAGNET =
             REGISTRY.register("magnet", () -> EntityType.Builder.<MagnetEntity>of(
@@ -58,7 +59,7 @@ public final class OCEntities {
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(10)
                     .updateInterval(1)
-                    .build(OCConstants.id("magnet").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("magnet"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MountedBlockEntity>> MOUNTED_BLOCK =
             REGISTRY.register("mounted_block", () -> EntityType.Builder.<MountedBlockEntity>of(
@@ -66,14 +67,14 @@ public final class OCEntities {
                     .sized(0.925F, 0.925F)
                     .clientTrackingRange(10)
                     .updateInterval(1)
-                    .build(OCConstants.id("mounted_block").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("mounted_block"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MiniMeEntity>> MINI_ME =
             REGISTRY.register("mini_me", () -> EntityType.Builder.<MiniMeEntity>of(
                             MiniMeEntity::new, MobCategory.CREATURE)
-                    .sized(0.4F, 0.9F)
+                    .sized(0.3F, 0.65F)
                     .clientTrackingRange(10)
-                    .build(OCConstants.id("mini_me").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, OCConstants.id("mini_me"))));
 
     private OCEntities() {}
 

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "tag": "c:gems/lapis"
-    },
-    {
-      "tag": "c:slime_balls"
-    },
-    {
-      "item": "minecraft:pink_wool"
-    }
+    "#c:gems/lapis",
+    "#c:slime_balls",
+    "minecraft:pink_wool"
   ],
   "result": {
     "count": 1,

@@ -14,14 +14,18 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.state.BlockState;
 /**
  * OpenBlocks golden egg hatch: spin stages accelerate, then the egg rises with light rays, falls,
@@ -107,7 +111,7 @@ public class GoldenEggBlockEntity extends BlockEntity {
 
     /** Starts the OpenBlocks hatch sequence (spin → rise → fall → Mini Me). */
     public boolean beginHatch() {
-        if (level == null || level.isClientSide || phase != Phase.IDLE) {
+        if (level == null || level.isClientSide() || phase != Phase.IDLE) {
             return false;
         }
         enterPhase(Phase.ROTATING_SLOW);
@@ -120,7 +124,7 @@ public class GoldenEggBlockEntity extends BlockEntity {
         if (egg.phase == Phase.IDLE) {
             return;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             egg.clientAnimate();
             return;
         }
@@ -168,7 +172,7 @@ public class GoldenEggBlockEntity extends BlockEntity {
 
     private void tryAdvance(Phase next) {
         if (phaseTicks > 0 && phaseTicks % STAGE_CHANGE_TICK == 0
-                && level != null && level.random.nextDouble() < STAGE_CHANGE_CHANCE) {
+                && level != null && level.getRandom().nextDouble() < STAGE_CHANGE_CHANCE) {
             enterPhase(next);
         }
     }
@@ -185,7 +189,7 @@ public class GoldenEggBlockEntity extends BlockEntity {
         phase = next;
         phaseTicks = 0;
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
@@ -194,13 +198,13 @@ public class GoldenEggBlockEntity extends BlockEntity {
         if (!OCCommonConfig.SPEC.isLoaded() || !OCCommonConfig.GOLDEN_EGG_PICK_BLOCKS.get()) {
             return;
         }
-        if (level.random.nextInt(6) != 0) {
+        if (level.getRandom().nextInt(6) != 0) {
             return;
         }
         BlockPos target = worldPosition.offset(
-                level.random.nextInt(20) - 10,
-                level.random.nextInt(2) - 1,
-                level.random.nextInt(20) - 10);
+                level.getRandom().nextInt(20) - 10,
+                level.getRandom().nextInt(2) - 1,
+                level.getRandom().nextInt(20) - 10);
         if (!MagnetPickup.canPickBlock(level, target)) {
             return;
         }
@@ -250,47 +254,52 @@ public class GoldenEggBlockEntity extends BlockEntity {
     private void hatch(ServerLevel level) {
         dropCarriedBlocks();
         GameProfile profile = owner == null ? FALLBACK : owner;
-        MiniMeEntity mini = OCEntities.MINI_ME.get().create(level);
+        MiniMeEntity mini = OCEntities.MINI_ME.get().create(level, EntitySpawnReason.MOB_SUMMONED);
         if (mini != null) {
             double x = worldPosition.getX() + 0.5D;
             double y = worldPosition.getY() + 0.5D;
             double z = worldPosition.getZ() + 0.5D;
-            mini.moveTo(x, y, z, 0.0F, 0.0F);
+            mini.setPos(x, y, z);
+            mini.setYRot(0.0F);
+            mini.setXRot(0.0F);
             mini.setOwner(profile);
             mini.suppressPickup(80);
-            level.addFreshEntity(mini);
         }
+        // Remove the egg first, then spawn the mini-me after the blast.
+        level.setBlock(worldPosition, Blocks.AIR.defaultBlockState(), 3);
         level.explode(null, worldPosition.getX() + 0.5D, worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D,
                 2.0F, Level.ExplosionInteraction.TNT);
-        level.setBlock(worldPosition, Blocks.AIR.defaultBlockState(), 3);
+        if (mini != null) {
+            level.addFreshEntity(mini);
+        }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putString("Phase", phase.name());
         tag.putInt("PhaseTicks", phaseTicks);
         tag.putFloat("RiseProgress", riseProgress);
-        if (owner != null && owner.getId() != null) {
-            tag.putUUID("OwnerUUID", owner.getId());
-            tag.putString("OwnerName", owner.getName() == null ? "Steve" : owner.getName());
+        if (owner != null) {
+            tag.store("OwnerUUID", UUIDUtil.CODEC, owner.id());
+            tag.putString("OwnerName", owner.name());
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        phaseTicks = tag.getInt("PhaseTicks");
-        riseProgress = tag.getFloat("RiseProgress");
-        if (tag.contains("Phase")) {
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        phaseTicks = tag.getIntOr("PhaseTicks", 0);
+        riseProgress = tag.getFloatOr("RiseProgress", 0.0F);
+        if (tag.keySet().contains("Phase")) {
             try {
-                phase = Phase.valueOf(tag.getString("Phase"));
+                phase = Phase.valueOf(tag.getStringOr("Phase", ""));
             } catch (IllegalArgumentException ignored) {
                 phase = Phase.IDLE;
             }
         } else {
             // Legacy progress-based save
-            int progress = tag.getInt("Progress");
+            int progress = tag.getIntOr("Progress", 0);
             if (progress <= 0) {
                 phase = Phase.IDLE;
             } else if (progress < 200) {
@@ -303,9 +312,8 @@ public class GoldenEggBlockEntity extends BlockEntity {
                 riseProgress = 1.0F;
             }
         }
-        if (tag.hasUUID("OwnerUUID")) {
-            owner = new GameProfile(tag.getUUID("OwnerUUID"), tag.getString("OwnerName"));
-        }
+        tag.read("OwnerUUID", UUIDUtil.CODEC).ifPresent(uuid ->
+                owner = new GameProfile(uuid, tag.getStringOr("OwnerName", "")));
     }
 
     @Override
@@ -319,8 +327,7 @@ public class GoldenEggBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        loadAdditional(packet.getTag(), registries);
+    public void onDataPacket(Connection connection, ValueInput input) {
+        loadAdditional(input);
     }
 }

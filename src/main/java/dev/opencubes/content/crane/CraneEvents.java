@@ -1,5 +1,7 @@
 package dev.opencubes.content.crane;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import dev.opencubes.OCConstants;
 import dev.opencubes.network.CraneTogglePayload;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,16 +48,16 @@ public final class CraneEvents {
             return;
         }
         event.setCanceled(true);
-        // Looking at an entity never fires LeftClickEmpty — send the grab packet here.
-        if (event.getEntity().level().isClientSide) {
-            PacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
+        // Entity clicks do not fire LeftClickEmpty.
+        if (event.getEntity().level().isClientSide()) {
+            ClientPacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
         }
     }
 
     @SubscribeEvent
     public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
         if (event.getItemStack().getItem() instanceof CraneControlItem) {
-            PacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
+            ClientPacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
         }
     }
 
@@ -63,8 +65,8 @@ public final class CraneEvents {
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         if (event.getItemStack().getItem() instanceof CraneControlItem) {
             event.setCanceled(true);
-            if (event.getLevel().isClientSide) {
-                PacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
+            if (event.getLevel().isClientSide()) {
+                ClientPacketDistributor.sendToServer(CraneTogglePayload.INSTANCE);
             }
         }
     }

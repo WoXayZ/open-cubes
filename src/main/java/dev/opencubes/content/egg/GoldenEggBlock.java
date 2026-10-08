@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import dev.opencubes.registry.OCBlockEntities;
 
@@ -25,8 +26,14 @@ public class GoldenEggBlock extends BaseEntityBlock {
 
     public static final MapCodec<GoldenEggBlock> CODEC = simpleCodec(GoldenEggBlock::new);
 
-    /** Same outline/collision as {@link net.minecraft.world.level.block.DragonEggBlock}. */
-    private static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
+    /** Hitbox follows the egg model. */
+    private static final VoxelShape SHAPE = Shapes.or(
+            Block.box(6.0D, 15.0D, 6.0D, 10.0D, 16.0D, 10.0D),
+            Block.box(5.0D, 14.0D, 5.0D, 11.0D, 15.0D, 11.0D),
+            Block.box(4.0D, 13.0D, 4.0D, 12.0D, 14.0D, 12.0D),
+            Block.box(3.0D, 0.0D, 3.0D, 13.0D, 13.0D, 13.0D),
+            Block.box(2.0D, 1.0D, 2.0D, 14.0D, 11.0D, 14.0D),
+            Block.box(1.0D, 3.0D, 1.0D, 15.0D, 8.0D, 15.0D));
 
     public GoldenEggBlock(Properties properties) {
         super(properties);
@@ -50,7 +57,7 @@ public class GoldenEggBlock extends BaseEntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!level.isClientSide && placer instanceof Player player
+        if (!level.isClientSide() && placer instanceof Player player
                 && level.getBlockEntity(pos) instanceof GoldenEggBlockEntity egg) {
             egg.setOwner(player.getGameProfile());
         }
@@ -60,7 +67,7 @@ public class GoldenEggBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof GoldenEggBlockEntity egg) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return egg.isIdle() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             }
             return egg.beginHatch() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
@@ -76,6 +83,6 @@ public class GoldenEggBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
 }

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "b": {
-      "item": "minecraft:iron_bars"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "y": {
-      "tag": "c:dyes/yellow"
-    }
+    "b": "minecraft:iron_bars",
+    "i": "#c:ingots/iron",
+    "y": "#c:dyes/yellow"
   },
   "pattern": [
     "ibi",

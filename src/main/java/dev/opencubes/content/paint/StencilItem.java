@@ -2,7 +2,6 @@ package dev.opencubes.content.paint;
 
 import dev.opencubes.registry.OCDataComponents;
 import dev.opencubes.registry.OCItems;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +14,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class StencilItem extends Item {
 
@@ -58,23 +60,23 @@ public class StencilItem extends Item {
 
         if (player != null && player.isShiftKeyDown()) {
             var popped = canvas.rotateOrPopStencil(context.getClickedFace(), true);
-            if (popped.isPresent() && !level.isClientSide && !player.getAbilities().instabuild) {
+            if (popped.isPresent() && !level.isClientSide() && !player.getAbilities().instabuild) {
                 player.getInventory().add(create(popped.get()));
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
 
         if (canvas.face(context.getClickedFace()).cover() != null) {
             canvas.rotateOrPopStencil(context.getClickedFace(), false);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
 
         Direction side = context.getClickedFace();
         if (canvas.placeStencil(side, pattern, placementRotation(side, context.getHorizontalDirection()))) {
-            if (!level.isClientSide && player != null && !player.getAbilities().instabuild) {
+            if (!level.isClientSide() && player != null && !player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return InteractionResult.FAIL;
     }
@@ -97,8 +99,8 @@ public class StencilItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("opencubes.misc.stencil_place_tip").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("opencubes.misc.stencil_brush_tip").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable("opencubes.misc.stencil_place_tip").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("opencubes.misc.stencil_brush_tip").withStyle(ChatFormatting.GRAY));
     }
 }

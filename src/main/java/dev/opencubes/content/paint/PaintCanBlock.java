@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -69,7 +69,7 @@ public class PaintCanBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
@@ -97,36 +97,36 @@ public class PaintCanBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof PaintCanBlockEntity can)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (stack.getItem() instanceof PaintBrushItem) {
             if (can.getAmount() <= 0) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             stack.set(OCDataComponents.PAINT_COLOR.get(), can.getColor());
             stack.setDamageValue(0);
             usePaint(level, pos, player, can);
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         if (GliderPaint.isPaintable(stack)) {
             if (can.getAmount() <= 0 || GliderPaint.colour(stack) == can.getColor()) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             stack.set(OCDataComponents.PAINT_COLOR.get(), can.getColor());
             usePaint(level, pos, player, can);
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 level.playSound(null, pos, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 0.4F, 1.8F);
             }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     private static void usePaint(Level level, BlockPos pos, Player player, PaintCanBlockEntity can) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return;
         }
         can.setAmount(can.getAmount() - 1);

@@ -2,10 +2,11 @@ package dev.opencubes.content.crane;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCEntities;
+import dev.opencubes.registry.OCEntityData;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,6 +20,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,7 +32,7 @@ public class MagnetEntity extends Entity {
     private static final EntityDataAccessor<Boolean> DATA_ABOVE_TARGET =
             SynchedEntityData.defineId(MagnetEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER =
-            SynchedEntityData.defineId(MagnetEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+            SynchedEntityData.defineId(MagnetEntity.class, OCEntityData.OPTIONAL_UUID);
 
     private boolean aboveTarget;
 
@@ -77,7 +80,7 @@ public class MagnetEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return;
         }
         if (!isValid()) {
@@ -91,7 +94,7 @@ public class MagnetEntity extends Entity {
             return;
         }
 
-        Vec3 target = tipTarget(owner).add(0.0D, -getBbHeight(), 0.0D);
+        Vec3 target = tipTarget(owner);
         if (OCCommonConfig.CRANE_COLLISION_CHECK.get()) {
             target = clipTip(owner, target);
         }
@@ -103,10 +106,15 @@ public class MagnetEntity extends Entity {
         aboveTarget = !detectTargets().isEmpty();
         entityData.set(DATA_ABOVE_TARGET, aboveTarget);
 
-        // Keep passengers glued under the magnet.
         for (Entity passenger : getPassengers()) {
-            passenger.setPos(getX(), getY() - passenger.getBbHeight(), getZ());
+            positionRider(passenger);
         }
+    }
+
+    @Override
+    protected void positionRider(Entity passenger, MoveFunction moveFunction) {
+        // Hang the passenger under the magnet.
+        moveFunction.accept(passenger, getX(), getY() - passenger.getBbHeight(), getZ());
     }
 
     public static Vec3 tipTarget(Player player) {
@@ -149,7 +157,7 @@ public class MagnetEntity extends Entity {
             passenger.setPos(passenger.getX(), y, passenger.getZ());
             return true;
         }
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return false;
         }
 
@@ -162,7 +170,7 @@ public class MagnetEntity extends Entity {
             target = createMountedBlock(serverLevel);
         }
         if (target != null) {
-            target.startRiding(this, true);
+            target.startRiding(this, true, true);
             return true;
         }
         return false;
@@ -201,14 +209,14 @@ public class MagnetEntity extends Entity {
         }
         MountedBlockEntity mounted = MountedBlockEntity.create(owner, level, pos);
         if (mounted != null) {
-            mounted.moveTo(getX(), getY(), getZ());
+            mounted.setPos(getX(), getY(), getZ());
             level.addFreshEntity(mounted);
         }
         return mounted;
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
 
@@ -228,14 +236,12 @@ public class MagnetEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.hasUUID("Owner")) {
-            entityData.set(DATA_OWNER, Optional.of(tag.getUUID("Owner")));
-        }
+    protected void readAdditionalSaveData(ValueInput tag) {
+        tag.read("Owner", UUIDUtil.CODEC).ifPresent(uuid -> entityData.set(DATA_OWNER, Optional.of(uuid)));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        entityData.get(DATA_OWNER).ifPresent(uuid -> tag.putUUID("Owner", uuid));
+    protected void addAdditionalSaveData(ValueOutput tag) {
+        entityData.get(DATA_OWNER).ifPresent(uuid -> tag.store("Owner", UUIDUtil.CODEC, uuid));
     }
 }

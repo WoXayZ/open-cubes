@@ -3,20 +3,22 @@ package dev.opencubes.client.flight;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.opencubes.OCConstants;
+import dev.opencubes.client.PoseRender;
 import dev.opencubes.content.flight.GliderPaint;
 import dev.opencubes.content.flight.HangGliderItem;
 import dev.opencubes.content.flight.HangGliderPhysics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -46,24 +48,20 @@ public final class HangGliderClient {
     }
 
     @SubscribeEvent
-    public static void poseGlider(RenderPlayerEvent.Pre event) {
-        if (!(event.getEntity() instanceof AbstractClientPlayer player) || !deployed(player)) {
+    public static void poseGlider(RenderPlayerEvent.Pre<?> event) {
+        AvatarRenderState state = event.getRenderState();
+        if (!(Minecraft.getInstance().level.getEntity(state.id) instanceof AbstractClientPlayer player) || !deployed(player)) {
             return;
         }
-        if (!(event.getRenderer() instanceof PlayerRenderer renderer)) {
-            return;
-        }
-
-        PlayerModel<AbstractClientPlayer> model = renderer.getModel();
-        model.crouching = false;
+        state.isCrouching = false;
         HumanoidArm gliderArm = HangGliderItem.engagedHand(player) == InteractionHand.MAIN_HAND
                 ? player.getMainArm() : player.getMainArm().getOpposite();
         if (gliderArm == HumanoidArm.RIGHT) {
-            model.rightArmPose = GliderArmPose.get();
-            model.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+            state.rightArmPose = GliderArmPose.get();
+            state.leftArmPose = HumanoidModel.ArmPose.EMPTY;
         } else {
-            model.leftArmPose = GliderArmPose.get();
-            model.rightArmPose = HumanoidModel.ArmPose.EMPTY;
+            state.leftArmPose = GliderArmPose.get();
+            state.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         }
 
         float bodyYaw = Mth.rotLerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
@@ -95,35 +93,36 @@ public final class HangGliderClient {
         pose.mulPose(MODEL_TO_VIEW);
         pose.translate(0.0F, -EYE_Y / 16.0F, -EYE_Z / 16.0F);
 
-        MultiBufferSource buffer = event.getMultiBufferSource();
+        SubmitNodeCollector collector = event.getSubmitNodeCollector();
         int light = event.getPackedLight();
-        HangGliderRenderer.render(pose, buffer, light, GliderPaint.colour(HangGliderItem.engagedStack(player)));
-        renderArms(pose, buffer, light, player);
+        HangGliderRenderer.render(pose, collector, light, GliderPaint.colour(HangGliderItem.engagedStack(player)));
+        renderArms(pose, collector, light, player);
         pose.popPose();
     }
 
-    private static void renderArms(PoseStack pose, MultiBufferSource buffer, int light, LocalPlayer player) {
-        if (!(Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player)
-                instanceof PlayerRenderer renderer)) {
+    private static void renderArms(PoseStack pose, SubmitNodeCollector collector, int light, LocalPlayer player) {
+        if (!(Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player) instanceof AvatarRenderer<?> renderer)) {
             return;
         }
-        PlayerModel<AbstractClientPlayer> model = renderer.getModel();
-        ResourceLocation skin = player.getSkin().texture();
+        PlayerModel model = (PlayerModel) renderer.getModel();
+        Identifier skin = player.getSkin().body().texturePath();
         model.rightArm.resetPose();
         model.leftArm.resetPose();
         GliderArmPose.poseArms(model.rightArm, model.leftArm);
-        renderArm(pose, buffer, light, skin, model.rightArm, model.rightSleeve);
-        renderArm(pose, buffer, light, skin, model.leftArm, model.leftSleeve);
+        renderArm(pose, collector, light, skin, model.rightArm, model.rightSleeve, false);
+        renderArm(pose, collector, light, skin, model.leftArm, model.leftSleeve, true);
     }
 
-    private static void renderArm(PoseStack pose, MultiBufferSource buffer, int light, ResourceLocation skin,
-                                  ModelPart arm, ModelPart sleeve) {
+    private static void renderArm(PoseStack pose, SubmitNodeCollector collector, int light, Identifier skin,
+                                  ModelPart arm, ModelPart sleeve, boolean translucentSleeve) {
         arm.visible = true;
-        arm.render(pose, buffer.getBuffer(RenderType.entitySolid(skin)), light, OverlayTexture.NO_OVERLAY);
-        sleeve.copyFrom(arm);
+        collector.submitCustomGeometry(pose, RenderTypes.entitySolid(skin),
+                (modelPose, buffer) -> arm.render(PoseRender.stack(modelPose), buffer, light, OverlayTexture.NO_OVERLAY));
+        sleeve.loadPose(arm.storePose());
         if (sleeve.visible) {
-            sleeve.render(pose, buffer.getBuffer(RenderType.entityTranslucent(skin)), light,
-                    OverlayTexture.NO_OVERLAY);
+            collector.submitCustomGeometry(pose,
+                    translucentSleeve ? RenderTypes.entityTranslucent(skin) : RenderTypes.entitySolid(skin),
+                    (modelPose, buffer) -> sleeve.render(PoseRender.stack(modelPose), buffer, light, OverlayTexture.NO_OVERLAY));
         }
     }
 }

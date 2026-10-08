@@ -34,7 +34,7 @@ public final class OCAttachments {
     /** Bricks owed after tasty clay. Cleared on death drop. */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<Integer>> BOWEL =
             REGISTRY.register("bowel", () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT)
+                    .serialize(Codec.INT.fieldOf("value"))
                     .build());
 
     private OCAttachments() {}

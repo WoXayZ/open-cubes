@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -21,7 +20,9 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
@@ -208,10 +209,10 @@ public class FlagBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
-                                     LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+                                     Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         if (!state.getValue(WALL)) {
             if (direction == Direction.DOWN && state.getValue(HALF) == DoubleBlockHalf.UPPER) {
@@ -242,7 +243,7 @@ public class FlagBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && !state.getValue(WALL) && state.getValue(TALL)) {
+        if (!level.isClientSide() && !state.getValue(WALL) && state.getValue(TALL)) {
             if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
                 BlockPos below = pos.below();
                 BlockState belowState = level.getBlockState(below);
@@ -284,11 +285,11 @@ public class FlagBlock extends Block implements SimpleWaterloggedBlock {
         if (state.getValue(WALL)) {
             return InteractionResult.PASS;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             int step = player.isShiftKeyDown() ? -1 : 1;
             setRotationPair(level, pos, state, (state.getValue(ROTATION) + step) & 15);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     private static void setRotationPair(Level level, BlockPos pos, BlockState state, int rotation) {
@@ -308,27 +309,27 @@ public class FlagBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(stack.getItem() instanceof DyeItem dye)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        DyeColor target = dye.getDyeColor();
+        DyeColor target = stack.get(net.minecraft.core.component.DataComponents.DYE);
         if (target == colour) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         Block recoloured = OCBlocks.recolour(this, target);
         if (recoloured == null) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             recolourPair(level, pos, state, recoloured);
             level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
         }
-        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     private void recolourPair(Level level, BlockPos pos, BlockState state, Block recoloured) {

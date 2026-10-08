@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -21,16 +21,18 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerData;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class TrophyBlockEntity extends BlockEntity {
@@ -40,7 +42,7 @@ public class TrophyBlockEntity extends BlockEntity {
     private static final String TAG_VARIANT = "DisplayVariant";
 
     @Nullable
-    private ResourceLocation trophyId;
+    private Identifier trophyId;
     private int cooldown;
     private int displayVariant;
     @Nullable
@@ -55,7 +57,7 @@ public class TrophyBlockEntity extends BlockEntity {
             trophy.cooldown--;
         }
         trophy.definition().ifPresent(def -> {
-            TrophyBehavior behavior = OCRegistries.TROPHY_BEHAVIORS.get(def.behavior());
+            TrophyBehavior behavior = OCRegistries.TROPHY_BEHAVIORS.get(def.behavior()).map(net.minecraft.core.Holder.Reference::value).orElse(null);
             if (behavior != null) {
                 behavior.onTick(trophy, def);
             }
@@ -64,7 +66,7 @@ public class TrophyBlockEntity extends BlockEntity {
 
     public void onActivated(Player player) {
         Level level = this.level;
-        if (level == null || level.isClientSide || cooldown > 0) {
+        if (level == null || level.isClientSide() || cooldown > 0) {
             return;
         }
         Optional<TrophyDefinition> definition = definition();
@@ -72,7 +74,7 @@ public class TrophyBlockEntity extends BlockEntity {
             return;
         }
         TrophyDefinition def = definition.get();
-        TrophyBehavior behavior = OCRegistries.TROPHY_BEHAVIORS.get(def.behavior());
+        TrophyBehavior behavior = OCRegistries.TROPHY_BEHAVIORS.get(def.behavior()).map(net.minecraft.core.Holder.Reference::value).orElse(null);
         if (behavior == null) {
             return;
         }
@@ -92,14 +94,14 @@ public class TrophyBlockEntity extends BlockEntity {
         if (level == null) {
             return;
         }
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(def.entity());
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(def.entity());
         if (type == null) {
             return;
         }
-        Entity entity = type.create(level);
+        Entity entity = type.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
         if (entity instanceof Slime || entity instanceof MagmaCube) {
             level.playSound(null, worldPosition, SoundEvents.SLIME_SQUISH_SMALL, SoundSource.BLOCKS,
-                    1.0F, 0.8F + level.random.nextFloat() * 0.4F);
+                    1.0F, 0.8F + level.getRandom().nextFloat() * 0.4F);
             if (entity != null) {
                 entity.discard();
             }
@@ -115,7 +117,7 @@ public class TrophyBlockEntity extends BlockEntity {
     }
 
     public void loadFromItem(ItemStack stack) {
-        ResourceLocation id = stack.get(OCDataComponents.TROPHY_ID.get());
+        Identifier id = stack.get(OCDataComponents.TROPHY_ID.get());
         if (id != null) {
             this.trophyId = id;
         }
@@ -135,16 +137,16 @@ public class TrophyBlockEntity extends BlockEntity {
         if (trophyId == null || level == null) {
             return Optional.empty();
         }
-        return level.registryAccess().registry(OCRegistries.TROPHY)
+        return level.registryAccess().lookup(OCRegistries.TROPHY)
                 .flatMap(reg -> reg.getOptional(trophyId));
     }
 
     @Nullable
-    public ResourceLocation getTrophyId() {
+    public Identifier getTrophyId() {
         return trophyId;
     }
 
-    public void setTrophyId(@Nullable ResourceLocation trophyId) {
+    public void setTrophyId(@Nullable Identifier trophyId) {
         this.trophyId = trophyId;
         this.renderEntity = null;
         setChanged();
@@ -177,11 +179,11 @@ public class TrophyBlockEntity extends BlockEntity {
         }
         TrophyDefinition def = definition.get();
         if (renderEntity == null || renderEntity.isRemoved()) {
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(def.entity());
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(def.entity());
             if (type == null) {
                 return null;
             }
-            renderEntity = type.create(level);
+            renderEntity = type.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
             if (renderEntity != null) {
                 renderEntity.setYRot(0.0F);
                 renderEntity.yRotO = 0.0F;
@@ -197,33 +199,34 @@ public class TrophyBlockEntity extends BlockEntity {
     }
 
     private void applyDisplayVariant(Entity entity) {
-        VillagerProfession profession = professionByIndex(displayVariant);
+        Holder<VillagerProfession> profession = professionByIndex(displayVariant);
+        Holder<VillagerType> plains = BuiltInRegistries.VILLAGER_TYPE.getOrThrow(VillagerType.PLAINS);
         if (entity instanceof Villager villager) {
             VillagerData data = villager.getVillagerData();
-            villager.setVillagerData(data.setProfession(profession).setType(VillagerType.PLAINS));
+            villager.setVillagerData(data.withProfession(profession).withType(plains));
         } else if (entity instanceof ZombieVillager zombie) {
             VillagerData data = zombie.getVillagerData();
-            zombie.setVillagerData(data.setProfession(profession).setType(VillagerType.PLAINS));
+            zombie.setVillagerData(data.withProfession(profession).withType(plains));
         }
     }
 
-    private static VillagerProfession professionByIndex(int index) {
-        var list = BuiltInRegistries.VILLAGER_PROFESSION.stream().toList();
+    private static Holder<VillagerProfession> professionByIndex(int index) {
+        var list = BuiltInRegistries.VILLAGER_PROFESSION.listElements().toList();
         if (list.isEmpty()) {
-            return VillagerProfession.NONE;
+            return BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(VillagerProfession.NONE);
         }
         return list.get(Math.floorMod(index, list.size()));
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         if (trophyId != null) {
             tag.putString(TAG_TROPHY, trophyId.toString());
         }
@@ -232,15 +235,15 @@ public class TrophyBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains(TAG_TROPHY)) {
-            trophyId = ResourceLocation.tryParse(tag.getString(TAG_TROPHY));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains(TAG_TROPHY)) {
+            trophyId = Identifier.tryParse(tag.getStringOr(TAG_TROPHY, ""));
         } else {
             trophyId = null;
         }
-        cooldown = tag.getInt(TAG_COOLDOWN);
-        displayVariant = tag.getInt(TAG_VARIANT);
+        cooldown = tag.getIntOr(TAG_COOLDOWN, 0);
+        displayVariant = tag.getIntOr(TAG_VARIANT, 0);
         renderEntity = null;
     }
 
@@ -254,18 +257,12 @@ public class TrophyBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        loadAdditional(packet.getTag(), registries);
-    }
-
-    public static ResourceKey<TrophyDefinition> key(ResourceLocation id) {
+    public static ResourceKey<TrophyDefinition> key(Identifier id) {
         return ResourceKey.create(OCRegistries.TROPHY, id);
     }
 
-    public static Optional<Holder.Reference<TrophyDefinition>> holder(Level level, ResourceLocation id) {
-        return level.registryAccess().registry(OCRegistries.TROPHY)
-                .flatMap(reg -> reg.getHolder(key(id)));
+    public static Optional<Holder.Reference<TrophyDefinition>> holder(Level level, Identifier id) {
+        return level.registryAccess().lookup(OCRegistries.TROPHY)
+                .flatMap(reg -> reg.get(key(id)));
     }
 }

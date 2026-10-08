@@ -51,6 +51,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -117,11 +119,11 @@ public final class OCBlocks {
         }
         for (BigButtonMaterial material : BigButtonMaterial.ALL) {
             BIG_BUTTONS.put(material, register(material.blockId(),
-                    () -> new BigButtonBlock(material.setType(), material.properties())));
+                    () -> new BigButtonBlock(material.setType(), stamp(material.properties()))));
         }
 
         ROPE_LADDER = register("rope_ladder",
-                () -> new RopeLadderBlock(BlockBehaviour.Properties.of()
+                () -> new RopeLadderBlock(props()
                         .mapColor(MapColor.WOOD)
                         .strength(0.4F)
                         .sound(SoundType.LADDER)
@@ -129,21 +131,21 @@ public final class OCBlocks {
                         .pushReaction(PushReaction.DESTROY)));
 
         FAN = register("fan",
-                () -> new FanBlock(BlockBehaviour.Properties.of()
+                () -> new FanBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         BEAR_TRAP = register("bear_trap",
-                () -> new BearTrapBlock(BlockBehaviour.Properties.of()
+                () -> new BearTrapBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(2.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         TANK = register("tank",
-                () -> new TankBlock(BlockBehaviour.Properties.of()
+                () -> new TankBlock(props()
                         .mapColor(MapColor.NONE)
                         .strength(0.5F)
                         .sound(SoundType.GLASS)
@@ -153,21 +155,21 @@ public final class OCBlocks {
                         .isRedstoneConductor((state, level, pos) -> false)));
 
         XP_DRAIN = register("xp_drain",
-                () -> new XpDrainBlock(BlockBehaviour.Properties.of()
+                () -> new XpDrainBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(3.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         XP_SHOWER = register("xp_shower",
-                () -> new XpShowerBlock(BlockBehaviour.Properties.of()
+                () -> new XpShowerBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         XP_BOTTLER = register("xp_bottler",
-                () -> new XpBottlerBlock(BlockBehaviour.Properties.of()
+                () -> new XpBottlerBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(3.0F)
                         .sound(SoundType.METAL)));
@@ -182,7 +184,7 @@ public final class OCBlocks {
                 () -> new BlockPlacerBlock(machineProperties()));
 
         AUTO_ANVIL = register("auto_anvil",
-                () -> new AutoAnvilBlock(BlockBehaviour.Properties.of()
+                () -> new AutoAnvilBlock(props()
                         .mapColor(MapColor.METAL)
                         .requiresCorrectToolForDrops()
                         .strength(5.0F, 1200.0F)
@@ -190,60 +192,60 @@ public final class OCBlocks {
                         .noOcclusion()));
 
         AUTO_ENCHANTMENT_TABLE = register("auto_enchanting_table",
-                () -> new AutoEnchantmentTableBlock(BlockBehaviour.Properties.of()
+                () -> new AutoEnchantmentTableBlock(props()
                         .mapColor(MapColor.COLOR_RED)
                         .strength(5.0F, 1200.0F)
                         .sound(SoundType.STONE)));
 
         GRAVE = register("grave",
-                () -> new GraveBlock(BlockBehaviour.Properties.of()
+                () -> new GraveBlock(props()
                         .mapColor(MapColor.STONE)
                         .strength(5.0F, 2000.0F)
                         .sound(SoundType.STONE)
                         .noOcclusion()));
 
         TROPHY = register("trophy",
-                () -> new TrophyBlock(BlockBehaviour.Properties.of()
+                () -> new TrophyBlock(props()
                         .mapColor(MapColor.STONE)
                         .strength(1.5F, 6.0F)
                         .sound(SoundType.STONE)
                         .noOcclusion()));
 
         CANVAS = register("canvas",
-                () -> new CanvasBlock(BlockBehaviour.Properties.of()
+                () -> new CanvasBlock(props()
                         .mapColor(MapColor.SNOW)
                         .strength(0.5F)
                         .sound(SoundType.WOOL)));
 
         GLASS_CANVAS = register("glass_canvas",
-                () -> new GlassCanvasBlock(BlockBehaviour.Properties.of()
+                () -> new GlassCanvasBlock(props()
                         .mapColor(MapColor.NONE)
                         .strength(0.3F)
                         .sound(SoundType.GLASS)
                         .noOcclusion()));
 
         PAINT_CAN = register("paint_can",
-                () -> new PaintCanBlock(BlockBehaviour.Properties.of()
+                () -> new PaintCanBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         PAINT_MIXER = register("paint_mixer",
-                () -> new PaintMixerBlock(BlockBehaviour.Properties.of()
+                () -> new PaintMixerBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(2.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         DRAWING_TABLE = register("drawing_table",
-                () -> new DrawingTableBlock(BlockBehaviour.Properties.of()
+                () -> new DrawingTableBlock(props()
                         .mapColor(MapColor.WOOD)
                         .strength(2.0F)
                         .sound(SoundType.WOOD)));
 
         BUILDING_GUIDE = register("building_guide",
-                () -> new BuildingGuideBlock(BlockBehaviour.Properties.of()
+                () -> new BuildingGuideBlock(props()
                         .mapColor(MapColor.NONE)
                         .strength(1.0F)
                         .sound(SoundType.GLASS)
@@ -251,7 +253,7 @@ public final class OCBlocks {
                         .noOcclusion()));
 
         ENHANCED_BUILDING_GUIDE = register("enhanced_building_guide",
-                () -> new EnhancedBuildingGuideBlock(BlockBehaviour.Properties.of()
+                () -> new EnhancedBuildingGuideBlock(props()
                         .mapColor(MapColor.NONE)
                         .strength(1.0F)
                         .sound(SoundType.GLASS)
@@ -259,7 +261,7 @@ public final class OCBlocks {
                         .noOcclusion()));
 
         HEIGHT_MAP_PROJECTOR = register("height_map_projector",
-                () -> new HeightMapProjectorBlock(BlockBehaviour.Properties.of()
+                () -> new HeightMapProjectorBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(2.0F)
                         .sound(SoundType.METAL)
@@ -268,7 +270,7 @@ public final class OCBlocks {
                         .noOcclusion()));
 
         IMAGINARY = register("imaginary_block",
-                () -> new ImaginaryBlock(BlockBehaviour.Properties.of()
+                () -> new ImaginaryBlock(props()
                         .mapColor(MapColor.NONE)
                         .strength(0.0F)
                         .sound(SoundType.SNOW)
@@ -276,52 +278,52 @@ public final class OCBlocks {
                         .pushReaction(PushReaction.DESTROY)));
 
         SKY_BLOCK = register("sky_block",
-                () -> new SkyBlock(BlockBehaviour.Properties.of()
+                () -> new SkyBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.5F)
                         .sound(SoundType.METAL)
                         .noOcclusion(), false));
 
         INVERTED_SKY_BLOCK = register("inverted_sky_block",
-                () -> new SkyBlock(BlockBehaviour.Properties.of()
+                () -> new SkyBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.5F)
                         .sound(SoundType.METAL)
                         .noOcclusion(), true));
 
         TEMPORARY_SCAFFOLDING = register("temporary_scaffolding",
-                () -> new TemporaryScaffoldingBlock(BlockBehaviour.Properties.of()
+                () -> new TemporaryScaffoldingBlock(props()
                         .mapColor(MapColor.WOOD)
                         .strength(0.1F)
                         .sound(SoundType.SCAFFOLDING)
                         .noOcclusion()
-                        .noCollission()
+                        .noCollision()
                         .dynamicShape()
                         .isViewBlocking((s, g, p) -> false)
                         .pushReaction(PushReaction.DESTROY)
                         .randomTicks()));
 
         LIQUID_SPONGE = register("liquid_sponge",
-                () -> new SpongeBlock(BlockBehaviour.Properties.of()
+                () -> new SpongeBlock(props()
                         .mapColor(MapColor.COLOR_YELLOW)
                         .strength(0.6F)
                         .sound(SoundType.GRASS)));
 
         HEALER = register("healer",
-                () -> new HealerBlock(BlockBehaviour.Properties.of()
+                () -> new HealerBlock(props()
                         .mapColor(MapColor.COLOR_PINK)
                         .strength(1.5F)
                         .sound(SoundType.STONE)));
 
         SPRINKLER = register("sprinkler",
-                () -> new SprinklerBlock(BlockBehaviour.Properties.of()
+                () -> new SprinklerBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         ARCHERY_TARGET = register("archery_target",
-                () -> new ArcheryTargetBlock(BlockBehaviour.Properties.of()
+                () -> new ArcheryTargetBlock(props()
                         .mapColor(MapColor.WOOD)
                         .strength(1.0F)
                         .sound(SoundType.WOOD)
@@ -329,14 +331,14 @@ public final class OCBlocks {
                         .lightLevel(s -> 5)));
 
         ITEM_CANNON = register("item_cannon",
-                () -> new ItemCannonBlock(BlockBehaviour.Properties.of()
+                () -> new ItemCannonBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(2.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()));
 
         GOLDEN_EGG = register("golden_egg",
-                () -> new GoldenEggBlock(BlockBehaviour.Properties.of()
+                () -> new GoldenEggBlock(props()
                         .mapColor(MapColor.GOLD)
                         .strength(1.0F)
                         .sound(SoundType.METAL)
@@ -344,7 +346,7 @@ public final class OCBlocks {
                         .lightLevel(s -> 4)));
 
         VILLAGE_HIGHLIGHTER = register("village_highlighter",
-                () -> new VillageHighlighterBlock(BlockBehaviour.Properties.of()
+                () -> new VillageHighlighterBlock(props()
                         .mapColor(MapColor.METAL)
                         .strength(1.5F)
                         .sound(SoundType.METAL)
@@ -352,12 +354,12 @@ public final class OCBlocks {
 
         for (DyeColor colour : DyeColor.values()) {
             FLAGS.put(colour, register(colour.getName() + "_flag",
-                    () -> new FlagBlock(colour, BlockBehaviour.Properties.of()
+                    () -> new FlagBlock(colour, props()
                             .mapColor(colour.getMapColor())
                             .strength(0.0F)
                             .sound(SoundType.WOOL)
                             .noOcclusion()
-                            .noCollission()
+                            .noCollision()
                             .pushReaction(PushReaction.DESTROY))));
         }
 
@@ -374,30 +376,52 @@ public final class OCBlocks {
     private OCBlocks() {}
 
     private static BlockBehaviour.Properties elevatorProperties(DyeColor colour) {
-        return BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+        return stamp(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
                 .mapColor(colour.getMapColor())
                 .sound(SoundType.STONE)
-                .strength(1.5F, 6.0F);
+                .strength(1.5F, 6.0F));
     }
 
     public static Block wool(DyeColor colour) {
-        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                net.minecraft.resources.ResourceLocation.withDefaultNamespace(colour.getName() + "_wool"));
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
+                net.minecraft.resources.Identifier.withDefaultNamespace(colour.getName() + "_wool"));
     }
 
     private static BlockBehaviour.Properties woolProperties(DyeColor colour) {
-        return BlockBehaviour.Properties.ofFullCopy(wool(colour)).mapColor(colour.getMapColor());
+        return stamp(BlockBehaviour.Properties.ofFullCopy(wool(colour)).mapColor(colour.getMapColor()));
     }
 
     private static BlockBehaviour.Properties machineProperties() {
-        return BlockBehaviour.Properties.of()
+        return props()
                 .mapColor(MapColor.METAL)
                 .strength(3.0F)
                 .sound(SoundType.METAL);
     }
 
+    private static final ThreadLocal<ResourceKey<Block>> REGISTERING_ID = new ThreadLocal<>();
+
+    /** Properties for the block currently being registered. 26.1 requires the registry id before construction. */
+    private static BlockBehaviour.Properties props() {
+        return stamp(BlockBehaviour.Properties.of());
+    }
+
+    private static BlockBehaviour.Properties stamp(BlockBehaviour.Properties properties) {
+        ResourceKey<Block> id = REGISTERING_ID.get();
+        if (id != null) {
+            properties.setId(id);
+        }
+        return properties;
+    }
+
     private static <B extends Block> DeferredBlock<B> register(String name, java.util.function.Supplier<B> supplier) {
-        DeferredBlock<B> block = REGISTRY.register(name, supplier);
+        DeferredBlock<B> block = REGISTRY.register(name, id -> {
+            REGISTERING_ID.set(ResourceKey.create(Registries.BLOCK, id));
+            try {
+                return supplier.get();
+            } finally {
+                REGISTERING_ID.remove();
+            }
+        });
         ORDERED.add(block);
         return block;
     }

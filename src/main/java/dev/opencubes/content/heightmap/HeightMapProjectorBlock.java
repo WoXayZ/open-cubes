@@ -68,7 +68,7 @@ public class HeightMapProjectorBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof HeightMapProjectorBlockEntity projector) {
             serverPlayer.openMenu(new MenuProvider() {
                 @Override
@@ -82,7 +82,7 @@ public class HeightMapProjectorBlock extends BaseEntityBlock {
                 }
             }, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Nullable

@@ -39,7 +39,7 @@ public final class InventoryCommand {
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("opencubes")
-                .requires(source -> source.hasPermission(4))
+                .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
                 .then(Commands.literal("inventory")
                         .then(Commands.literal("store")
                                 .then(Commands.argument("player", EntityArgument.player())
@@ -75,7 +75,7 @@ public final class InventoryCommand {
     private static int store(CommandSourceStack source, ServerPlayer player) {
         Path file = PlayerInventoryStore.INSTANCE.storePlayerInventory(player, "command");
         source.sendSuccess(() -> Component.translatable("commands.opencubes.inventory.stored",
-                player.getGameProfile().getName(),
+                player.getGameProfile().name(),
                 PlayerInventoryStore.stripFilename(file.getFileName().toString())), true);
         return 1;
     }
@@ -84,7 +84,7 @@ public final class InventoryCommand {
         boolean ok = PlayerInventoryStore.INSTANCE.restoreInventory(player, id);
         if (ok) {
             source.sendSuccess(() -> Component.translatable("commands.opencubes.inventory.restored",
-                    player.getGameProfile().getName(),
+                    player.getGameProfile().name(),
                     PlayerInventoryStore.stripFilename(id)), true);
             return 1;
         }
@@ -98,11 +98,11 @@ public final class InventoryCommand {
                 : FlimFlamHandler.forceEffect(player, effect);
         if (ok) {
             source.sendSuccess(() -> Component.translatable("commands.opencubes.flimflam.ok",
-                    player.getGameProfile().getName(), effect == null ? "random" : effect), true);
+                    player.getGameProfile().name(), effect == null ? "random" : effect), true);
             return 1;
         }
         source.sendFailure(Component.translatable("commands.opencubes.flimflam.fail",
-                player.getGameProfile().getName(), effect == null ? "random" : effect));
+                player.getGameProfile().name(), effect == null ? "random" : effect));
         return 0;
     }
 
@@ -110,12 +110,12 @@ public final class InventoryCommand {
         if (amount == null) {
             int value = FlimFlamHandler.getLuck(player);
             source.sendSuccess(() -> Component.translatable("commands.opencubes.luck.read",
-                    player.getGameProfile().getName(), value), false);
+                    player.getGameProfile().name(), value), false);
             return value;
         }
         int value = FlimFlamHandler.modifyLuck(player, amount);
         source.sendSuccess(() -> Component.translatable("commands.opencubes.luck.set",
-                player.getGameProfile().getName(), value), true);
+                player.getGameProfile().name(), value), true);
         return value;
     }
 }

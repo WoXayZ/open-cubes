@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:acacia_button"
-    }
+    "b": "minecraft:acacia_button"
   },
   "pattern": [
     "bb",

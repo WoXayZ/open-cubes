@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "e": {
-      "item": "minecraft:ender_eye"
-    },
-    "g": {
-      "tag": "c:glass_blocks/colorless"
-    },
-    "s": {
-      "item": "minecraft:end_stone"
-    }
+    "e": "minecraft:ender_eye",
+    "g": "#c:glass_blocks/colorless",
+    "s": "minecraft:end_stone"
   },
   "pattern": [
     "geg",

@@ -12,6 +12,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -22,6 +24,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -68,7 +73,7 @@ public class MountedBlockEntity extends Entity {
 
         MountedBlockEntity entity = new MountedBlockEntity(level);
         entity.setCarried(state, teTag);
-        entity.moveTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+        entity.setPos(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
         return entity;
     }
 
@@ -109,7 +114,7 @@ public class MountedBlockEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (level().isClientSide || suspended) {
+        if (level().isClientSide() || suspended) {
             return;
         }
         if (isPassenger()) {
@@ -154,7 +159,7 @@ public class MountedBlockEntity extends Entity {
                 tag.putInt("x", pos.getX());
                 tag.putInt("y", pos.getY());
                 tag.putInt("z", pos.getZ());
-                be.loadWithComponents(tag, level.registryAccess());
+                be.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
                 be.setChanged();
             }
         }
@@ -169,29 +174,33 @@ public class MountedBlockEntity extends Entity {
         BlockState state = getCarried();
         ItemStack stack = new ItemStack(state.getBlock());
         if (!stack.isEmpty()) {
-            spawnAtLocation(stack);
+            spawnAtLocation(serverLevel, stack);
         }
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains("BlockState")) {
-            entityData.set(DATA_BLOCK, NbtUtils.readBlockState(
-                    BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("BlockState")));
-        }
-        if (tag.contains("BlockEntity")) {
-            blockEntityTag = tag.getCompound("BlockEntity");
-        }
-        suspended = tag.getBoolean("Suspended");
+    protected void readAdditionalSaveData(ValueInput tag) {
+        tag.read("BlockState", CompoundTag.CODEC).ifPresent(stateTag -> entityData.set(
+                DATA_BLOCK, NbtUtils.readBlockState(BuiltInRegistries.BLOCK, stateTag)));
+        tag.read("BlockEntity", CompoundTag.CODEC).ifPresent(beTag -> blockEntityTag = beTag);
+        suspended = tag.getBooleanOr("Suspended", false);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.put("BlockState", NbtUtils.writeBlockState(getCarried()));
+    protected void addAdditionalSaveData(ValueOutput tag) {
+        tag.store("BlockState", CompoundTag.CODEC, NbtUtils.writeBlockState(getCarried()));
         if (blockEntityTag != null) {
-            tag.put("BlockEntity", blockEntityTag.copy());
+            tag.store("BlockEntity", CompoundTag.CODEC, blockEntityTag.copy());
         }
         tag.putBoolean("Suspended", suspended);
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (!isInvulnerableToBase(source)) {
+            markHurt();
+        }
+        return false;
     }
 
     @Override

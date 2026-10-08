@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
-@EventBusSubscriber(modid = OCConstants.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = OCConstants.MOD_ID)
 public final class OCRegistries {
 
     public static final ResourceKey<Registry<TrophyDefinition>> TROPHY =

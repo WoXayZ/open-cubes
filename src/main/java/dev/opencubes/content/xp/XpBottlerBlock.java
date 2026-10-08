@@ -62,16 +62,16 @@ public class XpBottlerBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof XpBottlerBlockEntity bottler
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof XpBottlerBlockEntity bottler
                 && player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(bottler, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof XpBottlerBlockEntity bottler) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof XpBottlerBlockEntity bottler) {
             if (level instanceof ServerLevel) {
                 for (int i = 0; i < bottler.getItems().getSlots(); i++) {
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
@@ -79,7 +79,7 @@ public class XpBottlerBlock extends BaseEntityBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable
@@ -92,7 +92,7 @@ public class XpBottlerBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.XP_BOTTLER.get(), XpBottlerBlockEntity::serverTick);
     }
 

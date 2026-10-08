@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "tag": "c:glass_blocks"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    },
-    "t": {
-      "item": "minecraft:torch"
-    }
+    "g": "#c:glass_blocks",
+    "r": "#c:dusts/redstone",
+    "t": "minecraft:torch"
   },
   "pattern": [
     "grg",

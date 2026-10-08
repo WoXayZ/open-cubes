@@ -24,7 +24,7 @@ public final class LlamaTrophyBehavior implements TrophyBehavior {
         double pY = pos.getY() + 1.0D;
         double pZ = pos.getZ() + 0.5D;
 
-        LlamaSpit spit = net.minecraft.world.entity.EntityType.LLAMA_SPIT.create(level);
+        LlamaSpit spit = net.minecraft.world.entity.EntityType.LLAMA_SPIT.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         if (spit == null) {
             return 0;
         }
@@ -37,7 +37,7 @@ public final class LlamaTrophyBehavior implements TrophyBehavior {
         float f = Mth.sqrt((float) (dX * dX + dZ * dZ)) * 0.2F;
         spit.shoot(dX, dY + f, dZ, 1.5F, 10.0F);
         level.playSound(null, pos, SoundEvents.LLAMA_SPIT, SoundSource.NEUTRAL, 1.0F,
-                1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F);
+                1.0F + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2F);
         level.addFreshEntity(spit);
         return 0;
     }

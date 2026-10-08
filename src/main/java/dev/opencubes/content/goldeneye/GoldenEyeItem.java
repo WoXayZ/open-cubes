@@ -15,13 +15,16 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.StructureTags;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class GoldenEyeItem extends Item {
 
@@ -47,13 +50,13 @@ public class GoldenEyeItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         if (!(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) {
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
 
         if (player.isShiftKeyDown()) {
@@ -61,7 +64,7 @@ public class GoldenEyeItem extends Item {
         } else if (tryThrow(stack, serverLevel, serverPlayer)) {
             stack.shrink(1);
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     private static void tryLearn(ItemStack stack, ServerLevel level, ServerPlayer player) {
@@ -85,7 +88,7 @@ public class GoldenEyeItem extends Item {
             double dist = player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
             if (dist < bestDist) {
                 bestDist = dist;
-                best = new GoldenEyeTarget(holder.unwrapKey().orElseThrow().location(), pos);
+                best = new GoldenEyeTarget(holder.unwrapKey().orElseThrow().identifier(), pos);
             }
         }
 
@@ -95,7 +98,7 @@ public class GoldenEyeItem extends Item {
         }
         stack.set(OCDataComponents.GOLDEN_EYE_TARGET.get(), best);
         player.sendSystemMessage(Component.translatable("opencubes.misc.locked_on_nearest_structure",
-                Component.translatable(net.minecraft.Util.makeDescriptionId("structure", best.structure()))));
+                    Component.translatable(net.minecraft.util.Util.makeDescriptionId("structure", best.structure()))));
     }
 
     private static boolean tryThrow(ItemStack stack, ServerLevel level, ServerPlayer player) {
@@ -110,7 +113,7 @@ public class GoldenEyeItem extends Item {
 
         ItemStack thrown = stack.copy();
         thrown.setDamageValue(thrown.getDamageValue() + 1);
-        GoldenEyeEntity eye = OCEntities.GOLDEN_EYE.get().create(level);
+        GoldenEyeEntity eye = OCEntities.GOLDEN_EYE.get().create(level, net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE);
         if (eye == null) {
             return false;
         }
@@ -120,21 +123,17 @@ public class GoldenEyeItem extends Item {
         eye.setTarget(target.pos());
         level.addFreshEntity(eye);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENDER_EYE_LAUNCH, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+                SoundEvents.ENDER_EYE_LAUNCH, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
         return true;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         GoldenEyeTarget target = stack.get(OCDataComponents.GOLDEN_EYE_TARGET.get());
         if (target != null) {
-            tooltip.add(Component.translatable("opencubes.misc.locked_on_nearest_structure",
-                    Component.translatable(net.minecraft.Util.makeDescriptionId("structure", target.structure()))));
+            tooltip.accept(Component.translatable("opencubes.misc.locked_on_nearest_structure",
+                    Component.translatable(net.minecraft.util.Util.makeDescriptionId("structure", target.structure()))));
         }
     }
 
-    @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(net.minecraft.world.item.Items.ENDER_PEARL);
-    }
 }

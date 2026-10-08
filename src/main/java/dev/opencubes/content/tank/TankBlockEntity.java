@@ -11,6 +11,7 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -26,6 +27,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -44,7 +47,7 @@ public class TankBlockEntity extends BlockEntity {
         @Override
         protected void onContentsChanged() {
             setChanged();
-            if (level != null && !level.isClientSide) {
+            if (level != null && !level.isClientSide()) {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
                 level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             }
@@ -142,7 +145,7 @@ public class TankBlockEntity extends BlockEntity {
 
     /** Empty-handed drink: spend XP juice to fill the player's current experience bar. */
     public boolean drink(Player player) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return false;
         }
         if (!XpFluidUtil.isXpJuice(tank.getFluid())) {
@@ -233,21 +236,21 @@ public class TankBlockEntity extends BlockEntity {
     public record NetworkContents(FluidStack fluid, int capacityMb, int tankCount) {}
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Tank")) {
-            tank.readFromNBT(registries, tag.getCompound("Tank"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Tank")) {
+            tag.child("Tank").ifPresent(tank::deserialize);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.putChild("Tank", tank);
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput components) {
+    protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
         SimpleFluidContent content = components.getOrDefault(OCDataComponents.TANK_FLUID.get(), SimpleFluidContent.EMPTY);
         tank.setFluid(content.copy());
@@ -262,15 +265,13 @@ public class TankBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void removeComponentsFromTag(CompoundTag tag) {
-        tag.remove("Tank");
+    public void removeComponentsFromTag(ValueOutput output) {
+        output.discard("Tank");
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveCustomOnly(registries);
     }
 
     @Override

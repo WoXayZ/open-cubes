@@ -23,7 +23,7 @@ public final class SnowmanTrophyBehavior implements TrophyBehavior {
                 BlockPos pos = base.offset(x, 0, z);
                 if (level.getBlockState(pos).isAir()
                         && Blocks.SNOW.defaultBlockState().canSurvive(level, pos)) {
-                    int layers = 1 + level.random.nextInt(SnowLayerBlock.MAX_HEIGHT);
+                    int layers = 1 + level.getRandom().nextInt(SnowLayerBlock.MAX_HEIGHT);
                     level.setBlock(pos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, layers), 3);
                 }
             }

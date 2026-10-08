@@ -1,13 +1,17 @@
 package dev.opencubes.client;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import dev.opencubes.client.sideconfig.MachineInfoButton;
 import dev.opencubes.content.paint.PaintMixerBlockEntity;
 import dev.opencubes.content.paint.PaintMixerMenu;
 import dev.opencubes.network.SetPaintColorPayload;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -33,11 +37,7 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
     private int lastKnownColour = -1;
 
     public PaintMixerScreen(PaintMixerMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title);
-        this.imageWidth = 176;
-        this.imageHeight = 218;
-        this.titleLabelY = 6;
-        this.inventoryLabelY = 124;
+        super(menu, inv, title, 176, 218);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
         blue = addRenderableWidget(new ChannelSlider(leftPos + 8, topPos + 82, "B", colour & 0xFF));
 
         addRenderableWidget(Button.builder(Component.translatable("opencubes.gui.paint_mixer.mix"), button ->
-                        PacketDistributor.sendToServer(new SetPaintColorPayload(menu.pos(), pickedColour(), true)))
+                        ClientPacketDistributor.sendToServer(new SetPaintColorPayload(menu.pos(), pickedColour(), true)))
                 .bounds(leftPos + 110, topPos + 96, 58, 16)
                 .build());
 
@@ -80,17 +80,18 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
 
     private void sendColour(int rgb) {
         lastKnownColour = rgb;
-        PacketDistributor.sendToServer(new SetPaintColorPayload(menu.pos(), rgb, false));
+        ClientPacketDistributor.sendToServer(new SetPaintColorPayload(menu.pos(), rgb, false));
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.PAINT_MIXER,
                 leftPos, topPos, imageWidth, imageHeight);
 
         int preview = pickedColour();
         graphics.fill(leftPos + 118, topPos + 26, leftPos + 146, topPos + 48, 0xFF000000 | preview);
-        graphics.renderOutline(leftPos + 118, topPos + 26, 28, 22, PANEL_DARK);
+        graphics.outline(leftPos + 118, topPos + 26, 28, 22, PANEL_DARK);
 
         int progress = menu.getProgress();
         graphics.fill(leftPos + 8, topPos + 48, leftPos + 168, topPos + 52, SLOT_BG);
@@ -101,51 +102,48 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, TEXT, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.text(font, title, titleLabelX, titleLabelY, TEXT, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
 
         // Captions sit under the title row so "Paint Mixer" never covers Milk / Ink / Can.
-        graphics.drawString(font, Component.translatable("opencubes.gui.paint_mixer.slot.milk_short"),
+        graphics.text(font, Component.translatable("opencubes.gui.paint_mixer.slot.milk_short"),
                 8, 18, TEXT, false);
-        graphics.drawString(font, "C", 48, 18, TEXT, false);
-        graphics.drawString(font, "M", 66, 18, TEXT, false);
-        graphics.drawString(font, "Y", 84, 18, TEXT, false);
-        graphics.drawString(font, "K", 102, 18, TEXT, false);
-        graphics.drawString(font, Component.translatable("opencubes.gui.paint_mixer.slot.output_short"),
+        graphics.text(font, "C", 48, 18, TEXT, false);
+        graphics.text(font, "M", 66, 18, TEXT, false);
+        graphics.text(font, "Y", 84, 18, TEXT, false);
+        graphics.text(font, "K", 102, 18, TEXT, false);
+        graphics.text(font, Component.translatable("opencubes.gui.paint_mixer.slot.output_short"),
                 148, 18, TEXT, false);
 
-        graphics.drawString(font, String.format("#%06X", pickedColour()), 8, 100, TEXT, false);
+        graphics.text(font, String.format("#%06X", pickedColour()), 8, 100, TEXT, false);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
-        renderSlotHelp(graphics, mouseX, mouseY);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Component help = slotHelp(mouseX, mouseY);
+        if (help != null) {
+            graphics.setTooltipForNextFrame(font, help, mouseX, mouseY);
+            return;
+        }
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 
-    private void renderSlotHelp(GuiGraphics graphics, int mouseX, int mouseY) {
+    private Component slotHelp(int mouseX, int mouseY) {
         if (isHovering(SLOT_X[0], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(0).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.milk"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.milk");
         } else if (isHovering(SLOT_X[1], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(1).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.cyan"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.cyan");
         } else if (isHovering(SLOT_X[2], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(2).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.magenta"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.magenta");
         } else if (isHovering(SLOT_X[3], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(3).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.yellow"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.yellow");
         } else if (isHovering(SLOT_X[4], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(4).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.black"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.black");
         } else if (isHovering(SLOT_X[5], SLOT_Y, 16, 16, mouseX, mouseY) && menu.getSlot(5).getItem().isEmpty()) {
-            graphics.renderTooltip(font,
-                    Component.translatable("opencubes.gui.paint_mixer.slot.output"), mouseX, mouseY);
+            return Component.translatable("opencubes.gui.paint_mixer.slot.output");
         }
+        return null;
     }
 
     @Override
@@ -153,7 +151,7 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
         ChannelSlider hovered = sliderAt(mouseX, mouseY);
         if (hovered != null && scrollY != 0.0D) {
             int delta = scrollY > 0.0D ? 1 : -1;
-            if (hasShiftDown()) {
+            if (minecraft != null && minecraft.hasShiftDown()) {
                 delta *= 8;
             }
             hovered.nudge(delta);
@@ -211,8 +209,8 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
         }
 
         @Override
-        public void onRelease(double mouseX, double mouseY) {
-            super.onRelease(mouseX, mouseY);
+        public void onRelease(MouseButtonEvent event) {
+            super.onRelease(event);
             sendColour(pickedColour());
         }
     }
@@ -228,7 +226,7 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             int rgb = dye.getTextureDiffuseColor() & 0xFFFFFF;
             red.setChannel((rgb >> 16) & 0xFF);
             green.setChannel((rgb >> 8) & 0xFF);
@@ -237,12 +235,12 @@ public class PaintMixerScreen extends AbstractContainerScreen<PaintMixerMenu> {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             graphics.fill(getX(), getY(), getX() + width, getY() + height, PANEL_DARK);
             graphics.fill(getX() + 1, getY() + 1, getX() + width - 1, getY() + height - 1,
                     0xFF000000 | dye.getTextureDiffuseColor());
             if (isHovered()) {
-                graphics.renderOutline(getX(), getY(), width, height, 0xFFFFFFFF);
+                graphics.outline(getX(), getY(), width, height, 0xFFFFFFFF);
             }
         }
 

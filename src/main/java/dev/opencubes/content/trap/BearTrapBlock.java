@@ -23,7 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public class BearTrapBlock extends BaseEntityBlock {
 
     public static final MapCodec<BearTrapBlock> CODEC = simpleCodec(BearTrapBlock::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty SHUT = BooleanProperty.create("shut");
 
     private static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 6.0D, 15.0D);
@@ -86,8 +87,7 @@ public class BearTrapBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
         if (level.getBlockEntity(pos) instanceof BearTrapBlockEntity trap) {
             trap.updateRedstone();
         }
@@ -97,7 +97,7 @@ public class BearTrapBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (level.getBlockEntity(pos) instanceof BearTrapBlockEntity trap) {
             trap.onEntityInside(entity);
         }
@@ -106,10 +106,10 @@ public class BearTrapBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof BearTrapBlockEntity trap) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof BearTrapBlockEntity trap) {
             trap.open();
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class BearTrapBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return level.getBlockEntity(pos) instanceof BearTrapBlockEntity trap
                 ? trap.comparatorSignal()
                 : 0;
@@ -134,7 +134,7 @@ public class BearTrapBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide
+        return level.isClientSide()
                 ? createTickerHelper(type, OCBlockEntities.BEAR_TRAP.get(), BearTrapBlockEntity::clientTick)
                 : createTickerHelper(type, OCBlockEntities.BEAR_TRAP.get(), BearTrapBlockEntity::serverTick);
     }

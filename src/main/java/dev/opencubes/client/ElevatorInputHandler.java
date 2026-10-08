@@ -1,5 +1,7 @@
 package dev.opencubes.client;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import dev.opencubes.OCConstants;
 import dev.opencubes.content.elevator.Elevator;
 import dev.opencubes.network.ElevatorMovePayload;
@@ -33,7 +35,7 @@ public final class ElevatorInputHandler {
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntity() instanceof LocalPlayer player && isStandingOnElevator(player)) {
-            PacketDistributor.sendToServer(new ElevatorMovePayload(true));
+            ClientPacketDistributor.sendToServer(new ElevatorMovePayload(true));
         }
     }
 
@@ -45,12 +47,12 @@ public final class ElevatorInputHandler {
             return;
         }
 
-        boolean crouching = player.input.shiftKeyDown;
+        boolean crouching = player.input.keyPresses.shift();
         boolean started = crouching && !wasCrouching;
         wasCrouching = crouching;
 
         if (started && player.onGround() && isStandingOnElevator(player)) {
-            PacketDistributor.sendToServer(new ElevatorMovePayload(false));
+            ClientPacketDistributor.sendToServer(new ElevatorMovePayload(false));
         }
     }
 

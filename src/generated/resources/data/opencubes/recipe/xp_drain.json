@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "i": {
-      "item": "minecraft:iron_bars"
-    }
+    "i": "minecraft:iron_bars"
   },
   "pattern": [
     "iii",

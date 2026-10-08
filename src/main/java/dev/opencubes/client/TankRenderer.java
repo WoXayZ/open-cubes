@@ -4,20 +4,22 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.opencubes.content.tank.TankBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the fluid inside a tank.
@@ -26,7 +28,7 @@ import org.joml.Matrix4f;
  * the frame border on exposed sides. Faces shared with a neighbouring tank holding the same fluid
  * are omitted and the body extends flush to that edge, so adjacent tanks read as one volume.
  */
-public class TankRenderer implements BlockEntityRenderer<TankBlockEntity> {
+public class TankRenderer implements BlockEntityRenderer<TankBlockEntity, TankRenderState> {
 
     // tank.png is 32px with a 1px opaque frame - keep the fluid behind that rim when exposed.
     private static final float INSET = 1.0F / 32.0F + 0.001F;
@@ -35,28 +37,40 @@ public class TankRenderer implements BlockEntityRenderer<TankBlockEntity> {
     public TankRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(TankBlockEntity tank, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int light, int overlay) {
+    public TankRenderState createRenderState() {
+        return new TankRenderState();
+    }
+
+    @Override
+    public void extractRenderState(
+            TankBlockEntity tank,
+            TankRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(tank, state, partialTicks, cameraPosition, breakProgress);
         FluidStack fluid = tank.getTank().getFluid();
-        if (fluid.isEmpty()) {
+        state.empty = fluid.isEmpty();
+        if (state.empty) {
             return;
         }
 
-        IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluid.getFluidType());
-        ResourceLocation texture = extensions.getStillTexture(fluid);
-        if (texture == null) {
-            return;
+        FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet()
+                .get(fluid.getFluid().defaultFluidState());
+        TextureAtlasSprite still = model.stillMaterial().sprite();
+        FluidTintSource tint = model.fluidTintSource();
+        int colour = tint == null ? 0xFFFFFFFF : tint.colorAsStack(fluid);
+        state.alpha = ((colour >> 24) & 0xFF) / 255.0F;
+        if (state.alpha == 0.0F) {
+            state.alpha = 1.0F;
         }
-        TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-
-        int colour = extensions.getTintColor(fluid);
-        float a = ((colour >> 24) & 0xFF) / 255.0F;
-        if (a == 0.0F) {
-            a = 1.0F;
-        }
-        float r = ((colour >> 16) & 0xFF) / 255.0F;
-        float g = ((colour >> 8) & 0xFF) / 255.0F;
-        float b = (colour & 0xFF) / 255.0F;
+        state.red = ((colour >> 16) & 0xFF) / 255.0F;
+        state.green = ((colour >> 8) & 0xFF) / 255.0F;
+        state.blue = (colour & 0xFF) / 255.0F;
+        state.u0 = still.getU0();
+        state.v0 = still.getV0();
+        state.u1 = still.getU1();
+        state.v1 = still.getV1();
 
         boolean shareWest = shares(tank, Direction.WEST) != null;
         boolean shareEast = shares(tank, Direction.EAST) != null;
@@ -65,75 +79,91 @@ public class TankRenderer implements BlockEntityRenderer<TankBlockEntity> {
         boolean shareDown = shares(tank, Direction.DOWN) != null;
         boolean shareUp = shares(tank, Direction.UP) != null;
 
-        // Flush with same-fluid neighbours; keep the glass-rim inset only on exposed sides.
-        float x0 = shareWest ? 0.0F : INSET;
-        float x1 = shareEast ? 1.0F : 1.0F - INSET;
-        float z0 = shareNorth ? 0.0F : INSET;
-        float z1 = shareSouth ? 1.0F : 1.0F - INSET;
-        float y0 = shareDown ? 0.0F : INSET;
-        float y1 = fluidTop(tank, y0, shareUp);
+        state.x0 = shareWest ? 0.0F : INSET;
+        state.x1 = shareEast ? 1.0F : 1.0F - INSET;
+        state.z0 = shareNorth ? 0.0F : INSET;
+        state.z1 = shareSouth ? 1.0F : 1.0F - INSET;
+        state.y0 = shareDown ? 0.0F : INSET;
+        state.y1 = fluidTop(tank, state.y0, shareUp);
+        state.surfaceHidden = tank.fillRatio() >= 0.999F && shareUp;
+        state.drawBottom = !shareDown;
 
-        VertexConsumer consumer = buffers.getBuffer(RenderType.translucent());
-        Matrix4f matrix = poseStack.last().pose();
-
-        // A full tank under a tank holding the same fluid has no visible surface.
-        boolean surfaceHidden = tank.fillRatio() >= 0.999F && shareUp;
-        if (!surfaceHidden) {
-            quad(consumer, matrix, 0.0F, 1.0F, 0.0F,
-                    x0, y1, z1, x1, y1, z1, x1, y1, z0, x0, y1, z0,
-                    still.getU0(), still.getV1(), still.getU1(), still.getV0(), r, g, b, a, light, overlay);
-        }
-        if (!shareDown) {
-            quad(consumer, matrix, 0.0F, -1.0F, 0.0F,
-                    x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1,
-                    still.getU0(), still.getV0(), still.getU1(), still.getV1(), r, g, b, a, light, overlay);
-        }
-
+        int index = 0;
         for (Direction side : Direction.Plane.HORIZONTAL) {
+            TankRenderState.Side face = state.sides[index++];
+            face.direction = side;
+            face.draw = false;
             TankBlockEntity neighbour = shares(tank, side);
-            float base = y0;
+            float base = state.y0;
             if (neighbour != null) {
                 float theirs = fluidTop(neighbour);
-                // Shared face: never draw the overlapping band (that reads as a vertical divider).
-                if (theirs >= y1 - 1.0E-4F) {
+                if (theirs >= state.y1 - 1.0E-4F) {
                     continue;
                 }
-                base = Math.min(y1, Math.max(y0, theirs));
+                base = Math.min(state.y1, Math.max(state.y0, theirs));
             }
-            if (y1 - base <= 1.0E-4F) {
+            if (state.y1 - base <= 1.0E-4F) {
                 continue;
             }
+            face.draw = true;
+            face.base = base;
+            face.plane = switch (side) {
+                case NORTH -> shareNorth ? 0.0F : state.z0;
+                case SOUTH -> shareSouth ? 1.0F : state.z1;
+                case WEST -> shareWest ? 0.0F : state.x0;
+                default -> shareEast ? 1.0F : state.x1;
+            };
+        }
+    }
 
-            // Side quads use the merged bounds (0/1 on shared axes, inset on exposed ones).
-            float vBottom = Mth.lerp(base, still.getV1(), still.getV0());
-            float vTop = Mth.lerp(y1, still.getV1(), still.getV0());
-            switch (side) {
-                case NORTH -> {
-                    float z = shareNorth ? 0.0F : z0;
-                    quad(consumer, matrix, 0.0F, 0.0F, -1.0F,
-                            x1, base, z, x0, base, z, x0, y1, z, x1, y1, z,
-                            still.getU0(), vBottom, still.getU1(), vTop, r, g, b, a, light, overlay);
+    @Override
+    public void submit(TankRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
+        if (state.empty) {
+            return;
+        }
+        int light = state.lightCoords;
+        submitNodeCollector.submitCustomGeometry(poseStack, Sheets.translucentBlockSheet(), (pose, buffer) -> {
+            var matrix = pose.pose();
+            if (!state.surfaceHidden) {
+                quad(buffer, matrix, 0.0F, 1.0F, 0.0F,
+                        state.x0, state.y1, state.z1, state.x1, state.y1, state.z1,
+                        state.x1, state.y1, state.z0, state.x0, state.y1, state.z0,
+                        state.u0, state.v1, state.u1, state.v0, state, light);
+            }
+            if (state.drawBottom) {
+                quad(buffer, matrix, 0.0F, -1.0F, 0.0F,
+                        state.x0, state.y0, state.z0, state.x1, state.y0, state.z0,
+                        state.x1, state.y0, state.z1, state.x0, state.y0, state.z1,
+                        state.u0, state.v0, state.u1, state.v1, state, light);
+            }
+            for (TankRenderState.Side side : state.sides) {
+                if (!side.draw) {
+                    continue;
                 }
-                case SOUTH -> {
-                    float z = shareSouth ? 1.0F : z1;
-                    quad(consumer, matrix, 0.0F, 0.0F, 1.0F,
-                            x0, base, z, x1, base, z, x1, y1, z, x0, y1, z,
-                            still.getU0(), vBottom, still.getU1(), vTop, r, g, b, a, light, overlay);
-                }
-                case WEST -> {
-                    float x = shareWest ? 0.0F : x0;
-                    quad(consumer, matrix, -1.0F, 0.0F, 0.0F,
-                            x, base, z0, x, base, z1, x, y1, z1, x, y1, z0,
-                            still.getU0(), vBottom, still.getU1(), vTop, r, g, b, a, light, overlay);
-                }
-                default -> {
-                    float x = shareEast ? 1.0F : x1;
-                    quad(consumer, matrix, 1.0F, 0.0F, 0.0F,
-                            x, base, z1, x, base, z0, x, y1, z0, x, y1, z1,
-                            still.getU0(), vBottom, still.getU1(), vTop, r, g, b, a, light, overlay);
+                float vBottom = Mth.lerp(side.base, state.v1, state.v0);
+                float vTop = Mth.lerp(state.y1, state.v1, state.v0);
+                float plane = side.plane;
+                switch (side.direction) {
+                    case NORTH -> quad(buffer, matrix, 0.0F, 0.0F, -1.0F,
+                            state.x1, side.base, plane, state.x0, side.base, plane,
+                            state.x0, state.y1, plane, state.x1, state.y1, plane,
+                            state.u0, vBottom, state.u1, vTop, state, light);
+                    case SOUTH -> quad(buffer, matrix, 0.0F, 0.0F, 1.0F,
+                            state.x0, side.base, plane, state.x1, side.base, plane,
+                            state.x1, state.y1, plane, state.x0, state.y1, plane,
+                            state.u0, vBottom, state.u1, vTop, state, light);
+                    case WEST -> quad(buffer, matrix, -1.0F, 0.0F, 0.0F,
+                            plane, side.base, state.z0, plane, side.base, state.z1,
+                            plane, state.y1, state.z1, plane, state.y1, state.z0,
+                            state.u0, vBottom, state.u1, vTop, state, light);
+                    default -> quad(buffer, matrix, 1.0F, 0.0F, 0.0F,
+                            plane, side.base, state.z1, plane, side.base, state.z0,
+                            plane, state.y1, state.z0, plane, state.y1, state.z1,
+                            state.u0, vBottom, state.u1, vTop, state, light);
                 }
             }
-        }
+        });
     }
 
     private static float fluidTop(TankBlockEntity tank) {
@@ -170,28 +200,28 @@ public class TankRenderer implements BlockEntityRenderer<TankBlockEntity> {
         return FluidStack.isSameFluidSameComponents(ours, theirs) ? neighbour : null;
     }
 
-    private static void quad(VertexConsumer consumer, Matrix4f matrix,
+    private static void quad(VertexConsumer consumer, org.joml.Matrix4f matrix,
                              float nx, float ny, float nz,
                              float x1, float y1, float z1,
                              float x2, float y2, float z2,
                              float x3, float y3, float z3,
                              float x4, float y4, float z4,
                              float u0, float v0, float u1, float v1,
-                             float r, float g, float b, float a, int light, int overlay) {
-        vertex(consumer, matrix, nx, ny, nz, x1, y1, z1, u0, v0, r, g, b, a, light, overlay);
-        vertex(consumer, matrix, nx, ny, nz, x2, y2, z2, u1, v0, r, g, b, a, light, overlay);
-        vertex(consumer, matrix, nx, ny, nz, x3, y3, z3, u1, v1, r, g, b, a, light, overlay);
-        vertex(consumer, matrix, nx, ny, nz, x4, y4, z4, u0, v1, r, g, b, a, light, overlay);
+                             TankRenderState state, int light) {
+        vertex(consumer, matrix, nx, ny, nz, x1, y1, z1, u0, v0, state, light);
+        vertex(consumer, matrix, nx, ny, nz, x2, y2, z2, u1, v0, state, light);
+        vertex(consumer, matrix, nx, ny, nz, x3, y3, z3, u1, v1, state, light);
+        vertex(consumer, matrix, nx, ny, nz, x4, y4, z4, u0, v1, state, light);
     }
 
-    private static void vertex(VertexConsumer consumer, Matrix4f matrix,
+    private static void vertex(VertexConsumer consumer, org.joml.Matrix4f matrix,
                                float nx, float ny, float nz,
                                float x, float y, float z, float u, float v,
-                               float r, float g, float b, float a, int light, int overlay) {
+                               TankRenderState state, int light) {
         consumer.addVertex(matrix, x, y, z)
-                .setColor(r, g, b, a)
+                .setColor(state.red, state.green, state.blue, state.alpha)
                 .setUv(u, v)
-                .setOverlay(overlay)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
                 .setNormal(nx, ny, nz);
     }

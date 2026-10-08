@@ -1,6 +1,5 @@
 package dev.opencubes.client.vision;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.opencubes.OCConstants;
 import dev.opencubes.config.OCClientConfig;
 import dev.opencubes.content.vision.SonicGlassesItem;
@@ -8,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -27,7 +28,7 @@ import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 @EventBusSubscriber(modid = OCConstants.MOD_ID, value = Dist.CLIENT)
 public final class SonicGlassesOverlay {
 
-    private static final ResourceLocation OBSCURE = OCConstants.id("textures/misc/glasses_obsidian.png");
+    private static final Identifier OBSCURE = OCConstants.id("textures/misc/glasses_obsidian.png");
     private static final List<SoundBlip> BLIPS = new ArrayList<>();
     private static final int MAX_BLIPS = 24;
     private static final int BLIP_LIFE = 40;
@@ -46,7 +47,7 @@ public final class SonicGlassesOverlay {
         if (mc.player.distanceToSqr(pos) > range * range) {
             return;
         }
-        ResourceLocation id = event.getSound().getLocation();
+        Identifier id = event.getSound().getIdentifier();
         String label = id.getPath();
         int slash = label.lastIndexOf('/');
         if (slash >= 0) {
@@ -87,13 +88,11 @@ public final class SonicGlassesOverlay {
             return;
         }
 
-        GuiGraphics graphics = event.getGuiGraphics();
+        GuiGraphicsExtractor graphics = event.getGuiGraphics();
         int width = mc.getWindow().getGuiScaledWidth();
         int height = mc.getWindow().getGuiScaledHeight();
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
-        graphics.blit(OBSCURE, 0, 0, 0, 0, width, height, width, height);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, OBSCURE, 0, 0, 0.0F, 0.0F, width, height, width, height,
+                ARGB.white(opacity));
     }
 
     /** Sound blips drawn after vanilla HUD so they remain readable over the hotbar. */
@@ -107,13 +106,13 @@ public final class SonicGlassesOverlay {
             return;
         }
 
-        GuiGraphics graphics = event.getGuiGraphics();
+        GuiGraphicsExtractor graphics = event.getGuiGraphics();
         int width = mc.getWindow().getGuiScaledWidth();
         int height = mc.getWindow().getGuiScaledHeight();
 
-        Vec3 camera = mc.gameRenderer.getMainCamera().getPosition();
-        float yaw = mc.gameRenderer.getMainCamera().getYRot();
-        float pitch = mc.gameRenderer.getMainCamera().getXRot();
+        Vec3 camera = mc.gameRenderer.getMainCamera().position();
+        float yaw = mc.gameRenderer.getMainCamera().yRot();
+        float pitch = mc.gameRenderer.getMainCamera().xRot();
 
         for (SoundBlip blip : BLIPS) {
             Vec3 delta = blip.pos.subtract(camera);
@@ -137,13 +136,10 @@ public final class SonicGlassesOverlay {
             int sx = Mth.clamp((int) (width / 2.0D + x * scale), 8, width - 8);
             int sy = Mth.clamp((int) (height / 2.0D - y * scale), 8, height - 16);
             float alpha = Mth.clamp(blip.life / (float) BLIP_LIFE, 0.15F, 1.0F);
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-            graphics.blit(blip.category.texture(), sx - ICON_SIZE / 2, sy - ICON_SIZE / 2,
-                    0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, blip.category.texture(), sx - ICON_SIZE / 2, sy - ICON_SIZE / 2,
+                    0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE, ARGB.white(alpha));
             int textAlpha = Mth.clamp((int) (alpha * 255.0F), 40, 255);
-            graphics.drawCenteredString(mc.font, blip.label, sx, sy + ICON_SIZE / 2 + 1,
+            graphics.centeredText(mc.font, blip.label, sx, sy + ICON_SIZE / 2 + 1,
                     (textAlpha << 24) | 0x00FFAA);
         }
     }

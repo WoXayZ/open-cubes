@@ -42,7 +42,7 @@ public abstract class BlockManipulatorBlockEntity extends BlockEntity {
     }
 
     protected void triggerAction(BlockState state) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         if (actionCount > getActionLimit()) {

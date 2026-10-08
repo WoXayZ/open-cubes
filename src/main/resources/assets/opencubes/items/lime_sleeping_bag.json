@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/lime_sleeping_bag",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 8439583
+      },
+      {
+        "type": "minecraft:constant",
+        "value": 16777215
+      }
+    ]
+  }
+}

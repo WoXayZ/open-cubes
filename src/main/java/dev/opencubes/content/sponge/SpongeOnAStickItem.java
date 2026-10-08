@@ -4,7 +4,6 @@ import dev.opencubes.config.OCCommonConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -33,17 +32,17 @@ public class SpongeOnAStickItem extends Item {
             return InteractionResult.PASS;
         }
         return soak(context.getLevel(), context.getClickedPos(), player, context.getItemInHand(), context.getHand())
-                ? InteractionResult.sidedSuccess(context.getLevel().isClientSide)
+                ? (context.getLevel().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER)
                 : InteractionResult.FAIL;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         boolean ok = soak(level, player.blockPosition(), player, stack, hand);
         return ok
-                ? InteractionResultHolder.sidedSuccess(stack, level.isClientSide)
-                : InteractionResultHolder.fail(stack);
+                ? (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER)
+                : InteractionResult.FAIL;
     }
 
     private static boolean soak(Level level, BlockPos pos, Player player, ItemStack stack, InteractionHand hand) {

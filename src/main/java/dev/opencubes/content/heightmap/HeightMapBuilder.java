@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.MapColor;
 
 /**
  * Port of OpenBlocks {@code MapDataBuilder}: samples loaded chunks into a height map.
- * Heights are stored relative to {@link Level#getMinBuildHeight()}.
+ * Heights are stored relative to {@link Level#getMinY()}.
  */
 public class HeightMapBuilder {
 
@@ -38,7 +38,7 @@ public class HeightMapBuilder {
         this.data = HeightMapManager.getOrCreate(level, mapId);
         data.centerX = (x >> 4) << 4;
         data.centerZ = (z >> 4) << 4;
-        data.dimension = level.dimension().location().toString();
+        data.dimension = level.dimension().identifier().toString();
 
         if (data.layers == null || data.layers.length != HeightMapData.LAYER_COUNT) {
             data.layers = new LayerData[HeightMapData.LAYER_COUNT];
@@ -115,7 +115,7 @@ public class HeightMapBuilder {
         }
         while (!distances.isEmpty()) {
             ChunkJob job = distances.poll().job;
-            LevelChunk chunk = level.getChunkSource().getChunkNow(job.chunk.x, job.chunk.z);
+            LevelChunk chunk = level.getChunkSource().getChunkNow(job.chunk.x(), job.chunk.z());
             if (chunk != null && !chunk.isEmpty()) {
                 job.mapChunk(level, chunk);
                 return job;
@@ -153,7 +153,7 @@ public class HeightMapBuilder {
             LayerData ground = data.layers[HeightMapData.LAYER_TERRAIN];
             LayerData liquid = data.layers[HeightMapData.LAYER_LIQUIDS];
             int blocksPerPixel = 16 / pixelsPerChunk;
-            int minY = level.getMinBuildHeight();
+            int minY = level.getMinY();
 
             int blockInChunkX = 0;
             for (int mapX = mapMinX; mapX < mapMinX + pixelsPerChunk; mapX++) {
@@ -193,7 +193,7 @@ public class HeightMapBuilder {
             double liquidHeightSum = 0;
             int liquidCount = 0;
             int[] liquidColors = new int[64];
-            int maxY = level.getMaxBuildHeight() - 1;
+            int maxY = level.getMaxY() - 1;
 
             for (int x = startX; x < startX + size; x++) {
                 for (int z = startZ; z < startZ + size; z++) {

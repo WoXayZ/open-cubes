@@ -11,8 +11,10 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -163,13 +165,13 @@ public final class SideConfigPanel {
         }
     }
 
-    /** Call from {@code renderBg} so the row buttons draw on top of the frame. */
-    public void render(GuiGraphics graphics, Font font) {
+    /** Call from {@code extractBackground} so the row buttons draw on top of the frame. */
+    public void render(GuiGraphicsExtractor graphics, Font font) {
         if (!isOpen()) {
             return;
         }
-        graphics.blitSprite(GuiSprites.SIDE_PANEL_SPRITE, panelX, panelY, WIDTH, panelHeight);
-        graphics.drawString(font, Component.translatable("container.opencubes.side_config.title"),
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiSprites.SIDE_PANEL_SPRITE, panelX, panelY, WIDTH, panelHeight);
+        graphics.text(font, Component.translatable("container.opencubes.side_config.title"),
                 panelX + PADDING, panelY + PADDING, SideConfigScreenHelper.TEXT, false);
         for (Row row : rows) {
             row.renderLabel(this, graphics, font);
@@ -195,7 +197,7 @@ public final class SideConfigPanel {
 
         abstract void build(SideConfigPanel panel, List<AbstractWidget> out);
 
-        abstract void renderLabel(SideConfigPanel panel, GuiGraphics graphics, Font font);
+        abstract void renderLabel(SideConfigPanel panel, GuiGraphicsExtractor graphics, Font font);
     }
 
     /** A caption plus the six face toggles below it. */
@@ -236,8 +238,8 @@ public final class SideConfigPanel {
         }
 
         @Override
-        void renderLabel(SideConfigPanel panel, GuiGraphics graphics, Font font) {
-            graphics.drawString(font, label, panel.panelX + PADDING, top,
+        void renderLabel(SideConfigPanel panel, GuiGraphicsExtractor graphics, Font font) {
+            graphics.text(font, label, panel.panelX + PADDING, top,
                     SideConfigScreenHelper.TEXT, false);
         }
     }
@@ -269,7 +271,7 @@ public final class SideConfigPanel {
         }
 
         @Override
-        void renderLabel(SideConfigPanel panel, GuiGraphics graphics, Font font) {
+        void renderLabel(SideConfigPanel panel, GuiGraphicsExtractor graphics, Font font) {
             // The button draws its own label and state.
         }
     }
@@ -310,8 +312,8 @@ public final class SideConfigPanel {
         }
 
         @Override
-        void renderLabel(SideConfigPanel panel, GuiGraphics graphics, Font font) {
-            graphics.drawString(font, label, panel.panelX + PADDING, top,
+        void renderLabel(SideConfigPanel panel, GuiGraphicsExtractor graphics, Font font) {
+            graphics.text(font, label, panel.panelX + PADDING, top,
                     SideConfigScreenHelper.TEXT, false);
         }
     }
@@ -332,19 +334,19 @@ public final class SideConfigPanel {
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             onClick.run();
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             int rgb = 0xFF000000 | colour.getTextureDiffuseColor();
             graphics.fill(getX(), getY(), getX() + width, getY() + height, SideConfigScreenHelper.SLOT_SHADOW);
             graphics.fill(getX() + 1, getY() + 1, getX() + width - 1, getY() + height - 1, rgb);
             boolean selected = (selectedRgb.getAsInt() & 0xFFFFFF)
                     == (colour.getTextureDiffuseColor() & 0xFFFFFF);
             if (selected || isHovered()) {
-                graphics.renderOutline(getX(), getY(), width, height,
+                graphics.outline(getX(), getY(), width, height,
                         selected ? 0xFFFFFFFF : 0xFF8B8B8B);
             }
         }

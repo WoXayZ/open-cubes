@@ -22,7 +22,7 @@ public class LuggageCollectGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (!OCCommonConfig.LUGGAGE_COLLECT_ITEMS.get() || luggage.level().isClientSide) {
+        if (!OCCommonConfig.LUGGAGE_COLLECT_ITEMS.get() || luggage.level().isClientSide()) {
             return false;
         }
         double range = OCCommonConfig.LUGGAGE_COLLECT_RANGE.get();
@@ -60,7 +60,7 @@ public class LuggageCollectGoal extends Goal {
             ItemStack stack = target.getItem();
             ItemStack remainder = ItemHandlerHelper.insertItem(luggage.getInventory(), stack.copy(), false);
             if (remainder.getCount() < stack.getCount()) {
-                luggage.level().playSound(null, luggage.blockPosition(), SoundEvents.GENERIC_EAT,
+                luggage.level().playSound(null, luggage.blockPosition(), SoundEvents.GENERIC_EAT.value(),
                         SoundSource.NEUTRAL, 0.5F, 1.0F);
             }
             if (remainder.isEmpty()) {

@@ -2,30 +2,14 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "item": "opencubes:crane_engine"
-    },
-    {
-      "item": "opencubes:crane_magnet"
-    },
-    {
-      "item": "opencubes:beam"
-    },
-    {
-      "item": "opencubes:beam"
-    },
-    {
-      "item": "opencubes:line"
-    },
-    {
-      "item": "opencubes:line"
-    },
-    {
-      "item": "opencubes:line"
-    },
-    {
-      "tag": "c:leathers"
-    }
+    "opencubes:crane_engine",
+    "opencubes:crane_magnet",
+    "opencubes:beam",
+    "opencubes:beam",
+    "opencubes:line",
+    "opencubes:line",
+    "opencubes:line",
+    "#c:leathers"
   ],
   "result": {
     "count": 1,

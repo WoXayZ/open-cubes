@@ -3,8 +3,9 @@ package dev.opencubes.client.sideconfig;
 import dev.opencubes.client.GuiSprites;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -28,12 +29,12 @@ public class SideToggleButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         action.run();
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         boolean on = state.getAsBoolean();
         int x = getX();
         int y = getY();
@@ -47,7 +48,7 @@ public class SideToggleButton extends AbstractButton {
                     isHoveredOrFocused() ? GuiSprites.BUTTON_HIGHLIGHTED : GuiSprites.FACE_OFF,
                     x, y, width, height);
         }
-        graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(),
+        graphics.centeredText(Minecraft.getInstance().font, getMessage(),
                 x + width / 2, y + (height - 8) / 2, on ? 0xFFFFFFFF : 0xFFB0B0B0);
     }
 

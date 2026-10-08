@@ -114,7 +114,7 @@ public class XpBottlerMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (bottler.getLevel() == null || bottler.getLevel().isClientSide) {
+        if (bottler.getLevel() == null || bottler.getLevel().isClientSide()) {
             return false;
         }
         if (id >= ITEM_INPUT_BUTTONS && id < ITEM_INPUT_BUTTONS + 6) {

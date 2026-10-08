@@ -38,13 +38,13 @@ public class XpBucketItem extends BucketItem {
         BlockPos pos = context.getClickedPos();
         // Prefer the clicked face; fall back to a sideless lookup for handlers that ignore sides.
         if (pour(level, player, context, pos, context.getClickedFace()) || pour(level, player, context, pos, null)) {
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return super.useOn(context);
     }
 
     private static boolean pour(Level level, Player player, UseOnContext context, BlockPos pos, @Nullable Direction face) {
-        if (level.getCapability(Capabilities.FluidHandler.BLOCK, pos, face) == null) {
+        if (level.getCapability(Capabilities.Fluid.BLOCK, pos, face) == null) {
             return false;
         }
         return FluidUtil.interactWithFluidHandler(player, context.getHand(), level, pos, face);

@@ -3,7 +3,6 @@ package dev.opencubes.content.paint;
 import dev.opencubes.registry.OCEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -11,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -18,10 +18,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -58,6 +60,7 @@ public class GlyphEntity extends HangingEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
         builder.define(DATA_CHAR, String.valueOf(GlyphItem.CHARACTERS.charAt(0)));
     }
 
@@ -91,15 +94,15 @@ public class GlyphEntity extends HangingEntity {
     }
 
     @Override
-    public void dropItem(@Nullable Entity breaker) {
+    public void dropItem(ServerLevel level, @Nullable Entity breaker) {
         playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.4F);
-        if (!level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (!level.getGameRules().get(GameRules.ENTITY_DROPS)) {
             return;
         }
         if (breaker instanceof Player player && player.hasInfiniteMaterials()) {
             return;
         }
-        spawnAtLocation(GlyphItem.create(getCharacter()));
+        spawnAtLocation(level, GlyphItem.create(getCharacter()));
     }
 
     @Override
@@ -109,7 +112,7 @@ public class GlyphEntity extends HangingEntity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
-        int data = direction.get3DDataValue() | offsetX << 4 | offsetY << 9;
+        int data = getDirection().get3DDataValue() | offsetX << 4 | offsetY << 9;
         return new ClientboundAddEntityPacket(this, data, getPos());
     }
 
@@ -123,24 +126,24 @@ public class GlyphEntity extends HangingEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
-        tag.putByte("Facing", (byte) direction.get2DDataValue());
+        tag.putByte("Facing", (byte) getDirection().get2DDataValue());
         tag.putByte("OffsetX", (byte) offsetX);
         tag.putByte("OffsetY", (byte) offsetY);
         tag.putString("Char", String.valueOf(getCharacter()));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        offsetX = clampOffset(tag.getByte("OffsetX"));
-        offsetY = clampOffset(tag.getByte("OffsetY"));
-        String value = tag.getString("Char");
+        offsetX = clampOffset(tag.getByteOr("OffsetX", (byte) 0));
+        offsetY = clampOffset(tag.getByteOr("OffsetY", (byte) 0));
+        String value = tag.getStringOr("Char", "");
         if (!value.isEmpty()) {
             setCharacter(value.charAt(0));
         }
-        setDirection(Direction.from2DDataValue(tag.getByte("Facing")));
+        setDirection(Direction.from2DDataValue(tag.getByteOr("Facing", (byte) 0)));
     }
 
     public int offsetX() {

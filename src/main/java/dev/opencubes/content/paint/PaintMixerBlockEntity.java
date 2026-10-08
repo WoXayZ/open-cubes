@@ -20,10 +20,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Slots: 0 = milk / paint can input, 1–4 = C/M/Y/K dyes, 5 = output paint can.
+ * Slots: 0 = milk / paint can input, 1-4 = C/M/Y/K dyes, 5 = output paint can.
  * Mix consumes CMYK ink for the selected RGB and writes a full can to the output.
  */
 public class PaintMixerBlockEntity extends BlockEntity implements MenuProvider {
@@ -91,7 +93,7 @@ public class PaintMixerBlockEntity extends BlockEntity implements MenuProvider {
 
     /** Pushes the selected colour to clients so the front overlay tint updates live. */
     private void syncColour() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
@@ -225,9 +227,9 @@ public class PaintMixerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
         tag.putInt("Progress", progress);
         tag.putBoolean("Mixing", mixing);
         tag.putInt("Color", targetColor);
@@ -238,18 +240,18 @@ public class PaintMixerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        progress = tag.getInt("Progress");
-        mixing = tag.getBoolean("Mixing");
-        targetColor = tag.getInt("Color");
-        lvlCyan = tag.getFloat("Cyan");
-        lvlMagenta = tag.getFloat("Magenta");
-        lvlYellow = tag.getFloat("Yellow");
-        lvlBlack = tag.getFloat("Black");
+        progress = tag.getIntOr("Progress", 0);
+        mixing = tag.getBooleanOr("Mixing", false);
+        targetColor = tag.getIntOr("Color", 0);
+        lvlCyan = tag.getFloatOr("Cyan", 0.0F);
+        lvlMagenta = tag.getFloatOr("Magenta", 0.0F);
+        lvlYellow = tag.getFloatOr("Yellow", 0.0F);
+        lvlBlack = tag.getFloatOr("Black", 0.0F);
     }
 
     @Override
@@ -263,12 +265,11 @@ public class PaintMixerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
+    public void onDataPacket(Connection connection, ValueInput input) {
         int before = targetColor;
-        loadAdditional(packet.getTag(), registries);
+        loadAdditional(input);
         // The overlay tint is baked into the chunk mesh, so it needs a re-render to change.
-        if (level != null && level.isClientSide && before != targetColor) {
+        if (level != null && level.isClientSide() && before != targetColor) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_IMMEDIATE);
         }
     }

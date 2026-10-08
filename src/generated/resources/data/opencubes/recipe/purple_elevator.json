@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "opencubes:elevator",
   "key": {
-    "e": {
-      "tag": "c:ender_pearls"
-    },
-    "w": {
-      "item": "minecraft:purple_wool"
-    }
+    "e": "#c:ender_pearls",
+    "w": "minecraft:purple_wool"
   },
   "pattern": [
     "www",

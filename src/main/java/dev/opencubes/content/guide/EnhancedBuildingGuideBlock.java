@@ -7,7 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
@@ -34,7 +34,7 @@ public class EnhancedBuildingGuideBlock extends BuildingGuideBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof EnhancedBuildingGuideBlockEntity guide)) {
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
@@ -44,18 +44,18 @@ public class EnhancedBuildingGuideBlock extends BuildingGuideBlock {
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
         if (guide.isActive() && stack.getItem() instanceof BlockItem) {
-            if (level.isClientSide) {
-                return ItemInteractionResult.SUCCESS;
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
             }
             if (player instanceof ServerPlayer serverPlayer) {
                 Vec3Hit hitLoc = new Vec3Hit(hit);
                 if (guide.tryPlaceWithHeld(serverPlayer, stack, hit.getDirection(),
                         hitLoc.x, hitLoc.y, hitLoc.z)) {
-                    return ItemInteractionResult.CONSUME;
+                    return InteractionResult.CONSUME;
                 }
             }
             // Consume the click so the held block is not placed against the guide.
-            return ItemInteractionResult.FAIL;
+            return InteractionResult.FAIL;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }
@@ -79,7 +79,7 @@ public class EnhancedBuildingGuideBlock extends BuildingGuideBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide
+        return level.isClientSide()
                 ? createTickerHelper(type, OCBlockEntities.ENHANCED_BUILDING_GUIDE.get(),
                 EnhancedBuildingGuideBlockEntity::clientTickEnhanced)
                 : null;

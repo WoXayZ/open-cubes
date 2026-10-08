@@ -44,8 +44,8 @@ public record BigButtonMaterial(String id, BlockSetType setType, String texture)
 
     /** The vanilla button this one is crafted from, four at a time. */
     public net.minecraft.world.level.block.Block vanillaButton() {
-        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                net.minecraft.resources.ResourceLocation.withDefaultNamespace(id + "_button"));
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
+                net.minecraft.resources.Identifier.withDefaultNamespace(id + "_button"));
     }
 
     /** Whether this material behaves as wood: quieter, and pressable by arrows. */

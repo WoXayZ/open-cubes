@@ -113,7 +113,7 @@ public class AutoAnvilMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (anvil.getLevel() == null || anvil.getLevel().isClientSide) {
+        if (anvil.getLevel() == null || anvil.getLevel().isClientSide()) {
             return false;
         }
         if (id >= ITEM_INPUT_BUTTONS && id < ITEM_INPUT_BUTTONS + 6) {

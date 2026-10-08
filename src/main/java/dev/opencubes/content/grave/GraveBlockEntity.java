@@ -21,7 +21,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -33,6 +33,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.slf4j.Logger;
 
 public class GraveBlockEntity extends BlockEntity {
@@ -102,7 +104,7 @@ public class GraveBlockEntity extends BlockEntity {
      * putting a grave block item into the player's inventory.
      */
     public boolean tryBreakOpen(Player player) {
-        if (level == null || level.isClientSide || player.isSpectator()) {
+        if (level == null || level.isClientSide() || player.isSpectator()) {
             return false;
         }
         // removeBlock triggers GraveBlock.onRemove -> dropContents (items + XP).
@@ -129,17 +131,18 @@ public class GraveBlockEntity extends BlockEntity {
             serverLevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.DIRT.defaultBlockState()),
                     worldPosition.getX() + 0.5D, worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D,
                     12, 0.2D, 0.2D, 0.2D, 0.05D);
-            if (level.random.nextDouble() < OCCommonConfig.GRAVES_SPECIAL_ACTION.get()) {
+            if (level.getRandom().nextDouble() < OCCommonConfig.GRAVES_SPECIAL_ACTION.get()) {
                 ohNoes(player);
             }
-            shovel.hurtAndBreak(2, player, Player.getSlotForHand(player.getUsedItemHand()));
+            shovel.hurtAndBreak(2, player, player.getUsedItemHand().asEquipmentSlot());
             setChanged();
         }
     }
 
     private void ohNoes(Player player) {
         level.playSound(null, player.blockPosition(), OCSounds.GRAVE_ROB.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        if (level instanceof ServerLevel serverLevel && serverLevel.getLevelData() instanceof ServerLevelData data) {
+        if (level instanceof ServerLevel serverLevel) {
+            var data = serverLevel.getWeatherData();
             data.setThunderTime(35 * 20);
             data.setRainTime(35 * 20);
             data.setThundering(true);
@@ -172,7 +175,7 @@ public class GraveBlockEntity extends BlockEntity {
         if (!OCCommonConfig.GRAVES_SPAWN_SKELETONS.get() || level.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
-        if (level.random.nextDouble() >= OCCommonConfig.GRAVES_SKELETON_RATE.get()) {
+        if (level.getRandom().nextDouble() >= OCCommonConfig.GRAVES_SKELETON_RATE.get()) {
             return;
         }
         List<Mob> hostiles = level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(7.0D),
@@ -181,12 +184,13 @@ public class GraveBlockEntity extends BlockEntity {
         if (hostiles.size() >= 5) {
             return;
         }
-        Mob living = level.random.nextBoolean()
+        Mob living = level.getRandom().nextBoolean()
                 ? new Skeleton(EntityType.SKELETON, level)
                 : new Bat(EntityType.BAT, level);
-        living.moveTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
-                level.random.nextFloat() * 360.0F, 0.0F);
-        if (living.checkSpawnRules(level, net.minecraft.world.entity.MobSpawnType.EVENT)
+        living.setPos(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+        living.setYRot(level.getRandom().nextFloat() * 360.0F);
+        living.setXRot(0.0F);
+        if (living.checkSpawnRules(level, net.minecraft.world.entity.EntitySpawnReason.EVENT)
                 && living.checkSpawnObstruction(level)) {
             level.addFreshEntity(living);
         }
@@ -200,9 +204,7 @@ public class GraveBlockEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveCustomOnly(registries);
     }
 
     @Override
@@ -211,35 +213,26 @@ public class GraveBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        CompoundTag tag = packet.getTag();
-        if (tag != null) {
-            loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        username = tag.getStringOr("Username", "");
+        xp = tag.getIntOr("xp", 0);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
+        }
+        if (tag.keySet().contains(TAG_MESSAGE)) {
+            deathMessage = tag.read(TAG_MESSAGE, net.minecraft.network.chat.ComponentSerialization.CODEC).orElse(null);
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        username = tag.getString("Username");
-        xp = tag.getInt("xp");
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
-        }
-        if (tag.contains(TAG_MESSAGE)) {
-            deathMessage = Component.Serializer.fromJson(tag.getString(TAG_MESSAGE), registries);
-        }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putString("Username", username);
         tag.putInt("xp", xp);
-        tag.put("Items", items.serializeNBT(registries));
+        items.serialize(tag.child("Items"));
         if (deathMessage != null) {
-            tag.putString(TAG_MESSAGE, Component.Serializer.toJson(deathMessage, registries));
+            tag.store(TAG_MESSAGE, net.minecraft.network.chat.ComponentSerialization.CODEC, deathMessage);
         }
     }
 }

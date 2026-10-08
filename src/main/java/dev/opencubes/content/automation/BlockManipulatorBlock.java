@@ -19,7 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class BlockManipulatorBlock extends BaseEntityBlock {
 
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     protected BlockManipulatorBlock(Properties properties) {
@@ -60,9 +61,8 @@ public abstract class BlockManipulatorBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
-        if (level.isClientSide) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
+        if (level.isClientSide()) {
             return;
         }
         boolean powered = level.hasNeighborSignal(pos);
@@ -70,7 +70,7 @@ public abstract class BlockManipulatorBlock extends BaseEntityBlock {
             level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_CLIENTS);
             level.playSound(null, pos,
                     powered ? SoundEvents.PISTON_EXTEND : SoundEvents.PISTON_CONTRACT,
-                    SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.15F + 0.6F);
+                    SoundSource.BLOCKS, 0.5F, level.getRandom().nextFloat() * 0.15F + 0.6F);
             if (powered && level.getBlockEntity(pos) instanceof BlockManipulatorBlockEntity manipulator) {
                 manipulator.triggerAction();
             }

@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "b": {
-      "tag": "c:dyes/blue"
-    },
-    "c": {
-      "tag": "c:ingots/copper"
-    },
-    "r": {
-      "tag": "c:dyes/red"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "b": "#c:dyes/blue",
+    "c": "#c:ingots/copper",
+    "r": "#c:dyes/red",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     " r ",

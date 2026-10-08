@@ -10,16 +10,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
@@ -27,11 +28,11 @@ import org.joml.Matrix4f;
  * Sonic glasses use the 1.12 model under an iron helmet. The other glasses put the lens part of
  * their item icon on the face, with arms back to the ears.
  */
-public class GlassesLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
+public class GlassesLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 
-    private static final ResourceLocation SONIC = OCConstants.id("textures/entity/glasses.png");
-    private static final ResourceLocation IRON =
-            ResourceLocation.withDefaultNamespace("textures/models/armor/iron_layer_1.png");
+    private static final Identifier SONIC = OCConstants.id("textures/entity/glasses.png");
+    private static final Identifier IRON =
+            Identifier.withDefaultNamespace("textures/models/armor/iron_layer_1.png");
 
     /** Model units are pixels; poses from {@code translateAndRotate} are in blocks. */
     private static final float PIXEL = 1.0F / 16.0F;
@@ -43,42 +44,39 @@ public class GlassesLayer<T extends LivingEntity, M extends HumanoidModel<T>> ex
     private static final float EAR_Z = 0.5F;
 
     private final GlassesModel sonic;
-    private final HumanoidModel<T> helmet;
+    private final ModelPart helmet;
 
-    public GlassesLayer(RenderLayerParent<T, M> parent, EntityModelSet models) {
+    public GlassesLayer(RenderLayerParent<S, M> parent, EntityModelSet models) {
         super(parent);
         this.sonic = new GlassesModel(models.bakeLayer(GlassesModel.LAYER));
-        this.helmet = new HumanoidModel<>(models.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR));
-        helmet.setAllVisible(false);
-        helmet.head.visible = true;
+        this.helmet = models.bakeLayer(ModelLayers.PLAYER_ARMOR.head());
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, T entity,
-                       float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks,
-                       float netHeadYaw, float headPitch) {
-        ItemStack stack = entity.getItemBySlot(EquipmentSlot.HEAD);
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, S state,
+                       float yRot, float xRot) {
+        ItemStack stack = state.headEquipment;
         if (stack.getItem() instanceof SonicGlassesItem) {
-            renderSonic(poseStack, buffer, packedLight);
+            renderSonic(poseStack, submitNodeCollector, packedLight, state);
         } else if (stack.getItem() instanceof ImaginationGlassesItem glasses) {
-            renderFrames(poseStack, buffer, packedLight, stack, glasses);
+            renderFrames(poseStack, submitNodeCollector, packedLight, stack, glasses);
         }
     }
 
-    private void renderSonic(PoseStack poseStack, MultiBufferSource buffer, int light) {
-        getParentModel().copyPropertiesTo(helmet);
-        helmet.renderToBuffer(poseStack, buffer.getBuffer(RenderType.armorCutoutNoCull(IRON)),
-                light, OverlayTexture.NO_OVERLAY);
+    private void renderSonic(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, S state) {
+        helmet.loadPose(getParentModel().head.storePose());
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.armorCutoutNoCull(IRON),
+                (pose, buffer) -> helmet.render(PoseRender.stack(pose), buffer, light, OverlayTexture.NO_OVERLAY));
 
         poseStack.pushPose();
-        getParentModel().getHead().translateAndRotate(poseStack);
+        getParentModel().head.translateAndRotate(poseStack);
         poseStack.scale(1.2F, 1.2F, 1.2F);
-        sonic.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(SONIC)),
-                light, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(SONIC),
+                (pose, buffer) -> sonic.draw(PoseRender.stack(pose), buffer, light));
         poseStack.popPose();
     }
 
-    private void renderFrames(PoseStack poseStack, MultiBufferSource buffer, int light, ItemStack stack,
+    private void renderFrames(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, ItemStack stack,
                               ImaginationGlassesItem glasses) {
         Lens lens = Lens.of(glasses);
         int colour = 0xFFFFFF;
@@ -90,15 +88,17 @@ public class GlassesLayer<T extends LivingEntity, M extends HumanoidModel<T>> ex
         }
 
         poseStack.pushPose();
-        getParentModel().getHead().translateAndRotate(poseStack);
+        getParentModel().head.translateAndRotate(poseStack);
         poseStack.scale(PIXEL, PIXEL, PIXEL);
-        // Through the atlas sprite so animated icons (technicolor) animate on the face too.
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(lens.sprite());
-        VertexConsumer consumer = sprite.wrap(
-                buffer.getBuffer(RenderType.entityCutoutNoCull(sprite.atlasLocation())));
-        Matrix4f matrix = poseStack.last().pose();
+        TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
+                .get(new SpriteId(TextureAtlas.LOCATION_ITEMS, lens.sprite()));
+        int tint = colour;
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(sprite.atlasLocation()),
+                (pose, buffer) -> drawFrames(sprite.wrap(buffer), pose.pose(), light, tint, lens));
+        poseStack.popPose();
+    }
 
+    private void drawFrames(VertexConsumer consumer, Matrix4f matrix, int light, int colour, Lens lens) {
         float halfHeight = LENS_HALF_WIDTH * (lens.v1() - lens.v0()) / (lens.u1() - lens.u0());
         float top = LENS_CENTRE_Y - halfHeight;
         float bottom = LENS_CENTRE_Y + halfHeight;
@@ -113,11 +113,10 @@ public class GlassesLayer<T extends LivingEntity, M extends HumanoidModel<T>> ex
         float armTop = top + 0.3F;
         arms.box(-SIDE_X - 0.4F, armTop, FACE_Z, -SIDE_X, armTop + 0.6F, EAR_Z);
         arms.box(SIDE_X, armTop, FACE_Z, SIDE_X + 0.4F, armTop + 0.6F, EAR_Z);
-        poseStack.popPose();
     }
 
     /** Lens rectangle and one solid frame pixel of each glasses icon, in icon pixels. */
-    private record Lens(ResourceLocation sprite, float u0, float v0, float u1, float v1, int frameU, int frameV) {
+    private record Lens(Identifier sprite, float u0, float v0, float u1, float v1, int frameU, int frameV) {
         static Lens of(ImaginationGlassesItem glasses) {
             return switch (glasses.kind()) {
                 case PENCIL -> new Lens(icon("glasses_pencil"), 0, 5, 16, 12, 0, 6);
@@ -127,7 +126,7 @@ public class GlassesLayer<T extends LivingEntity, M extends HumanoidModel<T>> ex
             };
         }
 
-        private static ResourceLocation icon(String name) {
+        private static Identifier icon(String name) {
             return OCConstants.id("item/" + name);
         }
     }

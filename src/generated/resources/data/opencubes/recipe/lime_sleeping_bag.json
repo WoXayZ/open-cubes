@@ -3,9 +3,7 @@
   "category": "equipment",
   "group": "opencubes:sleeping_bag",
   "key": {
-    "s": {
-      "item": "opencubes:lime_wool_slab"
-    }
+    "s": "opencubes:lime_wool_slab"
   },
   "pattern": [
     "sss"

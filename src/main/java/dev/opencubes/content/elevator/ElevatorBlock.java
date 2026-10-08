@@ -6,7 +6,7 @@ import dev.opencubes.registry.OCBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -46,24 +46,24 @@ public class ElevatorBlock extends Block implements Elevator {
      * carries the existing properties across.
      */
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, net.minecraft.world.InteractionHand hand,
                                               BlockHitResult hit) {
         if (!(stack.getItem() instanceof DyeItem dye)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
-        DyeColor target = dye.getDyeColor();
+        DyeColor target = stack.get(net.minecraft.core.component.DataComponents.DYE);
         if (target == colour) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         Block recoloured = OCBlocks.recolour(this, target);
         if (recoloured == null) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockState newState = copyProperties(state, recoloured.defaultBlockState());
             level.setBlockAndUpdate(pos, newState);
             level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -72,7 +72,7 @@ public class ElevatorBlock extends Block implements Elevator {
             }
         }
 
-        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     private static BlockState copyProperties(BlockState from, BlockState to) {

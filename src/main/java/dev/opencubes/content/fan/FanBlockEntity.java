@@ -11,11 +11,12 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -60,10 +61,6 @@ public class FanBlockEntity extends BlockEntity {
         Vec3 axis = base.subtract(apex);
 
         for (Entity entity : entities) {
-            if (entity instanceof Player player && player.getAbilities().instabuild) {
-                continue;
-            }
-
             Vec3 toEntity = entity.position().subtract(apex);
             if (!insideCone(axis, toEntity, CONE_HALF_APERTURE)) {
                 continue;
@@ -99,9 +96,9 @@ public class FanBlockEntity extends BlockEntity {
     }
 
     private Vec3 coneBase(double radians, double range) {
-        return Vec3.atLowerCornerOf(worldPosition).add(
+        return Vec3.atCenterOf(worldPosition).add(
                 Math.cos(radians) * range,
-                0.5D,
+                0.0D,
                 Math.sin(radians) * range);
     }
 
@@ -128,13 +125,13 @@ public class FanBlockEntity extends BlockEntity {
     public void setYaw(float yaw) {
         this.yaw = Mth.wrapDegrees(yaw);
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     public void updatePower() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         int next = OCCommonConfig.FAN_NEEDS_REDSTONE.get()
@@ -160,24 +157,22 @@ public class FanBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        yaw = tag.getFloat("Yaw");
-        power = tag.getByte("Power");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        yaw = tag.getFloatOr("Yaw", 0.0F);
+        power = tag.getByteOr("Power", (byte) 0);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putFloat("Yaw", yaw);
         tag.putByte("Power", (byte) power);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveCustomOnly(registries);
     }
 
     @Override

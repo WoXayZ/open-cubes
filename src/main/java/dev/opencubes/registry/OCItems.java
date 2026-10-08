@@ -42,6 +42,8 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -111,178 +113,201 @@ public final class OCItems {
             }
             if (block == OCBlocks.SKY_BLOCK || block == OCBlocks.INVERTED_SKY_BLOCK) {
                 boolean inverted = block == OCBlocks.INVERTED_SKY_BLOCK;
-                ORDERED.add(REGISTRY.register(block.getId().getPath(),
-                        () -> new SkyBlockItem(block.get(), new Item.Properties(), inverted)));
+                ORDERED.add(item(block.getId().getPath(),
+                        () -> new SkyBlockItem(block.get(), props().useBlockDescriptionPrefix(), inverted)));
                 return;
             }
             ORDERED.add(REGISTRY.registerSimpleBlockItem(block));
         });
 
         // Needs vanilla's scaffolding placement walk, so it cannot use the simple block item above.
-        TEMPORARY_SCAFFOLDING = REGISTRY.register("temporary_scaffolding",
-                () -> new TemporaryScaffoldingBlockItem(OCBlocks.TEMPORARY_SCAFFOLDING.get(), new Item.Properties()));
+        TEMPORARY_SCAFFOLDING = item("temporary_scaffolding",
+                () -> new TemporaryScaffoldingBlockItem(OCBlocks.TEMPORARY_SCAFFOLDING.get(), props().useBlockDescriptionPrefix()));
         ORDERED.add(TEMPORARY_SCAFFOLDING);
 
         // Top-edge clicks redirect onto the side face so the ladder can place and unroll.
-        ROPE_LADDER = REGISTRY.register("rope_ladder",
-                () -> new RopeLadderBlockItem(OCBlocks.ROPE_LADDER.get(), new Item.Properties()));
+        ROPE_LADDER = item("rope_ladder",
+                () -> new RopeLadderBlockItem(OCBlocks.ROPE_LADDER.get(), props().useBlockDescriptionPrefix()));
         ORDERED.add(ROPE_LADDER);
 
-        TROPHY = REGISTRY.register("trophy",
-                () -> new TrophyBlockItem(OCBlocks.TROPHY.get(), new Item.Properties()));
+        TROPHY = item("trophy",
+                () -> new TrophyBlockItem(OCBlocks.TROPHY.get(), props().useBlockDescriptionPrefix()));
         ORDERED.add(TROPHY);
 
-        TANK = REGISTRY.register("tank",
-                () -> new TankBlockItem(OCBlocks.TANK.get(), new Item.Properties()));
+        TANK = item("tank",
+                () -> new TankBlockItem(OCBlocks.TANK.get(), props().useBlockDescriptionPrefix()));
         ORDERED.add(TANK);
 
-        PAINT_CAN = REGISTRY.register("paint_can",
-                () -> new PaintCanItem(OCBlocks.PAINT_CAN.get(), new Item.Properties().stacksTo(1)));
+        PAINT_CAN = item("paint_can",
+                () -> new PaintCanItem(OCBlocks.PAINT_CAN.get(), props().stacksTo(1).useBlockDescriptionPrefix()));
         ORDERED.add(PAINT_CAN);
 
-        XP_BUCKET = REGISTRY.register("xp_bucket", () -> new XpBucketItem(new Item.Properties()));
+        XP_BUCKET = item("xp_bucket", () -> new XpBucketItem(props()));
         ORDERED.add(XP_BUCKET);
 
-        WRENCH = REGISTRY.register("wrench", () -> new WrenchItem(new Item.Properties()));
+        WRENCH = item("wrench", () -> new WrenchItem(props()));
         ORDERED.add(WRENCH);
 
-        SLIMALYZER = REGISTRY.register("slimalyzer", () -> new SlimalyzerItem(new Item.Properties()));
+        SLIMALYZER = item("slimalyzer", () -> new SlimalyzerItem(props()));
         ORDERED.add(SLIMALYZER);
 
-        PEDOMETER = REGISTRY.register("pedometer", () -> new PedometerItem(new Item.Properties()));
+        PEDOMETER = item("pedometer", () -> new PedometerItem(props()));
         ORDERED.add(PEDOMETER);
 
-        DEV_NULL = REGISTRY.register("dev_null", () -> new DevNullItem(new Item.Properties()));
+        DEV_NULL = item("dev_null", () -> new DevNullItem(props()));
         ORDERED.add(DEV_NULL);
 
         for (DyeColor colour : DyeColor.values()) {
-            DeferredItem<SleepingBagItem> bag = REGISTRY.register(colour.getName() + "_sleeping_bag",
-                    () -> new SleepingBagItem(new Item.Properties(), colour));
+            DeferredItem<SleepingBagItem> bag = item(colour.getName() + "_sleeping_bag",
+                    () -> new SleepingBagItem(props(), colour));
             SLEEPING_BAGS.put(colour, bag);
             ORDERED.add(bag);
         }
 
-        GOLDEN_EYE = REGISTRY.register("golden_eye", () -> new GoldenEyeItem(new Item.Properties()));
+        GOLDEN_EYE = item("golden_eye", () -> new GoldenEyeItem(props()));
         ORDERED.add(GOLDEN_EYE);
 
-        LUGGAGE = REGISTRY.register("luggage", () -> new LuggageItem(new Item.Properties()));
+        LUGGAGE = item("luggage", () -> new LuggageItem(props()));
         ORDERED.add(LUGGAGE);
 
-        PAINT_BRUSH = REGISTRY.register("paint_brush", () -> new PaintBrushItem(new Item.Properties()));
+        PAINT_BRUSH = item("paint_brush", () -> new PaintBrushItem(props()));
         ORDERED.add(PAINT_BRUSH);
 
-        SQUEEGEE = REGISTRY.register("squeegee", () -> new SqueegeeItem(new Item.Properties()));
+        SQUEEGEE = item("squeegee", () -> new SqueegeeItem(props()));
         ORDERED.add(SQUEEGEE);
 
-        STENCIL = REGISTRY.register("stencil", () -> new StencilItem(new Item.Properties()));
+        STENCIL = item("stencil", () -> new StencilItem(props()));
         ORDERED.add(STENCIL);
 
-        UNPREPARED_STENCIL = REGISTRY.register("unprepared_stencil", () -> new Item(new Item.Properties()));
+        UNPREPARED_STENCIL = item("unprepared_stencil", () -> new Item(props()));
         ORDERED.add(UNPREPARED_STENCIL);
 
-        SKETCHING_PENCIL = REGISTRY.register("sketching_pencil", () -> new Item(new Item.Properties()));
+        SKETCHING_PENCIL = item("sketching_pencil", () -> new Item(props()));
         ORDERED.add(SKETCHING_PENCIL);
 
-        GLYPH = REGISTRY.register("glyph", () -> new GlyphItem(new Item.Properties()));
+        GLYPH = item("glyph", () -> new GlyphItem(props()));
         ORDERED.add(GLYPH);
 
-        EMPTY_MAP = REGISTRY.register("empty_map", () -> new EmptyMapItem(new Item.Properties()));
+        EMPTY_MAP = item("empty_map", () -> new EmptyMapItem(props()));
         ORDERED.add(EMPTY_MAP);
 
-        HEIGHT_MAP = REGISTRY.register("height_map", () -> new HeightMapItem(new Item.Properties()));
+        HEIGHT_MAP = item("height_map", () -> new HeightMapItem(props()));
         ORDERED.add(HEIGHT_MAP);
 
-        CARTOGRAPHER = REGISTRY.register("cartographer", () -> new CartographerItem(new Item.Properties()));
+        CARTOGRAPHER = item("cartographer", () -> new CartographerItem(props()));
         ORDERED.add(CARTOGRAPHER);
 
-        BEAM = REGISTRY.register("beam", () -> new Item(new Item.Properties()));
+        BEAM = item("beam", () -> new Item(props()));
         ORDERED.add(BEAM);
 
-        LINE = REGISTRY.register("line", () -> new Item(new Item.Properties()));
+        LINE = item("line", () -> new Item(props()));
         ORDERED.add(LINE);
 
-        CRANE_ENGINE = REGISTRY.register("crane_engine", () -> new Item(new Item.Properties()));
+        CRANE_ENGINE = item("crane_engine", () -> new Item(props()));
         ORDERED.add(CRANE_ENGINE);
 
-        CRANE_MAGNET = REGISTRY.register("crane_magnet", () -> new Item(new Item.Properties()));
+        CRANE_MAGNET = item("crane_magnet", () -> new Item(props()));
         ORDERED.add(CRANE_MAGNET);
 
-        CRANE_BACKPACK = REGISTRY.register("crane_backpack",
-                () -> new CraneBackpackItem(new Item.Properties()));
+        CRANE_BACKPACK = item("crane_backpack",
+                () -> new CraneBackpackItem(props()));
         ORDERED.add(CRANE_BACKPACK);
 
-        CRANE_CONTROL = REGISTRY.register("crane_control",
-                () -> new CraneControlItem(new Item.Properties()));
+        CRANE_CONTROL = item("crane_control",
+                () -> new CraneControlItem(props()));
         ORDERED.add(CRANE_CONTROL);
 
-        GLIDER_WING_LEFT = REGISTRY.register("glider_wing_left", () -> new Item(new Item.Properties()));
+        GLIDER_WING_LEFT = item("glider_wing_left", () -> new Item(props()));
         ORDERED.add(GLIDER_WING_LEFT);
 
-        GLIDER_WING_RIGHT = REGISTRY.register("glider_wing_right", () -> new Item(new Item.Properties()));
+        GLIDER_WING_RIGHT = item("glider_wing_right", () -> new Item(props()));
         ORDERED.add(GLIDER_WING_RIGHT);
 
-        HANG_GLIDER = REGISTRY.register("hang_glider", () -> new HangGliderItem(new Item.Properties()));
+        HANG_GLIDER = item("hang_glider", () -> new HangGliderItem(props()));
         ORDERED.add(HANG_GLIDER);
 
-        THERMAL_ELYTRA = REGISTRY.register("thermal_elytra", () -> new ThermalElytraItem(new Item.Properties()));
+        THERMAL_ELYTRA = item("thermal_elytra", () -> new ThermalElytraItem(props()));
         ORDERED.add(THERMAL_ELYTRA);
 
-        SONIC_GLASSES = REGISTRY.register("sonic_glasses", () -> new SonicGlassesItem(new Item.Properties()));
+        SONIC_GLASSES = item("sonic_glasses", () -> new SonicGlassesItem(props()));
         ORDERED.add(SONIC_GLASSES);
 
-        PENCIL = REGISTRY.register("pencil",
-                () -> new ImaginaryItem(OCBlocks.IMAGINARY.get(), new Item.Properties(), false));
+        PENCIL = item("pencil",
+                () -> new ImaginaryItem(OCBlocks.IMAGINARY.get(), props(), false));
         ORDERED.add(PENCIL);
 
-        CRAYON = REGISTRY.register("crayon",
-                () -> new ImaginaryItem(OCBlocks.IMAGINARY.get(), new Item.Properties(), true));
+        CRAYON = item("crayon",
+                () -> new ImaginaryItem(OCBlocks.IMAGINARY.get(), props(), true));
         ORDERED.add(CRAYON);
 
-        PENCIL_GLASSES = REGISTRY.register("pencil_glasses",
-                () -> new ImaginationGlassesItem(new Item.Properties(), ImaginationGlassesKind.PENCIL));
+        PENCIL_GLASSES = item("pencil_glasses",
+                () -> new ImaginationGlassesItem(props(), ImaginationGlassesKind.PENCIL));
         ORDERED.add(PENCIL_GLASSES);
 
-        CRAYON_GLASSES = REGISTRY.register("crayon_glasses",
-                () -> new ImaginationGlassesItem(new Item.Properties(), ImaginationGlassesKind.CRAYON));
+        CRAYON_GLASSES = item("crayon_glasses",
+                () -> new ImaginationGlassesItem(props(), ImaginationGlassesKind.CRAYON));
         ORDERED.add(CRAYON_GLASSES);
 
-        TECHNICOLOR_GLASSES = REGISTRY.register("technicolor_glasses",
-                () -> new ImaginationGlassesItem(new Item.Properties(), ImaginationGlassesKind.TECHNICOLOR));
+        TECHNICOLOR_GLASSES = item("technicolor_glasses",
+                () -> new ImaginationGlassesItem(props(), ImaginationGlassesKind.TECHNICOLOR));
         ORDERED.add(TECHNICOLOR_GLASSES);
 
-        ADMIN_GLASSES = REGISTRY.register("admin_glasses",
-                () -> new ImaginationGlassesItem(new Item.Properties(), ImaginationGlassesKind.ADMIN));
+        ADMIN_GLASSES = item("admin_glasses",
+                () -> new ImaginationGlassesItem(props(), ImaginationGlassesKind.ADMIN));
         ORDERED.add(ADMIN_GLASSES);
 
-        LIQUID_SPONGE_ON_A_STICK = REGISTRY.register("liquid_sponge_on_a_stick",
-                () -> new SpongeOnAStickItem(new Item.Properties()));
+        LIQUID_SPONGE_ON_A_STICK = item("liquid_sponge_on_a_stick",
+                () -> new SpongeOnAStickItem(props()));
         ORDERED.add(LIQUID_SPONGE_ON_A_STICK);
 
-        SPONGE_ON_A_STICK = REGISTRY.register("sponge_on_a_stick",
-                () -> new WaterSpongeOnAStickItem(new Item.Properties(), false));
+        SPONGE_ON_A_STICK = item("sponge_on_a_stick",
+                () -> new WaterSpongeOnAStickItem(props(), false));
         ORDERED.add(SPONGE_ON_A_STICK);
 
-        WET_SPONGE_ON_A_STICK = REGISTRY.register("wet_sponge_on_a_stick",
-                () -> new WaterSpongeOnAStickItem(new Item.Properties(), true));
+        WET_SPONGE_ON_A_STICK = item("wet_sponge_on_a_stick",
+                () -> new WaterSpongeOnAStickItem(props(), true));
         ORDERED.add(WET_SPONGE_ON_A_STICK);
 
-        POINTER = REGISTRY.register("pointer", () -> new PointerItem(new Item.Properties()));
+        POINTER = item("pointer", () -> new PointerItem(props()));
         ORDERED.add(POINTER);
 
-        EPIC_ERASER = REGISTRY.register("epic_eraser", () -> new EpicEraserItem(new Item.Properties()));
+        EPIC_ERASER = item("epic_eraser", () -> new EpicEraserItem(props()));
         ORDERED.add(EPIC_ERASER);
 
-        TASTY_CLAY = REGISTRY.register("tasty_clay", () -> new TastyClayItem(new Item.Properties()));
+        TASTY_CLAY = item("tasty_clay", () -> new TastyClayItem(props()));
         ORDERED.add(TASTY_CLAY);
 
-        INFO_BOOK = REGISTRY.register("info_book", () -> new InfoBookItem(new Item.Properties()));
+        INFO_BOOK = item("info_book", () -> new InfoBookItem(props()));
         ORDERED.add(INFO_BOOK);
 
-        CURSOR = REGISTRY.register("cursor", () -> new CursorItem(new Item.Properties()));
+        CURSOR = item("cursor", () -> new CursorItem(props()));
         ORDERED.add(CURSOR);
     }
 
     private OCItems() {}
+
+    private static final ThreadLocal<ResourceKey<Item>> REGISTERING_ID = new ThreadLocal<>();
+
+    /** Properties for the item currently being registered. 26.1 requires the registry id before construction. */
+    private static Item.Properties props() {
+        Item.Properties properties = new Item.Properties();
+        ResourceKey<Item> id = REGISTERING_ID.get();
+        if (id != null) {
+            properties.setId(id);
+        }
+        return properties;
+    }
+
+    private static <I extends Item> DeferredItem<I> item(String name, java.util.function.Supplier<I> supplier) {
+        return REGISTRY.register(name, id -> {
+            REGISTERING_ID.set(ResourceKey.create(Registries.ITEM, id));
+            try {
+                return supplier.get();
+            } finally {
+                REGISTERING_ID.remove();
+            }
+        });
+    }
 
     public static List<DeferredItem<? extends Item>> ordered() {
         return Collections.unmodifiableList(ORDERED);

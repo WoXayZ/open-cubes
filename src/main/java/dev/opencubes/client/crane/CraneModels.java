@@ -8,7 +8,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -19,8 +19,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class CraneModels {
 
-    public static final ResourceLocation BACKPACK_TEXTURE = OCConstants.id("textures/entity/crane_backpack.png");
-    public static final ResourceLocation MAGNET_TEXTURE = OCConstants.id("textures/entity/crane_magnet.png");
+    public static final Identifier BACKPACK_TEXTURE = OCConstants.id("textures/entity/crane_backpack.png");
+    public static final Identifier MAGNET_TEXTURE = OCConstants.id("textures/entity/crane_magnet.png");
 
     /** Boom pivot, relative to the top of the body: a block above the neck, 7 px behind. */
     public static final float PIVOT_UP = 16.0F;

@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -51,23 +50,23 @@ public class WaterSpongeOnAStickItem extends Item {
         }
         BlockPos target = context.getClickedPos().relative(context.getClickedFace());
         return absorb(context.getLevel(), target, player, context.getHand())
-                ? InteractionResult.sidedSuccess(context.getLevel().isClientSide)
+                ? (context.getLevel().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER)
                 : InteractionResult.PASS;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         return absorb(level, player.blockPosition(), player, hand)
-                ? InteractionResultHolder.sidedSuccess(stack, level.isClientSide)
-                : InteractionResultHolder.pass(stack);
+                ? (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER)
+                : InteractionResult.PASS;
     }
 
     private boolean absorb(Level level, BlockPos origin, Player player, InteractionHand hand) {
         if (wet) {
             return false;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return hasWaterNearby(level, origin);
         }
         if (removeWaterBreadthFirst(level, origin) == 0) {

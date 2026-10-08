@@ -88,7 +88,7 @@ public final class Geometry {
         if (length < 0) {
             return;
         }
-        Vec3i v = direction.getNormal();
+        Vec3i v = direction.getUnitVec3i();
         for (int offset = 0; offset <= length; offset++) {
             shapeable.setBlock(
                     startX + offset * v.getX(),
@@ -107,7 +107,7 @@ public final class Geometry {
         if (width < 0 || height < 0) {
             return;
         }
-        Vec3i v = up.getNormal();
+        Vec3i v = up.getUnitVec3i();
         for (int h = 0; h <= height; h++) {
             makeLine(
                     startX + h * v.getX(),

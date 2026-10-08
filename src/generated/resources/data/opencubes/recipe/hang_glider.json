@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "l": {
-      "item": "opencubes:glider_wing_left"
-    },
-    "r": {
-      "item": "opencubes:glider_wing_right"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "l": "opencubes:glider_wing_left",
+    "r": "opencubes:glider_wing_right",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "lsr"

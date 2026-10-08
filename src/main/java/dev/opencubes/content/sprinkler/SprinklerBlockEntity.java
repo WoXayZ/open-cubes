@@ -2,6 +2,7 @@ package dev.opencubes.content.sprinkler;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCBlockEntities;
+import dev.opencubes.util.FluidHandlerBridge;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,6 +37,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.joml.Quaternionf;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.joml.Vector3f;
 
 public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
@@ -136,10 +139,7 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
     public static void tick(Level level, BlockPos pos, BlockState state, SprinklerBlockEntity sprinkler) {
         sprinkler.ticks++;
 
-        if (level.isClientSide) {
-            if (sprinkler.enabled) {
-                sprinkler.spawnSprayParticles(level);
-            }
+        if (level.isClientSide()) {
             return;
         }
 
@@ -160,6 +160,7 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         ServerLevel server = (ServerLevel) level;
+        sprinkler.spawnSprayParticles(server);
         sprinkler.attemptFertilize(server);
         sprinkler.attemptRandomGrowth(server);
 
@@ -168,7 +169,7 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    private void spawnSprayParticles(Level level) {
+    private void spawnSprayParticles(ServerLevel level) {
         Direction facing = getBlockState().getValue(SprinklerBlock.FACING);
         float tilt = getArmTilt(0.0F);
         Vector3f nozzle = armRotation(facing, tilt).transform(new Vector3f(0.0F, 1.0F, 0.0F));
@@ -185,13 +186,14 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         double originY = worldPosition.getY() + PIVOT_Y + 0.08D;
         double originZ = worldPosition.getZ() + 0.5D;
         for (int i = 0; i < 6; i++) {
-            double outlet = (level.random.nextDouble() - 0.5D) * 0.7D;
-            double speed = strength * (0.6D + level.random.nextDouble() * 0.4D);
-            double scatter = (level.random.nextDouble() - 0.5D) * 0.06D;
-            // Splash keeps the horizontal velocity only when the vertical one is zero.
-            level.addParticle(ParticleTypes.SPLASH,
+            double outlet = (level.getRandom().nextDouble() - 0.5D) * 0.7D;
+            double speed = strength * (0.6D + level.getRandom().nextDouble() * 0.4D);
+            double scatter = (level.getRandom().nextDouble() - 0.5D) * 0.06D;
+            // count 0 sends the offsets as the exact velocity. Splash only keeps that
+            // horizontal speed when the vertical one is zero, then lifts the drop itself.
+            level.sendParticles(ParticleTypes.SPLASH,
                     originX + along.x * outlet, originY, originZ + along.z * outlet,
-                    sideX * speed + along.x * scatter, 0.0D, sideZ * speed + along.z * scatter);
+                    0, sideX * speed + along.x * scatter, 0.0D, sideZ * speed + along.z * scatter, 1.0D);
         }
     }
 
@@ -199,10 +201,19 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         if (sprinkler.tank.getSpace() <= 0) {
             return;
         }
-        IFluidHandler below = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.below(), Direction.UP);
-        if (below == null) {
+        var found = level.getCapability(Capabilities.Fluid.BLOCK, pos.below(), Direction.UP);
+        if (found == null) {
+            var below = level.getFluidState(pos.below());
+            if (below.isSource() && below.is(net.minecraft.world.level.material.Fluids.WATER)) {
+                int sip = Math.min(sprinkler.tank.getSpace(), 50);
+                if (sip > 0) {
+                    sprinkler.tank.fill(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, sip),
+                            IFluidHandler.FluidAction.EXECUTE);
+                }
+            }
             return;
         }
+        IFluidHandler below = FluidHandlerBridge.asTanks(found);
         FluidStack sim = below.drain(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, sprinkler.tank.getSpace()),
                 IFluidHandler.FluidAction.SIMULATE);
         if (sim.isEmpty() || !sim.getFluid().isSame(net.minecraft.world.level.material.Fluids.WATER)) {
@@ -227,7 +238,7 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
@@ -272,23 +283,23 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         int chance = boost
                 ? OCCommonConfig.SPRINKLER_BONEMEAL_FERTILIZE_CHANCE.get()
                 : OCCommonConfig.SPRINKLER_FERTILIZE_CHANCE.get();
-        if (chance <= 0 || level.random.nextInt(chance) != 0) {
+        if (chance <= 0 || level.getRandom().nextInt(chance) != 0) {
             return;
         }
 
         int range = OCCommonConfig.SPRINKLER_RANGE.get();
         int attempts = boost ? 8 : 3;
         for (int attempt = 0; attempt < attempts; attempt++) {
-            int x = level.random.nextInt(2 * range + 1) - range;
-            int z = level.random.nextInt(2 * range + 1) - range;
+            int x = level.getRandom().nextInt(2 * range + 1) - range;
+            int z = level.getRandom().nextInt(2 * range + 1) - range;
             for (int y = -1; y <= 2; y++) {
                 BlockPos target = worldPosition.offset(x, y, z);
                 BlockState targetState = level.getBlockState(target);
                 if (targetState.getBlock() instanceof BonemealableBlock growable
                         && growable.isValidBonemealTarget(level, target, targetState)) {
-                    if (growable.isBonemealSuccess(level, level.random, target, targetState)
+                    if (growable.isBonemealSuccess(level, level.getRandom(), target, targetState)
                             || boost) {
-                        growable.performBonemeal(level, level.random, target, targetState);
+                        growable.performBonemeal(level, level.getRandom(), target, targetState);
                         if (boost) {
                             consumeBonemeal();
                         }
@@ -307,14 +318,14 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
         int range = OCCommonConfig.SPRINKLER_RANGE.get();
-        int x = level.random.nextInt(2 * range + 1) - range;
-        int z = level.random.nextInt(2 * range + 1) - range;
+        int x = level.getRandom().nextInt(2 * range + 1) - range;
+        int z = level.getRandom().nextInt(2 * range + 1) - range;
         for (int y = -1; y <= 2; y++) {
             BlockPos target = worldPosition.offset(x, y, z);
             BlockState targetState = level.getBlockState(target);
             if (targetState.getBlock() instanceof CropBlock
                     || targetState.getBlock() instanceof BonemealableBlock) {
-                targetState.randomTick(level, target, level.random);
+                targetState.randomTick(level, target, level.getRandom());
                 return;
             }
         }
@@ -349,23 +360,23 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.putChild("Tank", tank);
+        items.serialize(tag.child("Items"));
         tag.putBoolean("Enabled", enabled);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Tank")) {
-            tank.readFromNBT(registries, tag.getCompound("Tank"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Tank")) {
+            tag.child("Tank").ifPresent(tank::deserialize);
         }
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        enabled = tag.getBoolean("Enabled");
+        enabled = tag.getBooleanOr("Enabled", false);
     }
 
     @Override
@@ -379,17 +390,4 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-        loadAdditional(tag, registries);
-    }
-
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        CompoundTag tag = packet.getTag();
-        if (tag != null) {
-            loadAdditional(tag, registries);
-        }
-    }
 }

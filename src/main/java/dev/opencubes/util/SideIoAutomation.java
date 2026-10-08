@@ -1,5 +1,7 @@
 package dev.opencubes.util;
 
+import dev.opencubes.util.FluidHandlerBridge;
+import dev.opencubes.util.ItemHandlerBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -21,17 +23,18 @@ public final class SideIoAutomation {
             return;
         }
         Direction[] sides = Direction.values();
-        int start = level.random.nextInt(sides.length);
+        int start = level.getRandom().nextInt(sides.length);
         for (int n = 0; n < sides.length; n++) {
             Direction side = sides[(start + n) % sides.length];
             if (!SideBitmask.has(inputSides, side)) {
                 continue;
             }
-            IItemHandler neighbour = level.getCapability(
-                    Capabilities.ItemHandler.BLOCK, pos.relative(side), side.getOpposite());
-            if (neighbour == null) {
+            var found = level.getCapability(
+                    Capabilities.Item.BLOCK, pos.relative(side), side.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IItemHandler neighbour = ItemHandlerBridge.asSlots(found);
             for (int slot = 0; slot < neighbour.getSlots(); slot++) {
                 ItemStack stack = neighbour.extractItem(slot, 64, true);
                 if (stack.isEmpty()) {
@@ -52,17 +55,18 @@ public final class SideIoAutomation {
             return;
         }
         Direction[] sides = Direction.values();
-        int start = level.random.nextInt(sides.length);
+        int start = level.getRandom().nextInt(sides.length);
         for (int n = 0; n < sides.length; n++) {
             Direction side = sides[(start + n) % sides.length];
             if (!SideBitmask.has(outputSides, side)) {
                 continue;
             }
-            IItemHandler neighbour = level.getCapability(
-                    Capabilities.ItemHandler.BLOCK, pos.relative(side), side.getOpposite());
-            if (neighbour == null) {
+            var found = level.getCapability(
+                    Capabilities.Item.BLOCK, pos.relative(side), side.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IItemHandler neighbour = ItemHandlerBridge.asSlots(found);
             for (int slot = 0; slot < extractHandler.getSlots(); slot++) {
                 ItemStack stack = extractHandler.extractItem(slot, 64, true);
                 if (stack.isEmpty()) {
@@ -85,11 +89,12 @@ public final class SideIoAutomation {
             if (!SideBitmask.has(xpSides, side)) {
                 continue;
             }
-            IFluidHandler neighbour = level.getCapability(
-                    Capabilities.FluidHandler.BLOCK, pos.relative(side), side.getOpposite());
-            if (neighbour == null) {
+            var found = level.getCapability(
+                    Capabilities.Fluid.BLOCK, pos.relative(side), side.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IFluidHandler neighbour = FluidHandlerBridge.asTanks(found);
             FluidStack simulated = neighbour.drain(tank.getSpace(), IFluidHandler.FluidAction.SIMULATE);
             if (simulated.isEmpty() || !XpFluidUtil.isXpJuice(simulated)) {
                 continue;

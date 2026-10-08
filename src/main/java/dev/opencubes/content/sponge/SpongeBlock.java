@@ -29,14 +29,14 @@ public class SpongeBlock extends Block {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, net.minecraft.world.level.redstone.Orientation fromPos, boolean isMoving) {
         clear(level, pos);
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         clear(level, pos);
-        level.scheduleTick(pos, this, TICK_RATE + level.random.nextInt(5));
+        level.scheduleTick(pos, this, TICK_RATE + level.getRandom().nextInt(5));
     }
 
     @Override
@@ -46,11 +46,11 @@ public class SpongeBlock extends Block {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && !FluidSoak.blockUpdates()) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        if (!FluidSoak.blockUpdates()) {
             FluidSoak.wakeBorderLiquids(level, pos, FluidSoak.blockRange());
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }
 
     private void clear(Level level, BlockPos pos) {
@@ -63,12 +63,12 @@ public class SpongeBlock extends Block {
     @Override
     protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
         if (id == EVENT_BURN) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 for (int i = 0; i < 20; i++) {
                     level.addParticle(ParticleTypes.LARGE_SMOKE,
-                            pos.getX() + level.random.nextDouble() * 0.1D,
-                            pos.getY() + 1.0D + level.random.nextDouble(),
-                            pos.getZ() + level.random.nextDouble(),
+                            pos.getX() + level.getRandom().nextDouble() * 0.1D,
+                            pos.getY() + 1.0D + level.getRandom().nextDouble(),
+                            pos.getZ() + level.getRandom().nextDouble(),
                             0.0D, 0.0D, 0.0D);
                 }
             } else {

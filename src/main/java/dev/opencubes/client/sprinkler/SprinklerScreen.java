@@ -4,7 +4,7 @@ import dev.opencubes.client.MachineGuiTextures;
 import dev.opencubes.client.SideConfigScreenHelper;
 import dev.opencubes.client.sideconfig.MachineInfoButton;
 import dev.opencubes.content.sprinkler.SprinklerMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,22 +22,17 @@ public class SprinklerScreen extends AbstractContainerScreen<SprinklerMenu> {
 
     public SprinklerScreen(SprinklerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageWidth = 176;
-        imageHeight = 166;
-        inventoryLabelY = imageHeight - 94;
     }
 
     @Override
     protected void init() {
-        imageWidth = 176;
-        imageHeight = 166;
-        inventoryLabelY = imageHeight - 94;
         super.init();
         addRenderableWidget(MachineInfoButton.forMachine(leftPos + imageWidth - 22, topPos + 4, "sprinkler"));
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.SPRINKLER, x, y, imageWidth, imageHeight);
@@ -46,15 +41,14 @@ public class SprinklerScreen extends AbstractContainerScreen<SprinklerMenu> {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (isHovering(BAR_X - 1, BAR_Y - 1, BAR_WIDTH + 2, BAR_HEIGHT + 2, mouseX, mouseY)) {
-            graphics.renderTooltip(font,
+            graphics.setTooltipForNextFrame(font,
                     Component.translatable("container.opencubes.sprinkler.water",
                             menu.fluidAmount(), menu.fluidCapacity()),
                     mouseX, mouseY);
+            return;
         }
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 }

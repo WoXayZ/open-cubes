@@ -68,8 +68,8 @@ public final class VanillaEnchantLogic {
         }
 
         random.setSeed(seed + level.ordinal());
-        Optional<HolderSet.Named<Enchantment>> tag = registries.registryOrThrow(Registries.ENCHANTMENT)
-                .getTag(EnchantmentTags.IN_ENCHANTING_TABLE);
+        Optional<HolderSet.Named<Enchantment>> tag = registries.lookupOrThrow(Registries.ENCHANTMENT)
+                .get(EnchantmentTags.IN_ENCHANTING_TABLE);
         if (tag.isEmpty()) {
             return ItemStack.EMPTY;
         }

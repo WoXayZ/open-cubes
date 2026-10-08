@@ -1,8 +1,9 @@
 package dev.opencubes.client.sideconfig;
 
 import dev.opencubes.client.GuiSprites;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -24,12 +25,12 @@ public class SideConfigButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         panel.toggle();
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         var texture = panel.isOpen() ? GuiSprites.CONFIG_OPEN : GuiSprites.CONFIG;
         if (isHoveredOrFocused()) {
             texture = GuiSprites.CONFIG_HIGHLIGHTED;

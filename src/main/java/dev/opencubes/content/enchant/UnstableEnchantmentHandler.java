@@ -6,7 +6,7 @@ import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -35,7 +35,7 @@ public final class UnstableEnchantmentHandler {
         if (!OCCommonConfig.UNSTABLE_ENABLED.get()) {
             return;
         }
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) {
             return;
         }
         if (event.getDistance() <= 4.0F || player.isShiftKeyDown()) {
@@ -59,7 +59,7 @@ public final class UnstableEnchantmentHandler {
         if (!OCCommonConfig.UNSTABLE_ENABLED.get()) {
             return;
         }
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) {
             return;
         }
         DamageSource source = event.getSource();

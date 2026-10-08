@@ -4,58 +4,24 @@
   "group": "opencubes:elevator",
   "ingredients": [
     [
-      {
-        "item": "opencubes:white_elevator"
-      },
-      {
-        "item": "opencubes:orange_elevator"
-      },
-      {
-        "item": "opencubes:magenta_elevator"
-      },
-      {
-        "item": "opencubes:light_blue_elevator"
-      },
-      {
-        "item": "opencubes:yellow_elevator"
-      },
-      {
-        "item": "opencubes:lime_elevator"
-      },
-      {
-        "item": "opencubes:pink_elevator"
-      },
-      {
-        "item": "opencubes:gray_elevator"
-      },
-      {
-        "item": "opencubes:light_gray_elevator"
-      },
-      {
-        "item": "opencubes:cyan_elevator"
-      },
-      {
-        "item": "opencubes:purple_elevator"
-      },
-      {
-        "item": "opencubes:blue_elevator"
-      },
-      {
-        "item": "opencubes:brown_elevator"
-      },
-      {
-        "item": "opencubes:green_elevator"
-      },
-      {
-        "item": "opencubes:red_elevator"
-      },
-      {
-        "item": "opencubes:black_elevator"
-      }
+      "opencubes:white_elevator",
+      "opencubes:orange_elevator",
+      "opencubes:magenta_elevator",
+      "opencubes:light_blue_elevator",
+      "opencubes:yellow_elevator",
+      "opencubes:lime_elevator",
+      "opencubes:pink_elevator",
+      "opencubes:gray_elevator",
+      "opencubes:light_gray_elevator",
+      "opencubes:cyan_elevator",
+      "opencubes:purple_elevator",
+      "opencubes:blue_elevator",
+      "opencubes:brown_elevator",
+      "opencubes:green_elevator",
+      "opencubes:red_elevator",
+      "opencubes:black_elevator"
     ],
-    {
-      "item": "minecraft:white_dye"
-    }
+    "minecraft:white_dye"
   ],
   "result": {
     "count": 1,

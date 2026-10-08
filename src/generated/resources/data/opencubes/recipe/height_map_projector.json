@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "tag": "c:dusts/glowstone"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "l": {
-      "tag": "c:gems/lapis"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    },
-    "s": {
-      "tag": "minecraft:slabs"
-    }
+    "g": "#c:dusts/glowstone",
+    "i": "#c:ingots/iron",
+    "l": "#c:gems/lapis",
+    "r": "#c:dusts/redstone",
+    "s": "#minecraft:slabs"
   },
   "pattern": [
     "grl",

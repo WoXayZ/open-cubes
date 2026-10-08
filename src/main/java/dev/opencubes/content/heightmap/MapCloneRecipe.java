@@ -1,8 +1,10 @@
 package dev.opencubes.content.heightmap;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.opencubes.registry.OCItems;
-import dev.opencubes.registry.OCRecipeSerializers;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -13,9 +15,15 @@ import net.minecraft.world.level.Level;
 /** Shapeless: filled height map + empty map at the same scale → two copies of the filled map. */
 public class MapCloneRecipe extends CustomRecipe {
 
-    public MapCloneRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+    public static final MapCloneRecipe INSTANCE = new MapCloneRecipe();
+    public static final MapCodec<MapCloneRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC)
+                    .forGetter(recipe -> CraftingBookCategory.MISC)
+    ).apply(instance, category -> INSTANCE));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MapCloneRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final RecipeSerializer<MapCloneRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+
+    private MapCloneRecipe() {}
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
@@ -58,7 +66,7 @@ public class MapCloneRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (stack.is(OCItems.HEIGHT_MAP.get())) {
@@ -71,12 +79,7 @@ public class MapCloneRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return OCRecipeSerializers.MAP_CLONE.get();
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
+        return SERIALIZER;
     }
 }

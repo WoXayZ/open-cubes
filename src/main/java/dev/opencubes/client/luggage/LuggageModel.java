@@ -3,7 +3,7 @@ package dev.opencubes.client.luggage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.opencubes.OCConstants;
-import dev.opencubes.content.luggage.LuggageEntity;
+import dev.opencubes.client.LuggageRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -22,7 +22,7 @@ import net.minecraft.util.Mth;
  * {@link #NORMAL_LAYER} matches the compact {@code luggage_normal_body.png} atlas, and
  * {@link #SPECIAL_LAYER} matches the original 128x64 {@code luggage_special.png} atlas.
  */
-public class LuggageModel extends EntityModel<LuggageEntity> {
+public class LuggageModel extends EntityModel<LuggageRenderState> {
 
     private static final int LEGS_X = 7;
     private static final int LEGS_Z = 3;
@@ -38,6 +38,7 @@ public class LuggageModel extends EntityModel<LuggageEntity> {
     private final ModelPart[] legs = new ModelPart[LEG_COUNT];
 
     public LuggageModel(ModelPart root) {
+        super(root);
         this.body = root.getChild("body");
         this.lid = root.getChild("lid");
         int i = 0;
@@ -76,9 +77,13 @@ public class LuggageModel extends EntityModel<LuggageEntity> {
     }
 
     @Override
-    public void setupAnim(LuggageEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
-                          float netHeadYaw, float headPitch) {
-        float open = entity.lidOpenness(ageInTicks - entity.tickCount);
+    public void setupAnim(LuggageRenderState state) {
+        if (state.entity == null) {
+            return;
+        }
+        float limbSwing = state.walkPosition;
+        float limbSwingAmount = state.walkSpeed;
+        float open = state.entity.lidOpenness(state.ageInTicks - state.entity.tickCount);
         open = 1.0F - open;
         open = 1.0F - open * open * open;
         float walk = Math.min(0F, Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
@@ -92,12 +97,4 @@ public class LuggageModel extends EntityModel<LuggageEntity> {
         }
     }
 
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        body.render(poseStack, buffer, packedLight, packedOverlay, color);
-        lid.render(poseStack, buffer, packedLight, packedOverlay, color);
-        for (ModelPart leg : legs) {
-            leg.render(poseStack, buffer, packedLight, packedOverlay, color);
-        }
-    }
 }

@@ -6,8 +6,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,10 +22,10 @@ public final class MagnetPickup {
         if (entity == owner || entity instanceof MagnetEntity || entity instanceof MountedBlockEntity) {
             return false;
         }
-        if (entity.getType().is(OCTags.EntityTypes.MAGNET_BLACKLIST)) {
+        if (entity.getType().builtInRegistryHolder().is(OCTags.EntityTypes.MAGNET_BLACKLIST)) {
             return false;
         }
-        if (entity.getType().is(OCTags.EntityTypes.MAGNET_LIFTABLE)) {
+        if (entity.getType().builtInRegistryHolder().is(OCTags.EntityTypes.MAGNET_LIFTABLE)) {
             return true;
         }
         if (entity instanceof LivingEntity) {

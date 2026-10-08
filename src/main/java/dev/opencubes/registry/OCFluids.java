@@ -40,17 +40,18 @@ public final class OCFluids {
      * other bucket. It lives here rather than in {@code OCBlocks} because it has no block item,
      * no loot table and no recipe - it only exists as the fluid's physical form.
      */
-    public static final DeferredBlock<LiquidBlock> XP_JUICE_BLOCK = FLUID_BLOCKS.register("xp_juice",
-            () -> new LiquidBlock(XP_JUICE.get(), BlockBehaviour.Properties.of()
+    public static final DeferredBlock<LiquidBlock> XP_JUICE_BLOCK = FLUID_BLOCKS.registerBlock("xp_juice",
+            properties -> new LiquidBlock(XP_JUICE.get(), properties),
+            properties -> properties
                     .mapColor(MapColor.EMERALD)
                     .replaceable()
-                    .noCollission()
+                    .noCollision()
                     .strength(100.0F)
                     .pushReaction(PushReaction.DESTROY)
                     .noLootTable()
                     .liquid()
                     .lightLevel(state -> 10)
-                    .sound(SoundType.EMPTY)));
+                    .sound(SoundType.EMPTY));
 
     private OCFluids() {}
 

@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:dark_oak_button"
-    }
+    "b": "minecraft:dark_oak_button"
   },
   "pattern": [
     "bb",

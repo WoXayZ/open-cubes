@@ -23,7 +23,7 @@ public class TastyClayItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
-        if (!level.isClientSide && entity instanceof Player player) {
+        if (!level.isClientSide() && entity instanceof Player player) {
             int count = player.getData(OCAttachments.BOWEL.get());
             player.setData(OCAttachments.BOWEL.get(), count + 1);
         }

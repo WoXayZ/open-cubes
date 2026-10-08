@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
- * Ten-slot vacuum inventory plus the side-config proof of concept: menu buttons 0–5 toggle
- * item output faces, 6–11 toggle XP output faces (DOWN, UP, NORTH, SOUTH, WEST, EAST).
+ * Ten-slot vacuum inventory. Buttons 0-5 toggle item output faces,
+ * 6-11 toggle XP output faces (DOWN, UP, NORTH, SOUTH, WEST, EAST).
  */
 public class VacuumHopperMenu extends AbstractContainerMenu {
 
@@ -90,7 +90,7 @@ public class VacuumHopperMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (vacuum.getLevel() == null || vacuum.getLevel().isClientSide) {
+        if (vacuum.getLevel() == null || vacuum.getLevel().isClientSide()) {
             return false;
         }
         if (id >= ITEM_SIDE_BUTTONS && id < ITEM_SIDE_BUTTONS + 6) {

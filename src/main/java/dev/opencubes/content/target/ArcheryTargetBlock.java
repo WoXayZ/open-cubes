@@ -5,13 +5,15 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,7 +27,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -40,7 +42,7 @@ import dev.opencubes.registry.OCBlockEntities;
 public class ArcheryTargetBlock extends BaseEntityBlock {
 
     public static final MapCodec<ArcheryTargetBlock> CODEC = simpleCodec(ArcheryTargetBlock::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.ATTACH_FACE;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
@@ -118,8 +120,8 @@ public class ArcheryTargetBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
-                                     LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+                                     Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         if (getSupportDirection(state) == direction && !state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -168,7 +170,7 @@ public class ArcheryTargetBlock extends BaseEntityBlock {
 
     /** Shared entry used by {@link #onProjectileHit}, entity collision, and the impact event. */
     public static void handleArrowHit(Level level, BlockPos pos, BlockState state, Vec3 hit) {
-        if (level.isClientSide || !state.getValue(POWERED)) {
+        if (level.isClientSide() || !state.getValue(POWERED)) {
             return;
         }
         if (level.getBlockEntity(pos) instanceof ArcheryTargetBlockEntity target) {
@@ -184,9 +186,9 @@ public class ArcheryTargetBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
-                                   boolean isMoving) {
-        if (!level.isClientSide) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block,
+                                   net.minecraft.world.level.redstone.Orientation fromPos, boolean isMoving) {
+        if (!level.isClientSide()) {
             boolean powered = level.hasNeighborSignal(pos);
             if (state.getValue(POWERED) != powered) {
                 level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_ALL);
@@ -221,7 +223,7 @@ public class ArcheryTargetBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         if (level.getBlockEntity(pos) instanceof ArcheryTargetBlockEntity target) {
             return target.signalStrength();
         }
@@ -238,7 +240,7 @@ public class ArcheryTargetBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.ARCHERY_TARGET.get(), ArcheryTargetBlockEntity::serverTick);
     }
 

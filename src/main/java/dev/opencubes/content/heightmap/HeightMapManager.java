@@ -1,5 +1,7 @@
 package dev.opencubes.content.heightmap;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import dev.opencubes.network.HeightMapDirtyPayload;
 import dev.opencubes.network.HeightMapRequestPayload;
 import dev.opencubes.network.HeightMapResponsePayload;
@@ -26,11 +28,10 @@ public final class HeightMapManager {
     private HeightMapManager() {}
 
     public static int createNewMap(ServerLevel level, byte scale) {
-        HeightMapIdCounter counter = level.getDataStorage().computeIfAbsent(
-                HeightMapIdCounter.factory(), HeightMapIdCounter.STORAGE_NAME);
+        HeightMapLegacy.importCounter(level);
+        HeightMapIdCounter counter = level.getDataStorage().computeIfAbsent(HeightMapIdCounter.TYPE);
         int id = counter.nextId();
-        HeightMapData data = level.getDataStorage().computeIfAbsent(
-                HeightMapData.factory(id), HeightMapData.storageName(id));
+        HeightMapData data = level.getDataStorage().computeIfAbsent(HeightMapData.type(id));
         data.scale = scale;
         data.setDirty();
         return id;
@@ -40,7 +41,7 @@ public final class HeightMapManager {
         if (mapId < 0) {
             return HeightMapData.INVALID;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             HeightMapData cached = CLIENT_CACHE.get(mapId);
             return cached != null ? cached : HeightMapData.EMPTY;
         }
@@ -48,18 +49,20 @@ public final class HeightMapManager {
             return HeightMapData.EMPTY;
         }
         // Only return maps that already exist - do not allocate stubs via computeIfAbsent.
-        var storage = serverLevel.getDataStorage();
-        HeightMapData data = storage.get(HeightMapData.factory(mapId), HeightMapData.storageName(mapId));
+        HeightMapData data = HeightMapLegacy.importMap(serverLevel, mapId);
         return data != null ? data : HeightMapData.EMPTY;
     }
 
     public static HeightMapData getOrCreate(ServerLevel level, int mapId) {
-        return level.getDataStorage().computeIfAbsent(
-                HeightMapData.factory(mapId), HeightMapData.storageName(mapId));
+        HeightMapData imported = HeightMapLegacy.importMap(level, mapId);
+        if (imported != null) {
+            return imported;
+        }
+        return level.getDataStorage().computeIfAbsent(HeightMapData.type(mapId));
     }
 
     public static void markDataUpdated(Level level, int mapId) {
-        if (level.isClientSide || mapId < 0) {
+        if (level.isClientSide() || mapId < 0) {
             return;
         }
         HeightMapData data = getMapData(level, mapId);
@@ -89,13 +92,13 @@ public final class HeightMapManager {
     }
 
     public static void requestMapData(Level level, int mapId) {
-        if (!level.isClientSide || mapId < 0) {
+        if (!level.isClientSide() || mapId < 0) {
             return;
         }
         if (CLIENT_CACHE.containsKey(mapId) || !CLIENT_PENDING.add(mapId)) {
             return;
         }
-        PacketDistributor.sendToServer(new HeightMapRequestPayload(new int[]{mapId}));
+        ClientPacketDistributor.sendToServer(new HeightMapRequestPayload(new int[]{mapId}));
     }
 
     public static void handleRequest(ServerPlayer player, int[] mapIds) {

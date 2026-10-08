@@ -31,7 +31,7 @@ public class SqueegeeItem extends Item {
         }
         Player player = context.getPlayer();
         boolean all = player != null && player.isShiftKeyDown();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Optional<ItemStack> dropped = canvas.squeegee(context.getClickedFace(), all);
             dropped.ifPresent(stack -> {
                 ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, stack);
@@ -45,6 +45,6 @@ public class SqueegeeItem extends Item {
             }
             level.playSound(null, pos, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 0.5F, 1.2F);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 }

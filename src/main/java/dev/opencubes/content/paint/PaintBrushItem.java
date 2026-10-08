@@ -2,7 +2,6 @@ package dev.opencubes.content.paint;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCDataComponents;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -17,6 +16,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class PaintBrushItem extends Item {
 
@@ -69,13 +71,13 @@ public class PaintBrushItem extends Item {
             }
         }
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             level.playSound(null, pos, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 0.4F, 1.8F);
             if (!player.getAbilities().instabuild) {
                 stack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     private static boolean tryPaint(Level level, BlockPos pos, Direction face, int argb, boolean all) {
@@ -87,10 +89,10 @@ public class PaintBrushItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         Integer color = getColor(stack);
         if (color != null) {
-            tooltip.add(Component.literal(String.format("#%06X", color)));
+            tooltip.accept(Component.literal(String.format("#%06X", color)));
         }
     }
 

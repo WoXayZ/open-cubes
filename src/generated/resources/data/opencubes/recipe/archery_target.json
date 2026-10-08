@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "redstone",
   "ingredients": [
-    {
-      "item": "minecraft:target"
-    },
-    {
-      "item": "minecraft:bow"
-    }
+    "minecraft:target",
+    "minecraft:bow"
   ],
   "result": {
     "count": 1,

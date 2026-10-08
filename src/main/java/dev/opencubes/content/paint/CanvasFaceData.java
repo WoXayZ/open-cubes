@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
 /** Per-face canvas paint state: solid background, stencil layers, optional unpainted cover. */
 public final class CanvasFaceData {
@@ -130,20 +129,20 @@ public final class CanvasFaceData {
 
     public static CanvasFaceData load(CompoundTag tag) {
         CanvasFaceData data = new CanvasFaceData();
-        data.background = tag.getInt("Background");
-        ListTag list = tag.getList("Layers", Tag.TAG_COMPOUND);
+        data.background = tag.getIntOr("Background", 0);
+        ListTag list = tag.getListOrEmpty("Layers");
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
+            CompoundTag entry = list.getCompoundOrEmpty(i);
             data.layers.add(new Layer(
-                    StencilPattern.byId(entry.getString("Pattern")),
-                    entry.getInt("Rotation"),
-                    entry.getInt("Color")));
+                    StencilPattern.byId(entry.getStringOr("Pattern", "")),
+                    entry.getIntOr("Rotation", 0),
+                    entry.getIntOr("Color", 0)));
         }
-        if (tag.contains("Cover", Tag.TAG_COMPOUND)) {
-            CompoundTag coverTag = tag.getCompound("Cover");
+        if (tag.contains("Cover")) {
+            CompoundTag coverTag = tag.getCompoundOrEmpty("Cover");
             data.cover = new Cover(
-                    StencilPattern.byId(coverTag.getString("Pattern")),
-                    coverTag.getInt("Rotation"));
+                    StencilPattern.byId(coverTag.getStringOr("Pattern", "")),
+                    coverTag.getIntOr("Rotation", 0));
         }
         return data;
     }

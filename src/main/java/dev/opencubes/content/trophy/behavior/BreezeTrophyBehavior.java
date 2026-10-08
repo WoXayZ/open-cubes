@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.windcharge.WindCharge;
+import net.minecraft.world.entity.projectile.hurtingprojectile.windcharge.WindCharge;
 import net.minecraft.world.level.Level;
 
 public final class BreezeTrophyBehavior implements TrophyBehavior {
@@ -21,7 +21,7 @@ public final class BreezeTrophyBehavior implements TrophyBehavior {
             return 0;
         }
         BlockPos pos = trophy.getBlockPos();
-        WindCharge charge = EntityType.WIND_CHARGE.create(level);
+        WindCharge charge = EntityType.WIND_CHARGE.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         if (charge == null) {
             return 0;
         }

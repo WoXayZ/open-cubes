@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "redstone",
   "ingredients": [
-    {
-      "item": "minecraft:hopper"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "item": "minecraft:ender_eye"
-    }
+    "minecraft:hopper",
+    "#c:obsidians",
+    "minecraft:ender_eye"
   ],
   "result": {
     "count": 1,

@@ -17,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -71,7 +73,7 @@ public class BearTrapBlockEntity extends BlockEntity {
     }
 
     public void onEntityInside(Entity entity) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         if (entity instanceof Mob && !locked && !shut && ticksSinceOpened > OPENING_TICKS) {
@@ -109,7 +111,7 @@ public class BearTrapBlockEntity extends BlockEntity {
     }
 
     public void updateRedstone() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         boolean next = level.getBestNeighborSignal(worldPosition) > 0;
@@ -150,30 +152,28 @@ public class BearTrapBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        shut = tag.getBoolean("Shut");
-        locked = tag.getBoolean("Locked");
-        ticksSinceOpened = tag.getInt("TicksOpen");
-        trappedId = tag.hasUUID("Trapped") ? tag.getUUID("Trapped") : null;
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        shut = tag.getBooleanOr("Shut", false);
+        locked = tag.getBooleanOr("Locked", false);
+        ticksSinceOpened = tag.getIntOr("TicksOpen", 0);
+        trappedId = tag.read("Trapped", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putBoolean("Shut", shut);
         tag.putBoolean("Locked", locked);
         tag.putInt("TicksOpen", ticksSinceOpened);
         if (trappedId != null) {
-            tag.putUUID("Trapped", trappedId);
+            tag.store("Trapped", net.minecraft.core.UUIDUtil.CODEC, trappedId);
         }
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveCustomOnly(registries);
     }
 
     @Override

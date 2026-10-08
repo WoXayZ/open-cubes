@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:warped_button"
-    }
+    "b": "minecraft:warped_button"
   },
   "pattern": [
     "bb",

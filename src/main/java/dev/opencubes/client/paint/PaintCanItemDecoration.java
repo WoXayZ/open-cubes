@@ -2,7 +2,7 @@ package dev.opencubes.client.paint;
 
 import dev.opencubes.registry.OCDataComponents;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.IItemDecorator;
 
@@ -16,7 +16,7 @@ public enum PaintCanItemDecoration implements IItemDecorator {
     private static final int SQUARE = 2;
 
     @Override
-    public boolean render(GuiGraphics graphics, Font font, ItemStack stack, int xOffset, int yOffset) {
+    public boolean render(GuiGraphicsExtractor graphics, Font font, ItemStack stack, int xOffset, int yOffset) {
         Integer rgb = stack.get(OCDataComponents.PAINT_COLOR.get());
         drawChannel(graphics, xOffset, yOffset, rgb, 0);
         drawChannel(graphics, xOffset + SQUARE, yOffset, rgb, 1);
@@ -24,7 +24,7 @@ public enum PaintCanItemDecoration implements IItemDecorator {
         return false;
     }
 
-    private static void drawChannel(GuiGraphics graphics, int x, int y, Integer rgb, int channel) {
+    private static void drawChannel(GuiGraphicsExtractor graphics, int x, int y, Integer rgb, int channel) {
         graphics.fill(x, y, x + SQUARE, y + SQUARE, channelArgb(rgb, channel));
     }
 

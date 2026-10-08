@@ -7,7 +7,7 @@ import dev.opencubes.content.paint.GlyphEntity;
 import dev.opencubes.content.paint.GlyphItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,10 +31,7 @@ public final class GlyphPlacementOverlay {
     private GlyphPlacementOverlay() {}
 
     @SubscribeEvent
-    public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            return;
-        }
+    public static void onRender(RenderLevelStageEvent.AfterTranslucentBlocks event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui) {
             return;
@@ -54,9 +51,9 @@ public final class GlyphPlacementOverlay {
         BlockPos pos = hit.getBlockPos();
         int[] offsets = GlyphItem.pixelOffsets(pos, face, hit.getLocation());
         PoseStack poseStack = event.getPoseStack();
-        Vec3 camera = event.getCamera().getPosition();
+        Vec3 camera = event.getLevelRenderState().cameraRenderState.pos;
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        VertexConsumer consumer = buffers.getBuffer(RenderType.lines());
+        VertexConsumer consumer = buffers.getBuffer(RenderTypes.lines());
 
         poseStack.pushPose();
         poseStack.translate(-camera.x, -camera.y, -camera.z);
@@ -78,7 +75,7 @@ public final class GlyphPlacementOverlay {
         plane.line(consumer, matrix, right, top, right, bottom, colour);
 
         poseStack.popPose();
-        buffers.endBatch(RenderType.lines());
+        buffers.endBatch(RenderTypes.lines());
     }
 
     /** Maps face pixels (x right, y down, as seen facing the wall) to world coordinates. */

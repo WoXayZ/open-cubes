@@ -30,7 +30,7 @@ public final class SleepingBagClient {
             return;
         }
         Camera camera = event.getCamera();
-        if (!(camera.getEntity() instanceof LocalPlayer player)) {
+        if (!(camera.entity() instanceof LocalPlayer player)) {
             return;
         }
         if (!player.isSleeping()) {

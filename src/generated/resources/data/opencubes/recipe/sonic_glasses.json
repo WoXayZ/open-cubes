@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "h": {
-      "item": "minecraft:iron_helmet"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "o": {
-      "tag": "c:obsidians"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "h": "minecraft:iron_helmet",
+    "i": "#c:ingots/iron",
+    "o": "#c:obsidians",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "ihi",

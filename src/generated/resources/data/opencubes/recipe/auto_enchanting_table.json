@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "e": {
-      "item": "minecraft:enchanting_table"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "e": "minecraft:enchanting_table",
+    "i": "#c:ingots/iron",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "iii",

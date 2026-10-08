@@ -9,15 +9,17 @@ import dev.opencubes.content.paint.StencilItem;
 import dev.opencubes.content.paint.StencilPattern;
 import dev.opencubes.registry.OCItems;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,7 +38,7 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
 
     private static final String KEY = "container.opencubes.drawing_table.";
     private static final int GHOST_OVERLAY = 0x808B8B8B;
-    private static final int HINT = 0x8B3A3A;
+    private static final int HINT = 0xFF8B3A3A;
 
     private static final int CONTENT_WIDTH = 176;
     private static final int PADDING = 7;
@@ -54,11 +56,13 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
     private boolean glyphTab;
 
     public DrawingTableScreen(DrawingTableMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title);
-        imageHeight = 186;
-        inventoryLabelY = imageHeight - 94;
-        imageWidth = CONTENT_WIDTH + exclusiveWidth();
+        super(menu, inv, title, CONTENT_WIDTH + exclusiveWidth(), 186);
         glyphTab = !DrawingTableBlockEntity.isStencil(menu.selection());
+    }
+
+    @Override
+    public int getImageWidth() {
+        return CONTENT_WIDTH + exclusiveWidth();
     }
 
     /** Extra width folded into {@code imageWidth} so JEI / EMI move aside. */
@@ -68,8 +72,8 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
 
     @Override
     protected void init() {
-        imageWidth = CONTENT_WIDTH + exclusiveWidth();
         super.init();
+        this.leftPos = (this.width - getImageWidth()) / 2;
         cutButton = addRenderableWidget(new CutButton(leftPos + 66, topPos + 35,
                 () -> sendButton(DrawingTableMenu.BUTTON_CUT)));
         cutButton.active = hasInput() && outputFree();
@@ -156,22 +160,22 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            int tab = tabAt(mouseX, mouseY);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0) {
+            int tab = tabAt(event.x(), event.y());
             if (tab >= 0) {
                 glyphTab = tab == 1;
                 playClick();
                 return true;
             }
-            int entry = entryAt(mouseX, mouseY);
+            int entry = entryAt(event.x(), event.y());
             if (entry >= 0) {
                 sendButton(DrawingTableMenu.BUTTON_SELECT + entrySelection(entry));
                 playClick();
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private void playClick() {
@@ -181,12 +185,15 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top, int button) {
-        return !isOverPanel(mouseX, mouseY) && super.hasClickedOutside(mouseX, mouseY, left, top, button);
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+        boolean outside = mouseX < left || mouseY < top
+                || mouseX >= left + getImageWidth() || mouseY >= top + imageHeight;
+        return !isOverPanel(mouseX, mouseY) && outside;
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.DRAWING_TABLE, leftPos, topPos,
                 CONTENT_WIDTH, imageHeight);
 
@@ -194,24 +201,24 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
         if (!output.hasItem()) {
             int sx = leftPos + output.x;
             int sy = topPos + output.y;
-            graphics.renderFakeItem(DrawingTableBlockEntity.result(menu.selection()), sx, sy);
-            graphics.fill(RenderType.guiGhostRecipeOverlay(), sx, sy, sx + 16, sy + 16, GHOST_OVERLAY);
+            graphics.fakeItem(DrawingTableBlockEntity.result(menu.selection()), sx, sy);
+            graphics.fill(sx, sy, sx + 16, sy + 16, GHOST_OVERLAY);
         }
         if (panelOpen) {
             renderPanel(graphics, mouseX, mouseY);
         }
     }
 
-    private void renderPanel(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderPanel(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int px = panelX();
         int py = topPos;
-        graphics.blitSprite(GuiSprites.DRAWING_PANEL_SPRITE, px, py, PANEL_WIDTH, imageHeight);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiSprites.DRAWING_PANEL_SPRITE, px, py, PANEL_WIDTH, imageHeight);
 
         int hoveredTab = tabAt(mouseX, mouseY);
         renderTab(graphics, px + PADDING, py + TAB_Y, false, hoveredTab == 0);
         renderTab(graphics, px + PADDING + TAB_WIDTH + 2, py + TAB_Y, true, hoveredTab == 1);
         Component title = Component.translatable(KEY + (glyphTab ? "tab.glyphs" : "tab.stencils"));
-        graphics.drawString(font, title, px + PADDING + TAB_WIDTH * 2 + 8, py + TAB_Y + 6,
+        graphics.text(font, title, px + PADDING + TAB_WIDTH * 2 + 8, py + TAB_Y + 6,
                 SideConfigScreenHelper.TEXT, false);
 
         int selection = menu.selection();
@@ -223,12 +230,9 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
             boolean selected = entrySelection(entry) == selection;
             GuiSprites.blit(graphics, selected ? GuiSprites.DRAWING_ENTRY_SELECTED : GuiSprites.DRAWING_ENTRY,
                     x, y, 18, 18);
-            graphics.renderFakeItem(DrawingTableBlockEntity.result(entrySelection(entry)), x + 1, y + 1);
+            graphics.fakeItem(DrawingTableBlockEntity.result(entrySelection(entry)), x + 1, y + 1);
             if (entry == hovered) {
-                graphics.pose().pushPose();
-                graphics.pose().translate(0.0F, 0.0F, 200.0F);
                 GuiSprites.blit(graphics, GuiSprites.DRAWING_ENTRY_HIGHLIGHTED, x, y, 18, 18);
-                graphics.pose().popPose();
             }
         }
 
@@ -238,26 +242,26 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
             List<FormattedCharSequence> lines = font.split(
                     Component.translatable(KEY + "tab.stencils.tip"), PANEL_WIDTH - PADDING * 2);
             for (FormattedCharSequence line : lines) {
-                graphics.drawString(font, line, px + PADDING, y, SideConfigScreenHelper.TEXT, false);
+                graphics.text(font, line, px + PADDING, y, SideConfigScreenHelper.TEXT, false);
                 y += 10;
             }
         }
     }
 
-    private void renderTab(GuiGraphics graphics, int x, int y, boolean glyphs, boolean hovered) {
-        ResourceLocation sprite = glyphs == glyphTab ? GuiSprites.DRAWING_TAB_SELECTED
+    private void renderTab(GuiGraphicsExtractor graphics, int x, int y, boolean glyphs, boolean hovered) {
+        Identifier sprite = glyphs == glyphTab ? GuiSprites.DRAWING_TAB_SELECTED
                 : hovered ? GuiSprites.DRAWING_TAB_HIGHLIGHTED
                 : GuiSprites.DRAWING_TAB;
         GuiSprites.blit(graphics, sprite, x, y, TAB_WIDTH, TAB_HEIGHT);
-        graphics.renderFakeItem(tabIcon(glyphs), x + 3, y + 2);
+        graphics.fakeItem(tabIcon(glyphs), x + 3, y + 2);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
         int selection = menu.selection();
         drawCentred(graphics, Component.translatable(KEY + "selected"), 58, SideConfigScreenHelper.TEXT);
-        drawCentred(graphics, DrawingTableBlockEntity.result(selection).getHoverName(), 68, 0x1F3F7F);
+        drawCentred(graphics, DrawingTableBlockEntity.result(selection).getHoverName(), 68, 0xFF1F3F7F);
         if (!hasInput()) {
             drawCentred(graphics, Component.translatable(KEY + "need_input"), 80, HINT);
         } else if (!outputFree()) {
@@ -265,27 +269,26 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
         }
     }
 
-    private void drawCentred(GuiGraphics graphics, Component text, int y, int colour) {
+    private void drawCentred(GuiGraphicsExtractor graphics, Component text, int y, int colour) {
         String line = SideConfigScreenHelper.truncate(font, text.getString(), CONTENT_WIDTH - 14);
-        graphics.drawString(font, line, (CONTENT_WIDTH - font.width(line)) / 2, y, colour, false);
+        graphics.text(font, line, (CONTENT_WIDTH - font.width(line)) / 2, y, colour, false);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int entry = entryAt(mouseX, mouseY);
         if (entry >= 0) {
-            graphics.renderTooltip(font, DrawingTableBlockEntity.result(entrySelection(entry)), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, DrawingTableBlockEntity.result(entrySelection(entry)), mouseX, mouseY);
             return;
         }
         int tab = tabAt(mouseX, mouseY);
         if (tab >= 0) {
-            graphics.renderTooltip(font, font.split(
+            graphics.setTooltipForNextFrame(font, font.split(
                     Component.translatable(KEY + (tab == 1 ? "tab.glyphs.tip" : "tab.stencils.tip")), 200),
                     mouseX, mouseY);
+            return;
         }
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 
     /** 44×18 Cut button: sprite background with the translated label on top. */
@@ -300,18 +303,18 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             action.run();
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            ResourceLocation sprite = !active ? GuiSprites.DRAWING_CUT_DISABLED
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            Identifier sprite = !active ? GuiSprites.DRAWING_CUT_DISABLED
                     : isHoveredOrFocused() ? GuiSprites.DRAWING_CUT_HIGHLIGHTED
                     : GuiSprites.DRAWING_CUT;
             GuiSprites.blit(graphics, sprite, getX(), getY(), width, height);
-            graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + width / 2, getY() + (height - 8) / 2,
-                    active ? 0xFFFFFF : 0xA0A0A0);
+            graphics.centeredText(Minecraft.getInstance().font, getMessage(), getX() + width / 2, getY() + (height - 8) / 2,
+                    active ? 0xFFFFFFFF : 0xFFA0A0A0);
         }
 
         @Override
@@ -332,13 +335,13 @@ public class DrawingTableScreen extends AbstractContainerScreen<DrawingTableMenu
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             action.run();
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            ResourceLocation sprite = isHoveredOrFocused() ? GuiSprites.DRAWING_TOGGLE_HIGHLIGHTED
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            Identifier sprite = isHoveredOrFocused() ? GuiSprites.DRAWING_TOGGLE_HIGHLIGHTED
                     : panelOpen ? GuiSprites.DRAWING_TOGGLE_OPEN
                     : GuiSprites.DRAWING_TOGGLE;
             GuiSprites.blit(graphics, sprite, getX(), getY(), width, height);

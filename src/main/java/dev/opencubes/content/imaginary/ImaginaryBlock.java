@@ -38,10 +38,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
+
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.storage.loot.LootParams;
 
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -68,7 +69,7 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
     public static final EnumProperty<ImaginaryShape> SHAPE = EnumProperty.create("shape", ImaginaryShape.class);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
 
 
@@ -158,7 +159,7 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
     protected RenderShape getRenderShape(BlockState state) {
 
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
 
     }
 
@@ -198,18 +199,18 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
         }
 
-        if (context instanceof EntityCollisionContext entityContext
-
-                && entityContext.getEntity() instanceof Player player) {
-
-            if (be.is(ImaginaryProperty.SELECTABLE, player)) {
-
-                return be.voxelShape();
-
-            }
-
+        Player player = null;
+        if (context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player found) {
+            player = found;
+        }
+        if (player == null && level instanceof Level world && world.isClientSide()) {
+            player = dev.opencubes.client.imaginary.ImaginaryClient.player();
+        }
+        if (player != null && be.is(ImaginaryProperty.VISIBLE, player)) {
+            return be.voxelShape();
+        }
+        if (player != null) {
             return Shapes.empty();
-
         }
 
         // Creative pick / outline without entity context - still expose shape when inverted.
@@ -242,9 +243,7 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
     @Override
 
-    public ItemStack getCloneItemStack(BlockState state, net.minecraft.world.phys.HitResult target,
-
-                                       net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
 
         ImaginaryBlockEntity be = be(level, pos);
 
@@ -260,7 +259,7 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
                               @Nullable BlockEntity blockEntity, ItemStack tool) {
 
-        if (!level.isClientSide && blockEntity instanceof ImaginaryBlockEntity imaginary) {
+        if (!level.isClientSide() && blockEntity instanceof ImaginaryBlockEntity imaginary) {
 
             popResource(level, pos, imaginary.createPickStack());
 
@@ -274,7 +273,7 @@ public class ImaginaryBlock extends BaseEntityBlock {
 
     @Override
 
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, net.minecraft.world.level.redstone.Orientation fromPos, boolean isMoving) {
 
         // no-op
 

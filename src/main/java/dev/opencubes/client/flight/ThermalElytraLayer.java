@@ -1,89 +1,70 @@
 package dev.opencubes.client.flight;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.opencubes.OCConstants;
+import dev.opencubes.client.PoseRender;
 import dev.opencubes.content.flight.GliderPaint;
 import dev.opencubes.content.flight.ThermalElytraItem;
-import net.minecraft.client.model.ElytraModel;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.object.equipment.ElytraModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Vanilla {@link ElytraLayer} only renders for {@code Items.ELYTRA} and cannot tint. This variant
- * renders the same wing model for the Thermal Elytra, with our greyscale canvas multiplied by the
- * paint colour. Capes and skin elytras still take over, untinted, like on vanilla elytras.
+ * Vanilla wings render through the equipment asset and cannot tint. This layer draws the same
+ * wing model for the thermal elytra, with the greyscale canvas multiplied by the paint colour.
+ * A skin elytra or cape still takes over, untinted.
  */
-public class ThermalElytraLayer<T extends LivingEntity, M extends EntityModel<T>> extends ElytraLayer<T, M> {
+public class ThermalElytraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
-    private static final ResourceLocation TEXTURE = OCConstants.id("textures/entity/thermal_elytra.png");
+    private static final Identifier TEXTURE = OCConstants.id("textures/entity/thermal_elytra.png");
 
-    private final ElytraModel<T> wings;
+    private final ElytraModel wings;
 
-    public ThermalElytraLayer(RenderLayerParent<T, M> renderer, EntityModelSet modelSet) {
-        super(renderer, modelSet);
-        this.wings = new ElytraModel<>(modelSet.bakeLayer(ModelLayers.ELYTRA));
+    public ThermalElytraLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer, EntityModelSet modelSet) {
+        super(renderer);
+        this.wings = new ElytraModel(modelSet.bakeLayer(ModelLayers.ELYTRA));
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, T entity,
-                       float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks,
-                       float netHeadYaw, float headPitch) {
-        ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!shouldRender(stack, entity)) {
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light,
+                       AvatarRenderState state, float yRot, float xRot) {
+        ItemStack stack = state.chestEquipment;
+        if (!(stack.getItem() instanceof ThermalElytraItem)) {
             return;
         }
-        ResourceLocation texture = skinTexture(entity);
+        Identifier texture = skinTexture(state);
         int colour = 0xFFFFFFFF;
         if (texture == null) {
             texture = TEXTURE;
             colour = 0xFF000000 | GliderPaint.colour(stack);
         }
-
         poseStack.pushPose();
         poseStack.translate(0.0F, 0.0F, 0.125F);
-        getParentModel().copyPropertiesTo(wings);
-        wings.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        VertexConsumer consumer = ItemRenderer.getArmorFoilBuffer(buffer, RenderType.armorCutoutNoCull(texture),
-                stack.hasFoil());
-        wings.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, colour);
+        wings.setupAnim(state);
+        Identifier wingTexture = texture;
+        int tint = colour;
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.armorCutoutNoCull(wingTexture),
+                (pose, buffer) -> wings.renderToBuffer(PoseRender.stack(pose), buffer, light, OverlayTexture.NO_OVERLAY, tint));
         poseStack.popPose();
     }
 
-    private static ResourceLocation skinTexture(LivingEntity entity) {
-        if (entity instanceof AbstractClientPlayer player) {
-            PlayerSkin skin = player.getSkin();
-            if (skin.elytraTexture() != null) {
-                return skin.elytraTexture();
-            }
-            if (skin.capeTexture() != null && player.isModelPartShown(PlayerModelPart.CAPE)) {
-                return skin.capeTexture();
-            }
+    private static @Nullable Identifier skinTexture(AvatarRenderState state) {
+        if (state.skin.elytra() != null) {
+            return state.skin.elytra().texturePath();
+        }
+        if (state.showCape && state.skin.cape() != null) {
+            return state.skin.cape().texturePath();
         }
         return null;
-    }
-
-    @Override
-    public boolean shouldRender(ItemStack stack, T entity) {
-        return stack.getItem() instanceof ThermalElytraItem;
-    }
-
-    @Override
-    public ResourceLocation getElytraTexture(ItemStack stack, T entity) {
-        return TEXTURE;
     }
 }

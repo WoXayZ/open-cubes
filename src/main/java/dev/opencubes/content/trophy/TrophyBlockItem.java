@@ -12,7 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,7 @@ public class TrophyBlockItem extends BlockItem {
         super(block, properties);
     }
 
-    public static ItemStack create(Block block, ResourceLocation trophyId) {
+    public static ItemStack create(Block block, Identifier trophyId) {
         ItemStack stack = new ItemStack(block);
         stack.set(OCDataComponents.TROPHY_ID.get(), trophyId);
         return stack;
@@ -46,23 +46,23 @@ public class TrophyBlockItem extends BlockItem {
 
     /** Every trophy variant for the creative tab (registry first, then builtin fallback). */
     public static void fillCreative(HolderLookup.Provider holders, Consumer<ItemStack> output) {
-        Set<ResourceLocation> ids = new LinkedHashSet<>();
+        Set<Identifier> ids = new LinkedHashSet<>();
         holders.lookup(OCRegistries.TROPHY).ifPresent(lookup ->
-                lookup.listElements().forEach(holder -> ids.add(holder.key().location())));
+                lookup.listElements().forEach(holder -> ids.add(holder.key().identifier())));
         if (ids.isEmpty()) {
             for (String path : BUILTIN_IDS) {
                 ids.add(OCConstants.id(path));
             }
         }
         Block block = OCBlocks.TROPHY.get();
-        for (ResourceLocation id : ids) {
+        for (Identifier id : ids) {
             output.accept(create(block, id));
         }
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        ResourceLocation trophyId = stack.get(OCDataComponents.TROPHY_ID.get());
+        Identifier trophyId = stack.get(OCDataComponents.TROPHY_ID.get());
         if (trophyId == null) {
             return super.getName(stack);
         }
@@ -72,13 +72,13 @@ public class TrophyBlockItem extends BlockItem {
     public static Component nameFor(Holder.Reference<TrophyDefinition> holder) {
         Component entityName = BuiltInRegistries.ENTITY_TYPE.getOptional(holder.value().entity())
                 .map(EntityType::getDescription)
-                .orElseGet(() -> Component.literal(holder.key().location().getPath()));
+                .orElseGet(() -> Component.literal(holder.key().identifier().getPath()));
         return Component.translatable("block.opencubes.trophy.entity", entityName);
     }
 
-    private static Component entityLabel(ResourceLocation trophyId) {
+    private static Component entityLabel(Identifier trophyId) {
         // Shipped trophies use the mob path as their datapack id; full entity id lives in JSON.
-        ResourceLocation guess = ResourceLocation.fromNamespaceAndPath("minecraft", trophyId.getPath());
+        Identifier guess = Identifier.fromNamespaceAndPath("minecraft", trophyId.getPath());
         return BuiltInRegistries.ENTITY_TYPE.getOptional(guess)
                 .map(EntityType::getDescription)
                 .orElseGet(() -> Component.literal(trophyId.getPath()));

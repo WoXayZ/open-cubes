@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -26,7 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 public class BuildingGuideBlock extends BaseEntityBlock {
 
     public static final MapCodec<BuildingGuideBlock> CODEC = simpleCodec(BuildingGuideBlock::new);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE = Shapes.block();
 
@@ -67,7 +67,7 @@ public class BuildingGuideBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+    protected VoxelShape getOcclusionShape(BlockState state) {
         return Shapes.empty();
     }
 
@@ -77,7 +77,7 @@ public class BuildingGuideBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
@@ -91,19 +91,19 @@ public class BuildingGuideBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof BuildingGuideBlockEntity guide)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return DyeColor.getColor(stack) != null
-                    ? ItemInteractionResult.SUCCESS
-                    : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    ? InteractionResult.SUCCESS
+                    : InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         return guide.tryDye(stack)
-                ? ItemInteractionResult.SUCCESS
-                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                ? InteractionResult.SUCCESS
+                : InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class BuildingGuideBlock extends BaseEntityBlock {
         if (!areButtonsActive(player)) {
             return InteractionResult.PASS;
         }
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         if (!(level.getBlockEntity(pos) instanceof BuildingGuideBlockEntity)
@@ -128,8 +128,7 @@ public class BuildingGuideBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
         if (level.getBlockEntity(pos) instanceof BuildingGuideBlockEntity guide) {
             guide.updateRedstone();
         }
@@ -162,7 +161,7 @@ public class BuildingGuideBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide
+        return level.isClientSide()
                 ? createTickerHelper(type, OCBlockEntities.BUILDING_GUIDE.get(), BuildingGuideBlockEntity::clientTick)
                 : null;
     }

@@ -1,13 +1,13 @@
 package dev.opencubes.content.imaginary;
 
+import dev.opencubes.util.PlayerFeedback;
+
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCDataComponents;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -18,6 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class ImaginaryItem extends BlockItem {
 
@@ -38,11 +40,6 @@ public class ImaginaryItem extends BlockItem {
 
     public boolean isCrayon() {
         return crayon;
-    }
-
-    @Override
-    public String getDescriptionId() {
-        return crayon ? "item.opencubes.crayon" : "item.opencubes.pencil";
     }
 
     public static ItemStack createPencil(ImaginaryShape shape, boolean inverted, float uses) {
@@ -96,15 +93,15 @@ public class ImaginaryItem extends BlockItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 ImaginaryPlacementMode next = getMode(stack).next();
                 setMode(stack, next);
-                player.displayClientMessage(Component.translatable(next.translationKey()), true);
+                PlayerFeedback.tell(player, Component.translatable(next.translationKey()), true);
             }
-            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return super.use(level, player, hand);
     }
@@ -153,13 +150,13 @@ public class ImaginaryItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable(getMode(stack).translationKey()));
-        tooltip.add(Component.translatable("opencubes.misc.imaginary_uses", String.format("%.1f", getUses(stack))));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable(getMode(stack).translationKey()));
+        tooltip.accept(Component.translatable("opencubes.misc.imaginary_uses", String.format("%.1f", getUses(stack))));
         if (crayon) {
             Integer colour = stack.get(OCDataComponents.PAINT_COLOR.get());
             if (colour != null) {
-                tooltip.add(Component.translatable("opencubes.misc.color", String.format("#%06X", colour)));
+                tooltip.accept(Component.translatable("opencubes.misc.color", String.format("#%06X", colour)));
             }
         }
     }

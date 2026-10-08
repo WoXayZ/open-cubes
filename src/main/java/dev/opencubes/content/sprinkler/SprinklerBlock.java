@@ -5,8 +5,10 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -19,16 +21,18 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import dev.opencubes.registry.OCBlockEntities;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 public class SprinklerBlock extends BaseEntityBlock {
 
     public static final MapCodec<SprinklerBlock> CODEC = simpleCodec(SprinklerBlock::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape SHAPE_Z = Block.box(5, 0, 1, 11, 9, 15);
     private static final VoxelShape SHAPE_X = Block.box(1, 0, 5, 15, 9, 11);
 
@@ -77,13 +81,22 @@ public class SprinklerBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                          Player player, InteractionHand hand, BlockHitResult hit) {
+        if (FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
+            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof SprinklerBlockEntity sprinkler
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof SprinklerBlockEntity sprinkler
                 && player instanceof ServerPlayer serverPlayer) {
             // The menu type is an IContainerFactory, so the client reads a position out of the
             // extra data. Opening without it hands the factory a null buffer and kills the connection.
             serverPlayer.openMenu(sprinkler, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 }

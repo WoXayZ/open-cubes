@@ -30,6 +30,8 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.RangedWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -230,7 +232,7 @@ public class XpBottlerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void runAutoIo() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         if ((autoFlags & FLAG_AUTO_PULL) != 0) {
@@ -285,26 +287,26 @@ public class XpBottlerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Tank")) {
-            tank.readFromNBT(registries, tag.getCompound("Tank"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Tank")) {
+            tag.child("Tank").ifPresent(tank::deserialize);
         }
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        progress = tag.getInt("Progress");
-        itemInputSides = tag.getInt("ItemInputs");
-        itemOutputSides = tag.getInt("ItemOutputs");
-        xpSides = tag.getInt("XpInputs");
-        autoFlags = tag.getInt("AutoFlags");
+        progress = tag.getIntOr("Progress", 0);
+        itemInputSides = tag.getIntOr("ItemInputs", 0);
+        itemOutputSides = tag.getIntOr("ItemOutputs", 0);
+        xpSides = tag.getIntOr("XpInputs", 0);
+        autoFlags = tag.getIntOr("AutoFlags", 0);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.putChild("Tank", tank);
+        items.serialize(tag.child("Items"));
         tag.putInt("Progress", progress);
         tag.putInt("ItemInputs", itemInputSides);
         tag.putInt("ItemOutputs", itemOutputSides);

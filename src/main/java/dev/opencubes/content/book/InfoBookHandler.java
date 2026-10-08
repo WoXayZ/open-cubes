@@ -22,7 +22,7 @@ public final class InfoBookHandler {
         if (!OCCommonConfig.SPAM_INFO_BOOK.get()) {
             return;
         }
-        if (player.getPersistentData().getBoolean("opencubes:got_info_book")) {
+        if (player.getPersistentData().getBooleanOr("opencubes:got_info_book", false)) {
             return;
         }
         player.getPersistentData().putBoolean("opencubes:got_info_book", true);

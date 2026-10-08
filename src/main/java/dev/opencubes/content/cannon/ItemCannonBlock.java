@@ -17,7 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -26,7 +27,7 @@ import dev.opencubes.registry.OCBlockEntities;
 public class ItemCannonBlock extends BaseEntityBlock {
 
     public static final MapCodec<ItemCannonBlock> CODEC = simpleCodec(ItemCannonBlock::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     /** Traced from item_cannon.json (base, mounts, tilted barrel) with the muzzle pointing north. */
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
@@ -86,7 +87,7 @@ public class ItemCannonBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.ITEM_CANNON.get(), ItemCannonBlockEntity::serverTick);
     }
 

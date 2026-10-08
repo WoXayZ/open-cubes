@@ -3,15 +3,9 @@
   "category": "misc",
   "group": "opencubes:rotating_elevator",
   "key": {
-    "e": {
-      "tag": "c:ender_pearls"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "w": {
-      "item": "minecraft:black_wool"
-    }
+    "e": "#c:ender_pearls",
+    "i": "#c:ingots/iron",
+    "w": "minecraft:black_wool"
   },
   "pattern": [
     "wiw",

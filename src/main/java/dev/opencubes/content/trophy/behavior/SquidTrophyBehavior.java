@@ -19,7 +19,7 @@ public final class SquidTrophyBehavior implements TrophyBehavior {
             return 0;
         }
         BlockPos above = trophy.getBlockPos().above();
-        if (level.dimensionType().ultraWarm()) {
+        if (level.dimension() == Level.NETHER) {
             level.playSound(null, above, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F);
         } else if (level.getBlockState(above).isAir()) {
             level.setBlock(above, Blocks.WATER.defaultBlockState(), 3);

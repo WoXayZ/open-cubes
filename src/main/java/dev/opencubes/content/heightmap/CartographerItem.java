@@ -3,7 +3,7 @@ package dev.opencubes.content.heightmap;
 import dev.opencubes.registry.OCEntities;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,17 +17,19 @@ public class CartographerItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
-        if (!level.isClientSide && level instanceof ServerLevel) {
+        if (!level.isClientSide() && level instanceof ServerLevel) {
             Vec3 look = player.getLookAngle();
             Vec3 spawn = player.position().add(look.x * 1.5D, player.getEyeHeight(), look.z * 1.5D);
-            CartographerEntity entity = OCEntities.CARTOGRAPHER.get().create(level);
+            CartographerEntity entity = OCEntities.CARTOGRAPHER.get().create(level, net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE);
             if (entity != null) {
-                entity.moveTo(spawn.x, spawn.y, spawn.z, player.getYRot(), 0.0F);
+                entity.setPos(spawn.x, spawn.y, spawn.z);
+                entity.setYRot(player.getYRot());
+                entity.setXRot(0.0F);
                 entity.setOwner(player);
                 entity.loadFromItem(stack);
                 level.addFreshEntity(entity);
@@ -36,6 +38,6 @@ public class CartographerItem extends Item {
                 }
             }
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 }

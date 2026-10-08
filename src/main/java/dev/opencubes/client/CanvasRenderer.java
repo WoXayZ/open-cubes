@@ -7,19 +7,28 @@ import dev.opencubes.content.paint.CanvasBlockEntity;
 import dev.opencubes.content.paint.CanvasFaceData;
 import dev.opencubes.content.paint.GlassCanvasBlock;
 import dev.opencubes.content.paint.StencilPattern;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Canvas paint, face by face: the background colour, then every stencilled layer through the
@@ -34,7 +43,7 @@ import org.joml.Matrix4f;
  * is taken from the neighbouring cell, and the entity cutout pipeline is used so block-chunk shade
  * is not applied a second time on top of the tint.
  */
-public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity> {
+public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity, CanvasRenderState> {
 
     private static final float OUTSET = 0.002F;
     private static final float LAYER_STEP = 0.0015F;
@@ -48,16 +57,20 @@ public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity> {
     public CanvasRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(CanvasBlockEntity canvas, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int light, int overlay) {
-        boolean glass = canvas.getBlockState().getBlock() instanceof GlassCanvasBlock;
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(OCConstants.id("block/canvas"));
-        VertexConsumer consumer = buffers.getBuffer(glass
-                ? RenderType.entityTranslucent(InventoryMenu.BLOCK_ATLAS)
-                : RenderType.entityCutout(InventoryMenu.BLOCK_ATLAS));
-        Painter painter = new Painter(consumer, poseStack.last().pose(), sprite, overlay, glass);
+    public CanvasRenderState createRenderState() {
+        return new CanvasRenderState();
+    }
 
+    @Override
+    public void extractRenderState(
+            CanvasBlockEntity canvas,
+            CanvasRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(canvas, state, partialTicks, cameraPosition, breakProgress);
+        state.glass = canvas.getBlockState().getBlock() instanceof GlassCanvasBlock;
+        state.faces.clear();
         Level level = canvas.getLevel();
         BlockPos pos = canvas.getBlockPos();
         for (Direction direction : Direction.values()) {
@@ -65,52 +78,73 @@ public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity> {
             if (face.isEmpty()) {
                 continue;
             }
-            painter.face = direction;
-            painter.light = faceLight(level, pos, direction, light);
-            float depth = OUTSET;
-            if (face.background() != 0) {
-                painter.rect(0, 0, StencilPattern.SIZE, StencilPattern.SIZE, depth, face.background());
-            }
-            for (CanvasFaceData.Layer layer : face.layers()) {
-                depth += LAYER_STEP;
-                StencilPattern pattern = layer.pattern();
-                int rotation = layer.rotation();
-                painter.mask((x, y) -> pattern.isHole(x, y, rotation), depth, layer.color());
-            }
-            CanvasFaceData.Cover cover = face.cover();
-            if (cover != null) {
-                depth += LAYER_STEP;
-                painter.mask((x, y) -> !cover.pattern().isHole(x, y, cover.rotation()), depth, COVER_COLOUR);
-            }
+            CanvasRenderState.Face snapshot = new CanvasRenderState.Face();
+            snapshot.direction = direction;
+            snapshot.light = faceLight(level, pos, direction, state.lightCoords);
+            snapshot.background = face.background();
+            snapshot.layers = new ArrayList<>(face.layers());
+            snapshot.cover = face.cover();
+            state.faces.add(snapshot);
         }
+    }
+
+    @Override
+    public void submit(CanvasRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
+        if (state.faces.isEmpty()) {
+            return;
+        }
+        TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
+                .get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, OCConstants.id("block/canvas")));
+        RenderType renderType = state.glass
+                ? RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS)
+                : RenderTypes.entityCutoutCull(TextureAtlas.LOCATION_BLOCKS);
+        List<CanvasRenderState.Face> faces = List.copyOf(state.faces);
+        boolean glass = state.glass;
+        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            Painter painter = new Painter(buffer, pose.pose(), sprite, glass);
+            for (CanvasRenderState.Face face : faces) {
+                painter.face = face.direction;
+                painter.light = face.light;
+                float depth = OUTSET;
+                if (face.background != 0) {
+                    painter.rect(0, 0, StencilPattern.SIZE, StencilPattern.SIZE, depth, face.background);
+                }
+                for (CanvasFaceData.Layer layer : face.layers) {
+                    depth += LAYER_STEP;
+                    StencilPattern pattern = layer.pattern();
+                    int rotation = layer.rotation();
+                    painter.mask((x, y) -> pattern.isHole(x, y, rotation), depth, layer.color());
+                }
+                CanvasFaceData.Cover cover = face.cover;
+                if (cover != null) {
+                    depth += LAYER_STEP;
+                    painter.mask((x, y) -> !cover.pattern().isHole(x, y, cover.rotation()), depth, COVER_COLOUR);
+                }
+            }
+        });
     }
 
     private static int faceLight(Level level, BlockPos pos, Direction direction, int fallback) {
         if (level == null) {
             return fallback;
         }
-        int outside = LevelRenderer.getLightColor(level, pos.relative(direction));
-        // Prefer the brighter of centre vs neighbour so a face buried against a wall is not black.
-        int block = Math.max(LightTexture.block(fallback), LightTexture.block(outside));
-        int sky = Math.max(LightTexture.sky(fallback), LightTexture.sky(outside));
-        return LightTexture.pack(block, sky);
+        int outside = LevelRenderer.getLightCoords(level, pos.relative(direction));
+        return LightCoordsUtil.max(fallback, outside);
     }
 
     private static final class Painter {
         private final VertexConsumer consumer;
         private final Matrix4f matrix;
         private final TextureAtlasSprite sprite;
-        private final int overlay;
         private final boolean glass;
         private Direction face = Direction.UP;
         private int light;
 
-        private Painter(VertexConsumer consumer, Matrix4f matrix, TextureAtlasSprite sprite,
-                        int overlay, boolean glass) {
+        private Painter(VertexConsumer consumer, Matrix4f matrix, TextureAtlasSprite sprite, boolean glass) {
             this.consumer = consumer;
             this.matrix = matrix;
             this.sprite = sprite;
-            this.overlay = overlay;
             this.glass = glass;
         }
 
@@ -146,7 +180,6 @@ public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity> {
             float right = u1 / (float) StencilPattern.SIZE;
             float top = v0 / (float) StencilPattern.SIZE;
             float bottom = v1 / (float) StencilPattern.SIZE;
-            // Counter-clockwise seen from outside: top left, bottom left, bottom right, top right.
             vertex(left, top, depth, sprite.getU0(), sprite.getV0(), r, g, b, a);
             vertex(left, bottom, depth, sprite.getU0(), sprite.getV1(), r, g, b, a);
             vertex(right, bottom, depth, sprite.getU1(), sprite.getV1(), r, g, b, a);
@@ -171,7 +204,7 @@ public class CanvasRenderer implements BlockEntityRenderer<CanvasBlockEntity> {
             consumer.addVertex(matrix, x, y, z)
                     .setColor(r, g, b, a)
                     .setUv(tu, tv)
-                    .setOverlay(overlay)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(light)
                     .setNormal(face.getStepX(), face.getStepY(), face.getStepZ());
         }

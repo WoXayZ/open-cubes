@@ -1,5 +1,7 @@
 package dev.opencubes.content.grave;
 
+import dev.opencubes.util.ServerLevels;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import dev.opencubes.OCConstants;
@@ -26,7 +28,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,7 +58,7 @@ public final class GraveDeathHandler {
         if (!(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) {
             return;
         }
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return;
         }
 
@@ -68,12 +70,12 @@ public final class GraveDeathHandler {
             try {
                 var file = PlayerInventoryStore.INSTANCE.storePlayerInventory(player, "death");
                 LOGGER.info("Death inventory for {} saved as {}. Restore with /opencubes inventory restore {} {}",
-                        player.getGameProfile().getName(),
+                        player.getGameProfile().name(),
                         file.getFileName(),
-                        player.getGameProfile().getName(),
+                        player.getGameProfile().name(),
                         PlayerInventoryStore.stripFilename(file.getFileName().toString()));
             } catch (Exception e) {
-                LOGGER.error("Failed to dump death inventory for {}", player.getGameProfile().getName(), e);
+                LOGGER.error("Failed to dump death inventory for {}", player.getGameProfile().name(), e);
             }
         }
     }
@@ -90,16 +92,19 @@ public final class GraveDeathHandler {
         if (!(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) {
             return;
         }
-        if (player.level().isClientSide || !OCCommonConfig.GRAVES_ENABLED.get()) {
+        if (player.level().isClientSide() || !OCCommonConfig.GRAVES_ENABLED.get()) {
             return;
         }
-        if (!player.level().getGameRules().getBoolean(OCGameRules.SPAWN_GRAVES)) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!serverLevel.getGameRules().get(OCGameRules.SPAWN_GRAVES)) {
             return;
         }
         if (player.getAbilities().instabuild) {
             return;
         }
-        if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+        if (serverLevel.getGameRules().get(GameRules.KEEP_INVENTORY)) {
             return;
         }
         if (event.getDrops().isEmpty()) {
@@ -131,7 +136,7 @@ public final class GraveDeathHandler {
         GameProfile profile = player.getGameProfile();
         BlockPos deathPos = player.blockPosition();
         Component deathMessage = buildDeathMessage(player);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
 
         NEXT_TICK.add(() -> placeGrave(level, profile, deathPos, stacks, xp, deathMessage));
     }
@@ -168,11 +173,11 @@ public final class GraveDeathHandler {
         ItemStackHandler loot = PlayerInventoryStore.fromStacks(stacks);
 
         if (gravePos == null) {
-            LOGGER.warn("No grave location for {} - dropping loot and writing backup", profile.getName());
+            LOGGER.warn("No grave location for {} - dropping loot and writing backup", profile.name());
             if (OCCommonConfig.GRAVES_BACKUP.get()) {
-                PlayerInventoryStore.INSTANCE.storeHandler(loot, profile.getName(), "grave", level, meta -> {
-                    meta.putString(PlayerInventoryStore.TAG_PLAYER_NAME, profile.getName());
-                    meta.putString(PlayerInventoryStore.TAG_PLAYER_UUID, profile.getId().toString());
+                PlayerInventoryStore.INSTANCE.storeHandler(loot, profile.name(), "grave", level, meta -> {
+                    meta.putString(PlayerInventoryStore.TAG_PLAYER_NAME, profile.name());
+                    meta.putString(PlayerInventoryStore.TAG_PLAYER_UUID, profile.id().toString());
                     meta.putBoolean("Placed", false);
                     meta.putInt(PlayerInventoryStore.TAG_XP, xp);
                     meta.putInt("PlayerX", deathPos.getX());
@@ -194,15 +199,15 @@ public final class GraveDeathHandler {
         BlockState graveState = OCBlocks.GRAVE.get().defaultBlockState();
         level.setBlock(gravePos, graveState, 3);
         if (level.getBlockEntity(gravePos) instanceof GraveBlockEntity grave) {
-            grave.setUsername(profile.getName());
+            grave.setUsername(profile.name());
             grave.setLoot(loot);
             grave.setXp(xp);
             grave.setDeathMessage(deathMessage);
 
             if (OCCommonConfig.GRAVES_BACKUP.get()) {
-                PlayerInventoryStore.INSTANCE.storeHandler(loot, profile.getName(), "grave", level, meta -> {
-                    meta.putString(PlayerInventoryStore.TAG_PLAYER_NAME, profile.getName());
-                    meta.putString(PlayerInventoryStore.TAG_PLAYER_UUID, profile.getId().toString());
+                PlayerInventoryStore.INSTANCE.storeHandler(loot, profile.name(), "grave", level, meta -> {
+                    meta.putString(PlayerInventoryStore.TAG_PLAYER_NAME, profile.name());
+                    meta.putString(PlayerInventoryStore.TAG_PLAYER_UUID, profile.id().toString());
                     meta.putBoolean("Placed", true);
                     meta.putInt(PlayerInventoryStore.TAG_XP, xp);
                     meta.putInt("PlayerX", deathPos.getX());
@@ -215,7 +220,7 @@ public final class GraveDeathHandler {
             }
 
             LOGGER.info("Grave for {} spawned at {} (died at {}), XP={}",
-                    profile.getName(), gravePos, deathPos, xp);
+                    profile.name(), gravePos, deathPos, xp);
         } else {
             LOGGER.warn("Failed to create grave BE at {}", gravePos);
             dropStacks(level, gravePos, stacks);

@@ -1,8 +1,10 @@
 package dev.opencubes.content.heightmap;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.opencubes.registry.OCItems;
-import dev.opencubes.registry.OCRecipeSerializers;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -14,9 +16,15 @@ import net.minecraft.world.level.Level;
 /** Shapeless: empty map + exactly four gold nuggets → empty map at the next scale. */
 public class MapResizeRecipe extends CustomRecipe {
 
-    public MapResizeRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+    public static final MapResizeRecipe INSTANCE = new MapResizeRecipe();
+    public static final MapCodec<MapResizeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC)
+                    .forGetter(recipe -> CraftingBookCategory.MISC)
+    ).apply(instance, category -> INSTANCE));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MapResizeRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final RecipeSerializer<MapResizeRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+
+    private MapResizeRecipe() {}
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
@@ -47,7 +55,7 @@ public class MapResizeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (stack.is(OCItems.EMPTY_MAP.get())) {
@@ -58,12 +66,7 @@ public class MapResizeRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return OCRecipeSerializers.MAP_RESIZE.get();
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
+        return SERIALIZER;
     }
 }

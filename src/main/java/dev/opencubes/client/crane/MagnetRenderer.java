@@ -6,14 +6,15 @@ import com.mojang.math.Axis;
 import dev.opencubes.content.crane.MagnetEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -23,9 +24,9 @@ import org.joml.Matrix4f;
  * The stepped magnet, plus a striped cable up to the owner's boom. In first person the wearer's
  * own model is hidden, so the boom is drawn here too.
  */
-public class MagnetRenderer extends EntityRenderer<MagnetEntity> {
+public class MagnetRenderer extends EntityRenderer<MagnetEntity, MagnetRenderState> {
 
-    private static final ResourceLocation WHITE = ResourceLocation.withDefaultNamespace("textures/misc/white.png");
+    private static final Identifier WHITE = Identifier.withDefaultNamespace("textures/misc/white.png");
     private static final double CABLE_HALF_WIDTH = 0.025D;
     private static final double STRIPE = 0.125D;
     private static final int YELLOW = 0xFFF0C820;
@@ -42,51 +43,79 @@ public class MagnetRenderer extends EntityRenderer<MagnetEntity> {
     }
 
     @Override
+    public MagnetRenderState createRenderState() {
+        return new MagnetRenderState();
+    }
+
+    @Override
     public boolean shouldRender(MagnetEntity entity, Frustum frustum, double camX, double camY, double camZ) {
         // The cable can be on screen while the magnet itself is not.
         return entity.getOwner() != null || super.shouldRender(entity, frustum, camX, camY, camZ);
     }
 
     @Override
-    public void render(MagnetEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int packedLight) {
-        poseStack.pushPose();
-        poseStack.scale(2.0F, 2.0F, 2.0F);
-        magnet.render(poseStack, buffers.getBuffer(RenderType.entityCutout(CraneModels.MAGNET_TEXTURE)),
-                packedLight, OverlayTexture.NO_OVERLAY);
-        poseStack.popPose();
-
+    public void extractRenderState(MagnetEntity entity, MagnetRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
         Player owner = entity.getOwner();
-        if (owner != null) {
-            Vec3 origin = entity.getPosition(partialTick);
-            Vec3 tip = CraneModels.boomTip(owner, partialTick).subtract(origin);
-            int light = LightTexture.pack(Math.max(LightTexture.block(packedLight), 4), LightTexture.sky(packedLight));
-            renderCable(poseStack, buffers, new Vec3(0.0D, CraneModels.MAGNET_TOP, 0.0D), tip, light);
-            Minecraft mc = Minecraft.getInstance();
-            if (owner == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson()) {
-                renderBoom(poseStack, buffers, owner, origin, partialTick, light);
-            }
+        state.hasCable = owner != null;
+        if (owner == null) {
+            return;
         }
-        super.render(entity, entityYaw, partialTick, poseStack, buffers, packedLight);
+        Vec3 origin = entity.getPosition(partialTicks);
+        state.cableTip = CraneModels.boomTip(owner, partialTicks).subtract(origin);
+        state.cableLight = LightCoordsUtil.pack(
+                Math.max(LightCoordsUtil.block(state.lightCoords), 4),
+                LightCoordsUtil.sky(state.lightCoords));
+        Minecraft mc = Minecraft.getInstance();
+        state.drawBoom = owner == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
+        state.boomPivot = CraneModels.boomPivot(owner, partialTicks).subtract(origin);
+        state.headYaw = Mth.rotLerp(partialTicks, owner.yHeadRotO, owner.yHeadRot);
+        state.boomLight = state.cableLight;
     }
 
-    private void renderBoom(PoseStack poseStack, MultiBufferSource buffers, Player owner, Vec3 origin,
-                            float partialTick, int light) {
-        Vec3 pivot = CraneModels.boomPivot(owner, partialTick).subtract(origin);
-        float headYaw = Mth.rotLerp(partialTick, owner.yHeadRotO, owner.yHeadRot);
+    @Override
+    public void submit(MagnetRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
         poseStack.pushPose();
-        poseStack.translate(pivot.x, pivot.y, pivot.z);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - headYaw));
-        poseStack.scale(-1.0F, -1.0F, 1.0F);
-        arm.setPos(0.0F, 0.0F, 0.0F);
-        arm.yRot = Mth.PI;
-        arm.render(poseStack, buffers.getBuffer(RenderType.entityCutout(CraneModels.BACKPACK_TEXTURE)),
-                light, OverlayTexture.NO_OVERLAY);
+        poseStack.scale(2.0F, 2.0F, 2.0F);
+        int light = state.lightCoords;
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutoutCull(CraneModels.MAGNET_TEXTURE),
+                (pose, buffer) -> {
+                    PoseStack modelPose = new PoseStack();
+                    modelPose.last().set(pose);
+                    this.magnet.render(modelPose, buffer, light, OverlayTexture.NO_OVERLAY);
+                });
         poseStack.popPose();
+
+        if (state.hasCable) {
+            Vec3 tip = state.cableTip;
+            int cableLight = state.cableLight;
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(WHITE), (pose, buffer) ->
+                    renderCable(buffer, pose.pose(), new Vec3(0.0D, CraneModels.MAGNET_TOP, 0.0D), tip, cableLight));
+            if (state.drawBoom) {
+                Vec3 pivot = state.boomPivot;
+                float headYaw = state.headYaw;
+                int boomLight = state.boomLight;
+                poseStack.pushPose();
+                poseStack.translate(pivot.x, pivot.y, pivot.z);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - headYaw));
+                poseStack.scale(-1.0F, -1.0F, 1.0F);
+                submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutoutCull(CraneModels.BACKPACK_TEXTURE),
+                        (pose, buffer) -> {
+                            this.arm.setPos(0.0F, 0.0F, 0.0F);
+                            this.arm.yRot = Mth.PI;
+                            PoseStack modelPose = new PoseStack();
+                            modelPose.last().set(pose);
+                            this.arm.render(modelPose, buffer, boomLight, OverlayTexture.NO_OVERLAY);
+                        });
+                poseStack.popPose();
+            }
+        }
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
 
     /** A thin square tube from {@code from} to {@code to}, in alternating yellow and black bands. */
-    private static void renderCable(PoseStack poseStack, MultiBufferSource buffers, Vec3 from, Vec3 to, int light) {
+    private static void renderCable(VertexConsumer consumer, Matrix4f matrix, Vec3 from, Vec3 to, int light) {
         Vec3 span = to.subtract(from);
         double length = span.length();
         if (length < 1.0E-3D) {
@@ -101,8 +130,6 @@ public class MagnetRenderer extends EntityRenderer<MagnetEntity> {
         Vec3 other = dir.cross(side).normalize().scale(CABLE_HALF_WIDTH);
         Vec3[] corners = {side.add(other), side.subtract(other), side.reverse().subtract(other), side.reverse().add(other)};
 
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE));
-        Matrix4f matrix = poseStack.last().pose();
         int bands = Math.max(1, Mth.ceil(length / STRIPE));
         for (int band = 0; band < bands; band++) {
             Vec3 a = from.add(span.scale((double) band / bands));
@@ -127,10 +154,5 @@ public class MagnetRenderer extends EntityRenderer<MagnetEntity> {
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
                 .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
-    }
-
-    @Override
-    public ResourceLocation getTextureLocation(MagnetEntity entity) {
-        return CraneModels.MAGNET_TEXTURE;
     }
 }

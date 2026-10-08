@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class ArcheryTargetBlockEntity extends BlockEntity {
@@ -23,7 +25,7 @@ public class ArcheryTargetBlockEntity extends BlockEntity {
     }
 
     public void onHit(Vec3 hit) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         int next = ArcheryTargetBlock.accuracyStrength(worldPosition, getBlockState(), hit);
@@ -47,16 +49,16 @@ public class ArcheryTargetBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putInt("Strength", strength);
         tag.putInt("Decay", decayTicks);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        strength = tag.getInt("Strength");
-        decayTicks = tag.getInt("Decay");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        strength = tag.getIntOr("Strength", 0);
+        decayTicks = tag.getIntOr("Decay", 0);
     }
 }

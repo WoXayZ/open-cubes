@@ -1,9 +1,12 @@
 package dev.opencubes.content.cursor;
 
+import dev.opencubes.util.ServerLevels;
+
+import dev.opencubes.util.PlayerFeedback;
+
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCDataComponents;
 import dev.opencubes.util.ExperienceUtil;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -11,8 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +25,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 /**
  * Sneak-use a block to bind; right-click (air or block) to remotely activate it.
@@ -46,51 +50,51 @@ public class CursorItem extends Item {
 
         if (player.isShiftKeyDown()) {
             stack.set(OCDataComponents.CURSOR_TARGET.get(), new CursorTarget(
-                    level.dimension().location(),
+                    level.dimension().identifier(),
                     context.getClickedPos().immutable(),
                     context.getClickedFace()));
-            if (!level.isClientSide) {
-                player.displayClientMessage(Component.translatable("opencubes.misc.cursor_bound",
+            if (!level.isClientSide()) {
+                PlayerFeedback.tell(player, Component.translatable("opencubes.misc.cursor_bound",
                         context.getClickedPos().getX(),
                         context.getClickedPos().getY(),
                         context.getClickedPos().getZ()), true);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
 
         if (stack.has(OCDataComponents.CURSOR_TARGET.get())) {
-            if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                 activate(serverPlayer, stack, context.getHand());
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return InteractionResult.PASS;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND || player.isShiftKeyDown()) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         if (!stack.has(OCDataComponents.CURSOR_TARGET.get())) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             activate(serverPlayer, stack, hand);
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     private static void activate(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         CursorTarget target = stack.get(OCDataComponents.CURSOR_TARGET.get());
         if (target == null) {
-            player.displayClientMessage(Component.translatable("opencubes.misc.cursor_unbound"), true);
+            PlayerFeedback.tell(player, Component.translatable("opencubes.misc.cursor_unbound"), true);
             return;
         }
-        ServerLevel level = player.serverLevel();
-        if (!level.dimension().location().equals(target.dimension())) {
-            player.displayClientMessage(Component.translatable("opencubes.misc.cursor_wrong_dim"), true);
+        ServerLevel level = ServerLevels.of(player);
+        if (!level.dimension().identifier().equals(target.dimension())) {
+            PlayerFeedback.tell(player, Component.translatable("opencubes.misc.cursor_wrong_dim"), true);
             return;
         }
         BlockPos pos = target.pos();
@@ -99,7 +103,7 @@ public class CursorItem extends Item {
         }
         double distance = Math.sqrt(player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
         if (distance > OCCommonConfig.CURSOR_MAX_DISTANCE.get()) {
-            player.displayClientMessage(Component.translatable("opencubes.misc.cursor_too_far"), true);
+            PlayerFeedback.tell(player, Component.translatable("opencubes.misc.cursor_too_far"), true);
             return;
         }
         BlockState state = level.getBlockState(pos);
@@ -109,7 +113,7 @@ public class CursorItem extends Item {
 
         int cost = player.getAbilities().instabuild ? 0 : Math.max(0, (int) Math.ceil(distance) - 10);
         if (cost > 0 && ExperienceUtil.totalExperience(player) < cost) {
-            player.displayClientMessage(Component.translatable("opencubes.misc.cursor_no_xp"), true);
+            PlayerFeedback.tell(player, Component.translatable("opencubes.misc.cursor_no_xp"), true);
             return;
         }
 
@@ -133,7 +137,7 @@ public class CursorItem extends Item {
         if (withoutItem.consumesAction()) {
             consumed = true;
         } else {
-            ItemInteractionResult withItem = state.useItemOn(ItemStack.EMPTY, level, player, hand, hit);
+            InteractionResult withItem = state.useItemOn(ItemStack.EMPTY, level, player, hand, hit);
             consumed = withItem.consumesAction();
         }
         if (consumed && cost > 0) {
@@ -142,12 +146,12 @@ public class CursorItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         CursorTarget target = stack.get(OCDataComponents.CURSOR_TARGET.get());
         if (target == null) {
-            tooltip.add(Component.translatable("opencubes.misc.cursor_unbound"));
+            tooltip.accept(Component.translatable("opencubes.misc.cursor_unbound"));
         } else {
-            tooltip.add(Component.translatable("opencubes.misc.cursor_bound",
+            tooltip.accept(Component.translatable("opencubes.misc.cursor_bound",
                     target.pos().getX(), target.pos().getY(), target.pos().getZ()));
         }
     }

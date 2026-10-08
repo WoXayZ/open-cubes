@@ -17,6 +17,8 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemDropperBlockEntity extends net.minecraft.world.level.block.entity.BlockEntity
@@ -145,20 +147,20 @@ public class ItemDropperBlockEntity extends net.minecraft.world.level.block.enti
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        itemSpeedBase = tag.getDouble("ItemSpeed");
-        useRedstoneStrength = tag.getBoolean("UseRedstoneStrength");
-        redstonePowered = tag.getBoolean("RedstonePowered");
+        itemSpeedBase = tag.getDoubleOr("ItemSpeed", 0.0D);
+        useRedstoneStrength = tag.getBooleanOr("UseRedstoneStrength", false);
+        redstonePowered = tag.getBooleanOr("RedstonePowered", false);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
         tag.putDouble("ItemSpeed", itemSpeedBase);
         tag.putBoolean("UseRedstoneStrength", useRedstoneStrength);
         tag.putBoolean("RedstonePowered", redstonePowered);

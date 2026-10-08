@@ -1,0 +1,118 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "opencubes:stencil_pattern",
+    "cases": [
+      {
+        "when": "creeper_face",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/creeper_face"
+        }
+      },
+      {
+        "when": "border",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/border"
+        }
+      },
+      {
+        "when": "stripes",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/stripes"
+        }
+      },
+      {
+        "when": "corner",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/corner"
+        }
+      },
+      {
+        "when": "corner2",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/corner2"
+        }
+      },
+      {
+        "when": "corner3",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/corner3"
+        }
+      },
+      {
+        "when": "hole",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/hole"
+        }
+      },
+      {
+        "when": "spiral",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/spiral"
+        }
+      },
+      {
+        "when": "thickstripes",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/thickstripes"
+        }
+      },
+      {
+        "when": "splat",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/splat"
+        }
+      },
+      {
+        "when": "storage",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/storage"
+        }
+      },
+      {
+        "when": "heart",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/heart"
+        }
+      },
+      {
+        "when": "heart2",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/heart2"
+        }
+      },
+      {
+        "when": "music",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/music"
+        }
+      },
+      {
+        "when": "balloon",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/stencil/balloon"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "opencubes:item/stencil"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/lime_elevator",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 8439583
+      }
+    ]
+  }
+}

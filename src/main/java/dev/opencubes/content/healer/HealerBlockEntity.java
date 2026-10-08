@@ -2,6 +2,7 @@ package dev.opencubes.content.healer;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCBlockEntities;
+import dev.opencubes.util.FluidHandlerBridge;
 import dev.opencubes.util.XpFluidUtil;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -18,6 +19,8 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 /** Survival healer: regenerates players standing on it while burning liquid XP. */
@@ -71,11 +74,12 @@ public class HealerBlockEntity extends BlockEntity {
             return;
         }
         for (Direction dir : Direction.values()) {
-            IFluidHandler neighbor = level.getCapability(
-                    Capabilities.FluidHandler.BLOCK, pos.relative(dir), dir.getOpposite());
-            if (neighbor == null) {
+            var found = level.getCapability(
+                    Capabilities.Fluid.BLOCK, pos.relative(dir), dir.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IFluidHandler neighbor = FluidHandlerBridge.asTanks(found);
             FluidStack drained = neighbor.drain(XpFluidUtil.juice(250), IFluidHandler.FluidAction.SIMULATE);
             if (!XpFluidUtil.isXpJuice(drained) || drained.isEmpty()) {
                 continue;
@@ -90,16 +94,16 @@ public class HealerBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.putChild("Tank", tank);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Tank")) {
-            tank.readFromNBT(registries, tag.getCompound("Tank"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Tank")) {
+            tag.child("Tank").ifPresent(tank::deserialize);
         }
     }
 }

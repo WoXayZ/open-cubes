@@ -17,17 +17,17 @@ import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 @JeiPlugin
 public final class OCJeiPlugin implements IModPlugin {
 
-    private static final ResourceLocation UID = OCConstants.id("jei_plugin");
+    private static final Identifier UID = OCConstants.id("jei_plugin");
 
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return UID;
     }
 
@@ -39,12 +39,6 @@ public final class OCJeiPlugin implements IModPlugin {
                 return ingredient.get(OCDataComponents.TROPHY_ID.get());
             }
 
-            @Override
-            @SuppressWarnings("deprecation")
-            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-                ResourceLocation id = ingredient.get(OCDataComponents.TROPHY_ID.get());
-                return id == null ? "" : id.toString();
-            }
         });
     }
 

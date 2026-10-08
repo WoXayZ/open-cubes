@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "b": {
-      "tag": "c:bricks"
-    },
-    "e": {
-      "tag": "c:gems/emerald"
-    },
-    "g": {
-      "item": "minecraft:glowstone"
-    }
+    "b": "#c:bricks",
+    "e": "#c:gems/emerald",
+    "g": "minecraft:glowstone"
   },
   "pattern": [
     "ebe",

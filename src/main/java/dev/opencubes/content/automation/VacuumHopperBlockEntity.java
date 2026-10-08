@@ -3,6 +3,8 @@ package dev.opencubes.content.automation;
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCBlockEntities;
 import dev.opencubes.util.ExperienceUtil;
+import dev.opencubes.util.FluidHandlerBridge;
+import dev.opencubes.util.ItemHandlerBridge;
 import dev.opencubes.util.SideBitmask;
 import dev.opencubes.util.XpFluidUtil;
 import java.util.List;
@@ -37,6 +39,8 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -165,14 +169,14 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
             return;
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             level.addParticle(ParticleTypes.PORTAL,
-                    pos.getX() + 0.5D + (level.random.nextDouble() - 0.5D),
-                    pos.getY() + 0.5D + (level.random.nextDouble() - 1.0D),
-                    pos.getZ() + 0.5D + (level.random.nextDouble() - 0.5D),
-                    (level.random.nextDouble() - 0.5D) * 2.0D,
-                    -level.random.nextDouble(),
-                    (level.random.nextDouble() - 0.5D) * 2.0D);
+                    pos.getX() + 0.5D + (level.getRandom().nextDouble() - 0.5D),
+                    pos.getY() + 0.5D + (level.getRandom().nextDouble() - 1.0D),
+                    pos.getZ() + 0.5D + (level.getRandom().nextDouble() - 0.5D),
+                    (level.getRandom().nextDouble() - 0.5D) * 2.0D,
+                    -level.getRandom().nextDouble(),
+                    (level.getRandom().nextDouble() - 0.5D) * 2.0D);
             return;
         }
 
@@ -219,7 +223,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
     }
 
     public void onEntityCollided(Entity entity) {
-        if (level == null || level.isClientSide || vacuumDisabled) {
+        if (level == null || level.isClientSide() || vacuumDisabled) {
             return;
         }
         if (entity instanceof ItemEntity item && entity.isAlive()) {
@@ -253,11 +257,12 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
             if (!SideBitmask.has(xpOutputSides, side)) {
                 continue;
             }
-            IFluidHandler neighbour = level.getCapability(
-                    Capabilities.FluidHandler.BLOCK, worldPosition.relative(side), side.getOpposite());
-            if (neighbour == null) {
+            var found = level.getCapability(
+                    Capabilities.Fluid.BLOCK, worldPosition.relative(side), side.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IFluidHandler neighbour = FluidHandlerBridge.asTanks(found);
             FluidStack drained = tank.drain(50, IFluidHandler.FluidAction.SIMULATE);
             if (drained.isEmpty()) {
                 return;
@@ -274,17 +279,18 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
             return;
         }
         Direction[] sides = Direction.values();
-        int start = level.random.nextInt(sides.length);
+        int start = level.getRandom().nextInt(sides.length);
         for (int n = 0; n < sides.length; n++) {
             Direction side = sides[(start + n) % sides.length];
             if (!SideBitmask.has(itemOutputSides, side)) {
                 continue;
             }
-            IItemHandler neighbour = level.getCapability(
-                    Capabilities.ItemHandler.BLOCK, worldPosition.relative(side), side.getOpposite());
-            if (neighbour == null) {
+            var found = level.getCapability(
+                    Capabilities.Item.BLOCK, worldPosition.relative(side), side.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IItemHandler neighbour = ItemHandlerBridge.asSlots(found);
             for (int slot = 0; slot < items.getSlots(); slot++) {
                 ItemStack stack = items.extractItem(slot, 1, true);
                 if (stack.isEmpty()) {
@@ -310,7 +316,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
      * so the multipart model can show the right overlay. A no-op when nothing actually changed.
      */
     private void syncFaces() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         BlockState state = getBlockState();
@@ -365,33 +371,24 @@ public class VacuumHopperBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        CompoundTag tag = packet.getTag();
-        if (tag != null) {
-            loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
+        if (tag.keySet().contains("Tank")) {
+            tag.child("Tank").ifPresent(tank::deserialize);
+        }
+        itemOutputSides = tag.getIntOr("ItemOutputs", 0);
+        xpOutputSides = tag.getIntOr("XpOutputs", 0);
+        vacuumDisabled = tag.getBooleanOr("VacuumDisabled", false);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
-        }
-        if (tag.contains("Tank")) {
-            tank.readFromNBT(registries, tag.getCompound("Tank"));
-        }
-        itemOutputSides = tag.getInt("ItemOutputs");
-        xpOutputSides = tag.getInt("XpOutputs");
-        vacuumDisabled = tag.getBoolean("VacuumDisabled");
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
-        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
+        tag.putChild("Tank", tank);
         tag.putInt("ItemOutputs", itemOutputSides);
         tag.putInt("XpOutputs", xpOutputSides);
         tag.putBoolean("VacuumDisabled", vacuumDisabled);

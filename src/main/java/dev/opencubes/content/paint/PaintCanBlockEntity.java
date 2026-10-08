@@ -8,6 +8,8 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class PaintCanBlockEntity extends BlockEntity {
@@ -40,23 +42,23 @@ public class PaintCanBlockEntity extends BlockEntity {
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putInt("Color", color);
         tag.putInt("Amount", amount);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        color = tag.getInt("Color");
-        amount = tag.getInt("Amount");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        color = tag.getIntOr("Color", 0);
+        amount = tag.getIntOr("Amount", 0);
     }
 
     @Override
@@ -70,12 +72,11 @@ public class PaintCanBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
+    public void onDataPacket(Connection connection, ValueInput input) {
         int before = color;
-        loadAdditional(packet.getTag(), registries);
+        loadAdditional(input);
         // The tint is baked into the chunk mesh, so it needs a re-render to change.
-        if (level != null && level.isClientSide && before != color) {
+        if (level != null && level.isClientSide() && before != color) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_IMMEDIATE);
         }
     }

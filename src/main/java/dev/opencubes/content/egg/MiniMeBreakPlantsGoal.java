@@ -27,7 +27,7 @@ public class MiniMeBreakPlantsGoal extends Goal {
         if (!miniMe.getNavigation().isDone()) {
             return false;
         }
-        if (miniMe.level().isClientSide) {
+        if (miniMe.level().isClientSide()) {
             return false;
         }
         if ((miniMe.tickCount + tickOffset) % 4 != 0) {

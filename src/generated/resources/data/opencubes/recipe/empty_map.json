@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "tag": "c:nuggets/gold"
-    },
-    "m": {
-      "item": "minecraft:map"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "g": "#c:nuggets/gold",
+    "m": "minecraft:map",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "grg",

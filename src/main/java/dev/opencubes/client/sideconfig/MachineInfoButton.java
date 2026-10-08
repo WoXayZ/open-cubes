@@ -1,8 +1,9 @@
 package dev.opencubes.client.sideconfig;
 
 import dev.opencubes.client.GuiSprites;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -25,12 +26,12 @@ public class MachineInfoButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         // Tooltip-only control.
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         GuiSprites.blit(graphics,
                 isHoveredOrFocused() ? GuiSprites.INFO_HIGHLIGHTED : GuiSprites.INFO,
                 getX(), getY(), width, height);

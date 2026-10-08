@@ -47,8 +47,8 @@ public class TemporaryScaffoldingBlockItem extends BlockItem {
         int travelled = 0;
         BlockPos.MutableBlockPos cursor = pos.mutable().move(direction);
         while (travelled < ScaffoldingBlock.STABILITY_MAX_DISTANCE) {
-            if (!level.isClientSide && !level.isInWorldBounds(cursor)) {
-                int ceiling = level.getMaxBuildHeight();
+            if (!level.isClientSide() && !level.isInWorldBounds(cursor)) {
+                int ceiling = level.getMaxY();
                 if (context.getPlayer() instanceof ServerPlayer serverPlayer && cursor.getY() >= ceiling) {
                     serverPlayer.sendSystemMessage(
                             Component.translatable("build.tooHigh", ceiling - 1).withStyle(ChatFormatting.RED), true);

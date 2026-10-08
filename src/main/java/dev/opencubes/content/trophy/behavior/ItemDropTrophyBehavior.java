@@ -20,7 +20,7 @@ public final class ItemDropTrophyBehavior implements TrophyBehavior {
             return 0;
         }
 
-        Item item = BuiltInRegistries.ITEM.get(drop.item());
+        Item item = BuiltInRegistries.ITEM.getValue(drop.item());
         if (item == null) {
             return 0;
         }
@@ -32,7 +32,7 @@ public final class ItemDropTrophyBehavior implements TrophyBehavior {
 
         drop.sound().flatMap(BuiltInRegistries.SOUND_EVENT::getOptional).ifPresent(sound ->
                 level.playSound(null, trophy.getBlockPos(), sound, SoundSource.NEUTRAL, 1.0F,
-                        (level.random.nextFloat() - level.random.nextFloat()) * 0.2F + 1.0F));
+                        (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2F + 1.0F));
 
         ItemStack stack = new ItemStack(item, Math.max(1, drop.count()));
         ItemEntity entity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), stack);

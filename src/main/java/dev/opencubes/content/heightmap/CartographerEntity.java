@@ -2,17 +2,21 @@ package dev.opencubes.content.heightmap;
 
 import dev.opencubes.content.heightmap.HeightMapBuilder.ChunkJob;
 import dev.opencubes.registry.OCEntities;
+import dev.opencubes.registry.OCEntityData;
 import dev.opencubes.registry.OCItems;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +28,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -38,7 +44,7 @@ public class CartographerEntity extends Entity {
     private static final EntityDataAccessor<Boolean> DATA_MAPPING =
             SynchedEntityData.defineId(CartographerEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER =
-            SynchedEntityData.defineId(CartographerEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+            SynchedEntityData.defineId(CartographerEntity.class, OCEntityData.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DATA_JOBS_DONE =
             SynchedEntityData.defineId(CartographerEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_JOBS_TOTAL =
@@ -133,7 +139,7 @@ public class CartographerEntity extends Entity {
     public void tick() {
         super.tick();
         Player owner = findOwner();
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             float yaw;
             if (isMapping()) {
                 if (--countdownToMove <= 0) {
@@ -157,7 +163,7 @@ public class CartographerEntity extends Entity {
 
             if (isMapping()
                     && level() instanceof ServerLevel serverLevel
-                    && serverLevel.dimension().location().toString().equals(mappingDimension)
+                    && serverLevel.dimension().identifier().toString().equals(mappingDimension)
                     && --countdownToAction <= 0) {
                 runJob(serverLevel);
                 countdownToAction = MAP_JOB_DELAY;
@@ -180,11 +186,11 @@ public class CartographerEntity extends Entity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (hand != InteractionHand.MAIN_HAND || distanceTo(player) >= 5.0F) {
             return InteractionResult.PASS;
         }
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         ItemStack holding = player.getMainHandItem();
@@ -196,12 +202,12 @@ public class CartographerEntity extends Entity {
             stopMapping();
             return InteractionResult.SUCCESS;
         }
-        // Give empty/height map — sneak not required (sneaking often aims past the hitbox at a block).
+        // Hand over an empty map or a height map. Sneak is not required.
         if (!holding.isEmpty() && mapItem.isEmpty()
                 && (holding.getItem() instanceof HeightMapItem || holding.getItem() instanceof EmptyMapItem)
                 && level() instanceof ServerLevel serverLevel) {
             mapItem = holding.split(1);
-            mappingDimension = serverLevel.dimension().location().toString();
+            mappingDimension = serverLevel.dimension().identifier().toString();
             mapItem = HeightMapBuilder.upgradeToMap(serverLevel, mapItem);
             setMapping(true);
             int mapId = HeightMapItem.getMapId(mapItem);
@@ -246,9 +252,9 @@ public class CartographerEntity extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide && !isRemoved()) {
-            spawnAtLocation(toItemStack());
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (!isRemoved()) {
+            spawnAtLocation(level, toItemStack());
             discard();
         }
         return true;
@@ -267,29 +273,27 @@ public class CartographerEntity extends Entity {
         tag.putBoolean("Mapping", isMapping());
         tag.putByteArray("Bits", finishedBits.toByteArray());
         if (ownerUuid != null) {
-            tag.putUUID("Owner", ownerUuid);
+            tag.store("Owner", UUIDUtil.CODEC, ownerUuid);
         }
         if (!mapItem.isEmpty()) {
-            tag.put("MapItem", mapItem.save(level().registryAccess()));
+            var ops = level().registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            tag.store("MapItem", ItemStack.CODEC, ops, mapItem);
             tag.putString("Dimension", mappingDimension);
         }
     }
 
     private void readExtra(CompoundTag tag) {
-        setMapping(tag.getBoolean("Mapping"));
+        setMapping(tag.getBooleanOr("Mapping", false));
         finishedBits.clear();
-        if (tag.contains("Bits")) {
-            BitSet loaded = BitSet.valueOf(tag.getByteArray("Bits"));
-            finishedBits.or(loaded);
-        }
-        if (tag.hasUUID("Owner")) {
-            ownerUuid = tag.getUUID("Owner");
+        tag.getByteArray("Bits").ifPresent(bytes -> finishedBits.or(BitSet.valueOf(bytes)));
+        tag.read("Owner", UUIDUtil.CODEC).ifPresent(uuid -> {
+            ownerUuid = uuid;
             entityData.set(DATA_OWNER, Optional.of(ownerUuid));
-        }
+        });
         if (tag.contains("MapItem") && level() instanceof ServerLevel serverLevel) {
-            Optional<ItemStack> loaded = ItemStack.parse(level().registryAccess(), tag.getCompound("MapItem"));
-            mapItem = loaded.orElse(ItemStack.EMPTY);
-            mappingDimension = tag.getString("Dimension");
+            var ops = serverLevel.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            mapItem = tag.read("MapItem", ItemStack.CODEC, ops).orElse(ItemStack.EMPTY);
+            mappingDimension = tag.getStringOr("Dimension", "");
             if (!mapItem.isEmpty() && isMapping()) {
                 int mapId = HeightMapItem.getMapId(mapItem);
                 if (mapId >= 0) {
@@ -300,13 +304,19 @@ public class CartographerEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    protected void readAdditionalSaveData(ValueInput input) {
+        CompoundTag tag = new CompoundTag();
+        for (String key : new String[] {"Mapping", "Bits", "Owner", "MapItem", "Dimension"}) {
+            input.read(key, ExtraCodecs.NBT).ifPresent(value -> tag.put(key, value));
+        }
         readExtra(tag);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        writeExtra(tag);
+    protected void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag extra = new CompoundTag();
+        writeExtra(extra);
+        output.store(extra);
     }
 
     @Override
@@ -315,7 +325,7 @@ public class CartographerEntity extends Entity {
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean canBeCollidedWith(@Nullable Entity other) {
         return true;
     }
 }

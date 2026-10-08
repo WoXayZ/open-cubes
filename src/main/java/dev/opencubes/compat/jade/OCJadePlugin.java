@@ -16,9 +16,9 @@ public final class OCJadePlugin implements IWailaPlugin {
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerBlockDataProvider(TrophyJadeProvider.INSTANCE, TrophyBlockEntity.class);
-        registration.registerBlockDataProvider(TankJadeProvider.INSTANCE, TankBlockEntity.class);
-        registration.registerEntityDataProvider(LuggageJadeProvider.INSTANCE, LuggageEntity.class);
+        registration.registerBlockDataProvider(TrophyJadeProvider.Data.INSTANCE, TrophyBlockEntity.class);
+        registration.registerBlockDataProvider(TankJadeProvider.Data.INSTANCE, TankBlockEntity.class);
+        registration.registerEntityDataProvider(LuggageJadeProvider.Data.INSTANCE, LuggageEntity.class);
         registration.registerFluidStorage(HideThingsExtensionProvider.instance(), TankBlockEntity.class);
     }
 

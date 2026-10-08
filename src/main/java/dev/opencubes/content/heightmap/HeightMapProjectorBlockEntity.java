@@ -13,6 +13,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class HeightMapProjectorBlockEntity extends BlockEntity {
@@ -65,14 +67,14 @@ public class HeightMapProjectorBlockEntity extends BlockEntity {
             return null;
         }
         HeightMapData data = HeightMapManager.getMapData(level, mapId);
-        if (level.isClientSide && data.isEmpty()) {
+        if (level.isClientSide() && data.isEmpty()) {
             HeightMapManager.requestMapData(level, mapId);
         }
         return data.isValid() ? data : null;
     }
 
     private void onMapSlotChanged() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         ItemStack stack = items.getStackInSlot(0);
@@ -104,28 +106,28 @@ public class HeightMapProjectorBlockEntity extends BlockEntity {
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
         tag.putInt("MapId", mapId);
         tag.putByte("Rotation", rotation);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
-        mapId = tag.getInt("MapId");
-        rotation = tag.getByte("Rotation");
-        if (level != null && level.isClientSide && mapId >= 0) {
+        mapId = tag.getIntOr("MapId", 0);
+        rotation = tag.getByteOr("Rotation", (byte) 0);
+        if (level != null && level.isClientSide() && mapId >= 0) {
             HeightMapData data = HeightMapManager.getMapData(level, mapId);
             if (data.isEmpty()) {
                 HeightMapManager.requestMapData(level, mapId);

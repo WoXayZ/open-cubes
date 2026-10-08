@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/orange_sleeping_bag",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 16351261
+      },
+      {
+        "type": "minecraft:constant",
+        "value": 16777215
+      }
+    ]
+  }
+}

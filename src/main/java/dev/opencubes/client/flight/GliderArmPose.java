@@ -2,6 +2,7 @@ package dev.opencubes.client.flight;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +19,7 @@ import org.joml.Vector3f;
 public final class GliderArmPose {
 
     public static final EnumProxy<HumanoidModel.ArmPose> POSE = new EnumProxy<>(
-            HumanoidModel.ArmPose.class, true, (IArmPoseTransformer) GliderArmPose::transform);
+            HumanoidModel.ArmPose.class, true, true, (IArmPoseTransformer) GliderArmPose::transform);
 
     public static final float ARM_PITCH = -2.35F;
     public static final float ARM_SPREAD = 0.22F;
@@ -36,7 +37,7 @@ public final class GliderArmPose {
         return POSE.getValue();
     }
 
-    private static void transform(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
+    private static void transform(HumanoidModel<?> model, HumanoidRenderState state, HumanoidArm arm) {
         poseArms(model.rightArm, model.leftArm);
         model.head.xRot = Mth.clamp(model.head.xRot, -0.5F, 1.0F) - Mth.HALF_PI;
         model.rightLeg.xRot = 0.0F;

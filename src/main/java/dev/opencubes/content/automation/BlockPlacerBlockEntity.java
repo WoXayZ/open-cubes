@@ -16,6 +16,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPlacerBlockEntity extends BlockManipulatorBlockEntity implements MenuProvider {
@@ -28,7 +30,7 @@ public class BlockPlacerBlockEntity extends BlockManipulatorBlockEntity implemen
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
-            if (!skipInventoryTrigger && level != null && !level.isClientSide
+            if (!skipInventoryTrigger && level != null && !level.isClientSide()
                     && getBlockState().getValue(BlockManipulatorBlock.POWERED)
                     && !getStackInSlot(slot).isEmpty()) {
                 triggerAction();
@@ -113,16 +115,16 @@ public class BlockPlacerBlockEntity extends BlockManipulatorBlockEntity implemen
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("Items")) {
-            items.deserializeNBT(registries, tag.getCompound("Items"));
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("Items")) {
+            tag.child("Items").ifPresent(items::deserialize);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("Items", items.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        items.serialize(tag.child("Items"));
     }
 }

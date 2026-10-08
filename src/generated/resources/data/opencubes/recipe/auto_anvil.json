@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "a": {
-      "item": "minecraft:anvil"
-    },
-    "i": {
-      "tag": "c:gems/diamond"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "a": "minecraft:anvil",
+    "i": "#c:gems/diamond",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "iii",

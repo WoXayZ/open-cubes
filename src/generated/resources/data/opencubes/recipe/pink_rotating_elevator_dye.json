@@ -4,58 +4,24 @@
   "group": "opencubes:rotating_elevator",
   "ingredients": [
     [
-      {
-        "item": "opencubes:white_rotating_elevator"
-      },
-      {
-        "item": "opencubes:orange_rotating_elevator"
-      },
-      {
-        "item": "opencubes:magenta_rotating_elevator"
-      },
-      {
-        "item": "opencubes:light_blue_rotating_elevator"
-      },
-      {
-        "item": "opencubes:yellow_rotating_elevator"
-      },
-      {
-        "item": "opencubes:lime_rotating_elevator"
-      },
-      {
-        "item": "opencubes:pink_rotating_elevator"
-      },
-      {
-        "item": "opencubes:gray_rotating_elevator"
-      },
-      {
-        "item": "opencubes:light_gray_rotating_elevator"
-      },
-      {
-        "item": "opencubes:cyan_rotating_elevator"
-      },
-      {
-        "item": "opencubes:purple_rotating_elevator"
-      },
-      {
-        "item": "opencubes:blue_rotating_elevator"
-      },
-      {
-        "item": "opencubes:brown_rotating_elevator"
-      },
-      {
-        "item": "opencubes:green_rotating_elevator"
-      },
-      {
-        "item": "opencubes:red_rotating_elevator"
-      },
-      {
-        "item": "opencubes:black_rotating_elevator"
-      }
+      "opencubes:white_rotating_elevator",
+      "opencubes:orange_rotating_elevator",
+      "opencubes:magenta_rotating_elevator",
+      "opencubes:light_blue_rotating_elevator",
+      "opencubes:yellow_rotating_elevator",
+      "opencubes:lime_rotating_elevator",
+      "opencubes:pink_rotating_elevator",
+      "opencubes:gray_rotating_elevator",
+      "opencubes:light_gray_rotating_elevator",
+      "opencubes:cyan_rotating_elevator",
+      "opencubes:purple_rotating_elevator",
+      "opencubes:blue_rotating_elevator",
+      "opencubes:brown_rotating_elevator",
+      "opencubes:green_rotating_elevator",
+      "opencubes:red_rotating_elevator",
+      "opencubes:black_rotating_elevator"
     ],
-    {
-      "item": "minecraft:pink_dye"
-    }
+    "minecraft:pink_dye"
   ],
   "result": {
     "count": 1,

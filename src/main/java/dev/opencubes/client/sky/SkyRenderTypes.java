@@ -1,29 +1,22 @@
 package dev.opencubes.client.sky;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.textures.FilterMode;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 
-/** Opaque faces that show the sky captured right after the vanilla sky pass, in screen space. */
-public final class SkyRenderTypes extends RenderType {
+/** Faces of an active sky block. Sampler0 is the sky copy from {@link SkyBlockCapture}. */
+public final class SkyRenderTypes {
 
-    public static final RenderType SKY_WINDOW = create("opencubes_sky_window",
-            DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 1536, false, false,
-            CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(SkyShaders::skyWindow))
-                    .setTextureState(new EmptyTextureStateShard(
-                            () -> RenderSystem.setShaderTexture(0, SkyBlockCapture.colorTextureId()),
-                            () -> {}))
-                    .setTransparencyState(NO_TRANSPARENCY)
-                    .setCullState(CULL)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .createCompositeState(false));
+    public static final RenderType SKY_WINDOW = RenderType.create(
+            "opencubes_sky_window",
+            RenderSetup.builder(SkyShaders.SKY_WINDOW)
+                    // The capture texture is constructed when the mod class loads, before the sampler
+                    // cache exists, so its own sampler stays null. A null sampler makes the draw drop
+                    // Sampler0 and the world crashes every frame. Resolve one at draw time instead.
+                    .withTexture("Sampler0", SkyBlockCapture.TEXTURE,
+                            () -> RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR))
+                    .createRenderSetup());
 
-    private SkyRenderTypes(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize,
-                           boolean affectsCrumbling, boolean sortOnUpload, Runnable setup, Runnable clear) {
-        super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setup, clear);
-    }
+    private SkyRenderTypes() {}
 }

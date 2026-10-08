@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:polished_blackstone_button"
-    }
+    "b": "minecraft:polished_blackstone_button"
   },
   "pattern": [
     "bb",

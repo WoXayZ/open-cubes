@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "l": {
-      "item": "minecraft:ladder"
-    },
-    "s": {
-      "tag": "c:strings"
-    }
+    "l": "minecraft:ladder",
+    "s": "#c:strings"
   },
   "pattern": [
     "sls",

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/yellow_flag",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 16701501
+      }
+    ]
+  }
+}

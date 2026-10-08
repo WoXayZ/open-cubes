@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "c": {
-      "tag": "c:ingots/copper"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "c": "#c:ingots/copper",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "ccc",

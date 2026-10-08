@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -179,16 +180,16 @@ public class RopeLadderBlock extends HorizontalDirectionalBlock implements Simpl
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
-                                     LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+                                     Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         // Never return air here: Block.updateOrDestroy would drop the segment, and the
         // onRemove cascade would drop it again. Schedule a tick for unsupported segments
         // that were not removed by a cascade (for example the wall behind was broken).
         if (!CASCADING.get() && !state.canSurvive(level, pos) && level instanceof Level realLevel
-                && !realLevel.isClientSide) {
+                && !realLevel.isClientSide()) {
             realLevel.scheduleTick(pos, this, 1);
         }
         return state;
@@ -204,7 +205,7 @@ public class RopeLadderBlock extends HorizontalDirectionalBlock implements Simpl
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
                             ItemStack stack) {
-        if (level.isClientSide || !(placer instanceof Player player)) {
+        if (level.isClientSide() || !(placer instanceof Player player)) {
             return;
         }
 
@@ -213,7 +214,7 @@ public class RopeLadderBlock extends HorizontalDirectionalBlock implements Simpl
         BlockPos placePos = pos.below();
 
         // setPlacedBy runs before BlockItem shrinks the stack, so count still includes the top segment.
-        while (placePos.getY() >= level.getMinBuildHeight()
+        while (placePos.getY() >= level.getMinY()
                 && (infinite || stack.getCount() > 1)) {
             if (!level.getBlockState(placePos).canBeReplaced()) {
                 break;
@@ -234,16 +235,16 @@ public class RopeLadderBlock extends HorizontalDirectionalBlock implements Simpl
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        super.onRemove(state, level, pos, newState, moved);
-        if (level.isClientSide || state.is(newState.getBlock()) || moved || CASCADING.get()) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
+        if (moved || CASCADING.get()) {
             return;
         }
         boolean drop = !OCCommonConfig.ROPE_LADDER_INFINITE.get();
         CASCADING.set(true);
         try {
             BlockPos below = pos.below();
-            while (below.getY() >= level.getMinBuildHeight() && level.getBlockState(below).is(this)) {
+            while (below.getY() >= level.getMinY() && level.getBlockState(below).is(this)) {
                 BlockPos next = below.below();
                 level.destroyBlock(below, drop);
                 below = next;

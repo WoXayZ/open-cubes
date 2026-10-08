@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "s": {
-      "item": "opencubes:liquid_sponge"
-    },
-    "t": {
-      "tag": "c:rods/wooden"
-    }
+    "s": "opencubes:liquid_sponge",
+    "t": "#c:rods/wooden"
   },
   "pattern": [
     "  s",

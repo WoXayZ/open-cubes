@@ -81,7 +81,7 @@ public class BuildingGuideMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player clicker, int id) {
-        if (guide == null || guide.getLevel() == null || guide.getLevel().isClientSide) {
+        if (guide == null || guide.getLevel() == null || guide.getLevel().isClientSide()) {
             return false;
         }
         boolean shift = id >= SHIFT_OFFSET;

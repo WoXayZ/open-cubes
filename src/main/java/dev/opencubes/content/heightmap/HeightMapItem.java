@@ -2,13 +2,15 @@ package dev.opencubes.content.heightmap;
 
 import dev.opencubes.registry.OCDataComponents;
 import dev.opencubes.registry.OCItems;
-import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class HeightMapItem extends Item {
 
@@ -28,7 +30,7 @@ public class HeightMapItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
         int mapId = getMapId(stack);
         if (mapId < 0) {
@@ -36,18 +38,18 @@ public class HeightMapItem extends Item {
         }
         @Nullable Level level = context.level();
         if (level == null) {
-            tooltip.add(Component.translatable("opencubes.misc.map_id", mapId));
+            tooltip.accept(Component.translatable("opencubes.misc.map_id", mapId));
             return;
         }
         HeightMapData data = HeightMapManager.getMapData(level, mapId);
         if (data.isEmpty()) {
             HeightMapManager.requestMapData(level, mapId);
-            tooltip.add(Component.translatable("opencubes.misc.map_id", mapId));
+            tooltip.accept(Component.translatable("opencubes.misc.map_id", mapId));
             return;
         }
         if (data.isValid()) {
-            tooltip.add(Component.translatable("opencubes.misc.map_center", data.centerX, data.centerZ));
-            tooltip.add(Component.translatable("opencubes.misc.map_scale", 1 << data.scale));
+            tooltip.accept(Component.translatable("opencubes.misc.map_center", data.centerX, data.centerZ));
+            tooltip.accept(Component.translatable("opencubes.misc.map_scale", 1 << data.scale));
         }
     }
 }

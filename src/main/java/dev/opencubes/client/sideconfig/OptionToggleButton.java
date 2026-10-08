@@ -5,8 +5,9 @@ import dev.opencubes.client.SideConfigScreenHelper;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -31,12 +32,12 @@ public class OptionToggleButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         action.run();
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         boolean on = state.getAsBoolean();
         int x = getX();
         int y = getY();
@@ -62,8 +63,8 @@ public class OptionToggleButton extends AbstractButton {
         int textY = drawY + (drawH - font.lineHeight) / 2 + 1;
         String label = SideConfigScreenHelper.truncate(font, getMessage().getString(),
                 drawW - stateWidth - 12);
-        graphics.drawString(font, label, drawX + 4, textY, 0xFFFFFFFF);
-        graphics.drawString(font, stateText, drawX + drawW - 4 - stateWidth, textY,
+        graphics.text(font, label, drawX + 4, textY, 0xFFFFFFFF);
+        graphics.text(font, stateText, drawX + drawW - 4 - stateWidth, textY,
                 on ? 0xFF7CE87C : 0xFFD8D8D8);
     }
 

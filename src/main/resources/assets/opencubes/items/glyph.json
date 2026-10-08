@@ -1,0 +1,384 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "opencubes:glyph_char",
+    "cases": [
+      {
+        "when": "A",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0041"
+        }
+      },
+      {
+        "when": "B",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0042"
+        }
+      },
+      {
+        "when": "C",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0043"
+        }
+      },
+      {
+        "when": "D",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0044"
+        }
+      },
+      {
+        "when": "E",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0045"
+        }
+      },
+      {
+        "when": "F",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0046"
+        }
+      },
+      {
+        "when": "G",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0047"
+        }
+      },
+      {
+        "when": "H",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0048"
+        }
+      },
+      {
+        "when": "I",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0049"
+        }
+      },
+      {
+        "when": "J",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004a"
+        }
+      },
+      {
+        "when": "K",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004b"
+        }
+      },
+      {
+        "when": "L",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004c"
+        }
+      },
+      {
+        "when": "M",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004d"
+        }
+      },
+      {
+        "when": "N",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004e"
+        }
+      },
+      {
+        "when": "O",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/004f"
+        }
+      },
+      {
+        "when": "P",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0050"
+        }
+      },
+      {
+        "when": "Q",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0051"
+        }
+      },
+      {
+        "when": "R",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0052"
+        }
+      },
+      {
+        "when": "S",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0053"
+        }
+      },
+      {
+        "when": "T",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0054"
+        }
+      },
+      {
+        "when": "U",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0055"
+        }
+      },
+      {
+        "when": "V",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0056"
+        }
+      },
+      {
+        "when": "W",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0057"
+        }
+      },
+      {
+        "when": "X",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0058"
+        }
+      },
+      {
+        "when": "Y",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0059"
+        }
+      },
+      {
+        "when": "Z",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/005a"
+        }
+      },
+      {
+        "when": "0",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0030"
+        }
+      },
+      {
+        "when": "1",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0031"
+        }
+      },
+      {
+        "when": "2",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0032"
+        }
+      },
+      {
+        "when": "3",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0033"
+        }
+      },
+      {
+        "when": "4",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0034"
+        }
+      },
+      {
+        "when": "5",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0035"
+        }
+      },
+      {
+        "when": "6",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0036"
+        }
+      },
+      {
+        "when": "7",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0037"
+        }
+      },
+      {
+        "when": "8",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0038"
+        }
+      },
+      {
+        "when": "9",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0039"
+        }
+      },
+      {
+        "when": "!",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0021"
+        }
+      },
+      {
+        "when": "?",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/003f"
+        }
+      },
+      {
+        "when": ".",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002e"
+        }
+      },
+      {
+        "when": ",",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002c"
+        }
+      },
+      {
+        "when": ":",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/003a"
+        }
+      },
+      {
+        "when": "'",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0027"
+        }
+      },
+      {
+        "when": "-",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002d"
+        }
+      },
+      {
+        "when": "+",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002b"
+        }
+      },
+      {
+        "when": "=",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/003d"
+        }
+      },
+      {
+        "when": "&",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0026"
+        }
+      },
+      {
+        "when": "#",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0023"
+        }
+      },
+      {
+        "when": "@",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0040"
+        }
+      },
+      {
+        "when": "(",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0028"
+        }
+      },
+      {
+        "when": ")",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0029"
+        }
+      },
+      {
+        "when": "/",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002f"
+        }
+      },
+      {
+        "when": "*",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/002a"
+        }
+      },
+      {
+        "when": "%",
+        "model": {
+          "type": "minecraft:model",
+          "model": "opencubes:item/glyph/0025"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "opencubes:item/glyph"
+    }
+  }
+}

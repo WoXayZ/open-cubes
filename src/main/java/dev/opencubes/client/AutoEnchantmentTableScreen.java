@@ -2,7 +2,7 @@ package dev.opencubes.client;
 
 import dev.opencubes.client.sideconfig.SideConfigPanel;
 import dev.opencubes.content.automation.AutoEnchantmentTableMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -20,16 +20,18 @@ public class AutoEnchantmentTableScreen extends AbstractContainerScreen<AutoEnch
     private SideConfigPanel panel;
 
     public AutoEnchantmentTableScreen(AutoEnchantmentTableMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageWidth = CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoEnchantmentTableMenu.class);
-        imageHeight = 166;
-        inventoryLabelY = imageHeight - 94;
+        super(menu, inventory, title, CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoEnchantmentTableMenu.class), 166);
+    }
+
+    @Override
+    public int getImageWidth() {
+        return CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoEnchantmentTableMenu.class);
     }
 
     @Override
     protected void init() {
-        imageWidth = CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoEnchantmentTableMenu.class);
         super.init();
+        this.leftPos = (this.width - getImageWidth()) / 2;
         int x = leftPos;
         int y = topPos;
 
@@ -86,7 +88,7 @@ public class AutoEnchantmentTableScreen extends AbstractContainerScreen<AutoEnch
             return;
         }
         int id = buttonId;
-        if (hasShiftDown() && (buttonId == AutoEnchantmentTableMenu.BUTTON_POWER_DOWN
+        if (minecraft.hasShiftDown() && (buttonId == AutoEnchantmentTableMenu.BUTTON_POWER_DOWN
                 || buttonId == AutoEnchantmentTableMenu.BUTTON_POWER_UP)) {
             id += AutoEnchantmentTableMenu.SHIFT_OFFSET;
         }
@@ -94,7 +96,8 @@ public class AutoEnchantmentTableScreen extends AbstractContainerScreen<AutoEnch
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.AUTO_ENCHANTMENT_TABLE,
@@ -109,40 +112,40 @@ public class AutoEnchantmentTableScreen extends AbstractContainerScreen<AutoEnch
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, SideConfigScreenHelper.TEXT, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.text(font, title, titleLabelX, titleLabelY, SideConfigScreenHelper.TEXT, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
                 SideConfigScreenHelper.TEXT, false);
-        graphics.drawString(font,
+        graphics.text(font,
                 Component.translatable("container.opencubes.auto_enchanting_table.slot",
                         menu.getSelectedLevel()),
                 24, 18, SideConfigScreenHelper.TEXT, false);
-        graphics.drawString(font,
+        graphics.text(font,
                 Component.translatable("container.opencubes.auto_enchanting_table.cap",
                         menu.getPowerLimit()),
                 24, 34, SideConfigScreenHelper.TEXT, false);
-        graphics.drawString(font,
+        graphics.text(font,
                 Component.translatable("container.opencubes.auto_enchanting_table.shelves",
                         menu.getAvailablePower()),
                 24, 42, SideConfigScreenHelper.TEXT, false);
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int button) {
-        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, button)
-                && !panel.isMouseOver(mouseX, mouseY);
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop) {
+        boolean outside = mouseX < guiLeft || mouseY < guiTop
+                || mouseX >= guiLeft + getImageWidth() || mouseY >= guiTop + imageHeight;
+        return outside && !panel.isMouseOver(mouseX, mouseY);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (isHovering(7, 15, 12, 50, mouseX, mouseY)) {
-            graphics.renderTooltip(font,
+            graphics.setTooltipForNextFrame(font,
                     Component.translatable("container.opencubes.xp_bottler.fluid",
                             menu.getFluidAmount(), menu.getFluidCapacity()),
                     mouseX, mouseY);
+            return;
         }
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 }

@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -80,9 +79,8 @@ public class GraveBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
-        if (neighbourPos.equals(pos.below())) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
+        {
             boolean base = hasBase(level, pos);
             if (base != state.getValue(HAS_BASE)) {
                 level.setBlock(pos, state.setValue(HAS_BASE, base), Block.UPDATE_CLIENTS);
@@ -105,7 +103,7 @@ public class GraveBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
                             ItemStack stack) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GraveBlockEntity grave
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof GraveBlockEntity grave
                 && placer instanceof Player player && !player.isSpectator()) {
             // Recovered graves already carry block-entity data; do not overwrite their loot.
             if (stack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA)) {
@@ -114,7 +112,7 @@ public class GraveBlock extends BaseEntityBlock {
             if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
                 grave.setUsername(stack.getHoverName().getString());
             } else {
-                grave.setUsername(player.getGameProfile().getName());
+                grave.setUsername(player.getGameProfile().name());
             }
             if (player.getAbilities().instabuild) {
                 grave.copyFromPlayer(player);
@@ -123,56 +121,56 @@ public class GraveBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (player.isShiftKeyDown()) {
-            if (level.isClientSide) {
-                return ItemInteractionResult.SUCCESS;
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
             }
             if (level.getBlockEntity(pos) instanceof GraveBlockEntity grave
                     && grave.tryBreakOpen(player)) {
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             }
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (stack.isEmpty()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        if (level.isClientSide) {
-            return ItemInteractionResult.SUCCESS;
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         }
         if (level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
             grave.onActivated(player, stack);
         }
-        return ItemInteractionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         if (player.isShiftKeyDown()) {
-            if (!level.isClientSide && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
                 grave.tryBreakOpen(player);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
             grave.onActivated(player, ItemStack.EMPTY);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
             if (level instanceof ServerLevel serverLevel) {
                 grave.dropContents(serverLevel, pos);
             }
         }
-        super.onRemove(state, level, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable
@@ -185,7 +183,7 @@ public class GraveBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.GRAVE.get(), GraveBlockEntity::serverTick);
     }
 

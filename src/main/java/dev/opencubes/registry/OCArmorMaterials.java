@@ -1,46 +1,38 @@
 package dev.opencubes.registry;
 
 import dev.opencubes.OCConstants;
-import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 
 /**
  * Zero-defence helmet material with no armour texture layers. Glasses use a custom face layer
- * for the item model; empty layers keep {@code HumanoidArmorLayer} from drawing a plate helmet.
+ * for the item model; an asset with no texture keeps the humanoid layer from drawing a plate helmet.
  */
 public final class OCArmorMaterials {
 
-    public static final DeferredRegister<ArmorMaterial> REGISTRY =
-            DeferredRegister.create(Registries.ARMOR_MATERIAL, OCConstants.MOD_ID);
-
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> GLASSES =
-            REGISTRY.register("glasses", () -> {
-                Map<ArmorItem.Type, Integer> defence = new EnumMap<>(ArmorItem.Type.class);
-                for (ArmorItem.Type type : ArmorItem.Type.values()) {
-                    defence.put(type, 0);
-                }
-                return new ArmorMaterial(
-                        defence,
-                        1,
-                        SoundEvents.ARMOR_EQUIP_LEATHER,
-                        () -> Ingredient.EMPTY,
-                        List.of(),
-                        0.0F,
-                        0.0F);
-            });
+    public static final ArmorMaterial GLASSES = new ArmorMaterial(
+            1,
+            Map.of(
+                    ArmorType.BOOTS, 0,
+                    ArmorType.LEGGINGS, 0,
+                    ArmorType.CHESTPLATE, 0,
+                    ArmorType.HELMET, 0,
+                    ArmorType.BODY, 0),
+            1,
+            SoundEvents.ARMOR_EQUIP_LEATHER,
+            0.0F,
+            0.0F,
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(OCConstants.MOD_ID, "repairs_glasses")),
+            ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(OCConstants.MOD_ID, "glasses")));
 
     private OCArmorMaterials() {}
-
-    public static void register(IEventBus modBus) {
-        REGISTRY.register(modBus);
-    }
 }

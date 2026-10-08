@@ -3,9 +3,7 @@
   "category": "equipment",
   "group": "opencubes:sleeping_bag",
   "key": {
-    "s": {
-      "item": "opencubes:cyan_wool_slab"
-    }
+    "s": "opencubes:cyan_wool_slab"
   },
   "pattern": [
     "sss"

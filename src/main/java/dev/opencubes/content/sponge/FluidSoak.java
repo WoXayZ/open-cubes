@@ -16,7 +16,7 @@ public final class FluidSoak {
     private FluidSoak() {}
 
     public static Result soak(Level level, BlockPos origin, int range, boolean fullNeighborUpdates) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return new Result(false, false);
         }
         boolean absorbed = false;
@@ -53,7 +53,7 @@ public final class FluidSoak {
                     }
                     BlockState state = level.getBlockState(work);
                     if (!state.getFluidState().isEmpty()) {
-                        state.handleNeighborChanged(level, work, state.getBlock(), origin, false);
+                        state.handleNeighborChanged(level, work, state.getBlock(), null, false);
                     }
                 }
             }

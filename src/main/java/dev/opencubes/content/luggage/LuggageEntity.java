@@ -35,6 +35,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class LuggageEntity extends TamableAnimal {
@@ -89,7 +91,7 @@ public class LuggageEntity extends TamableAnimal {
         entityData.set(DATA_VIEWERS, viewers);
         if (viewers == 0) {
             level().playSound(null, blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.NEUTRAL,
-                    0.5F, level().random.nextFloat() * 0.1F + 0.9F);
+                    0.5F, level().getRandom().nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -140,7 +142,7 @@ public class LuggageEntity extends TamableAnimal {
         if (held.is(Items.NAME_TAG)) {
             return InteractionResult.PASS;
         }
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         if (player.isShiftKeyDown()) {
@@ -148,7 +150,7 @@ public class LuggageEntity extends TamableAnimal {
             if (player.getInventory().add(item)) {
                 discard();
                 level().playSound(null, blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL,
-                        0.5F, level().random.nextFloat() * 0.1F + 0.9F);
+                        0.5F, level().getRandom().nextFloat() * 0.1F + 0.9F);
             }
         } else {
             player.openMenu(new SimpleMenuProvider(
@@ -156,7 +158,7 @@ public class LuggageEntity extends TamableAnimal {
                     getDisplayName()),
                     buf -> buf.writeVarInt(getId()));
             level().playSound(null, blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.NEUTRAL,
-                    0.5F, level().random.nextFloat() * 0.1F + 0.9F);
+                    0.5F, level().getRandom().nextFloat() * 0.1F + 0.9F);
         }
         return InteractionResult.CONSUME;
     }
@@ -193,7 +195,7 @@ public class LuggageEntity extends TamableAnimal {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
 
@@ -232,20 +234,20 @@ public class LuggageEntity extends TamableAnimal {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Special", special);
-        tag.put("Inventory", inventory.serializeNBT(registryAccess()));
+        tag.putChild("Inventory", inventory);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        special = tag.getBoolean("Special");
+        special = tag.getBooleanOr("Special", false);
         int size = special ? SIZE_SPECIAL : SIZE_NORMAL;
         inventory = createHandler(size);
-        if (tag.contains("Inventory")) {
-            inventory.deserializeNBT(registryAccess(), tag.getCompound("Inventory"));
+        if (tag.keySet().contains("Inventory")) {
+            tag.child("Inventory").ifPresent(inventory::deserialize);
         }
         entityData.set(DATA_SIZE, inventory.getSlots());
     }
@@ -253,7 +255,7 @@ public class LuggageEntity extends TamableAnimal {
     @Override
     public void tick() {
         super.tick();
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             int size = entityData.get(DATA_SIZE);
             if (inventory.getSlots() != size) {
                 inventory = createHandler(size);

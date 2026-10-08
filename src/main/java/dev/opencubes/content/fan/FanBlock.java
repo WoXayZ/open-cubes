@@ -70,16 +70,15 @@ public class FanBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
                             ItemStack stack) {
         if (level.getBlockEntity(pos) instanceof FanBlockEntity fan && placer != null) {
-            // Zero yaw blows north while a player looking north reads -180, so the half turn
-            // points the draught away from whoever set it down.
-            fan.setYaw(placer.getYHeadRot() + 180.0F);
+            // The model faces north at yaw 0, and a player looking north stands on the south
+            // side. Their head yaw already turns the front toward them.
+            fan.setYaw(placer.getYHeadRot());
             fan.updatePower();
         }
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
         if (level.getBlockEntity(pos) instanceof FanBlockEntity fan) {
             fan.updatePower();
         }
@@ -91,10 +90,10 @@ public class FanBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof FanBlockEntity fan) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof FanBlockEntity fan) {
             fan.nudge(player.isShiftKeyDown());
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Nullable
@@ -107,7 +106,7 @@ public class FanBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide
+        return level.isClientSide()
                 ? createTickerHelper(type, OCBlockEntities.FAN.get(), FanBlockEntity::clientTick)
                 : createTickerHelper(type, OCBlockEntities.FAN.get(), FanBlockEntity::serverTick);
     }

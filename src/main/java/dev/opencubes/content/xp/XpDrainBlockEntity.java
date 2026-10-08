@@ -2,6 +2,7 @@ package dev.opencubes.content.xp;
 
 import dev.opencubes.registry.OCBlockEntities;
 import dev.opencubes.util.ExperienceUtil;
+import dev.opencubes.util.FluidHandlerBridge;
 import dev.opencubes.util.XpFluidUtil;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -31,10 +32,11 @@ public class XpDrainBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, XpDrainBlockEntity drain) {
-        IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.below(), Direction.UP);
-        if (handler == null) {
+        var found = level.getCapability(Capabilities.Fluid.BLOCK, pos.below(), Direction.UP);
+        if (found == null) {
             return;
         }
+        IFluidHandler handler = FluidHandlerBridge.asTanks(found);
 
         AABB feet = new AABB(pos).setMaxY(pos.getY() + 0.3D);
         List<ExperienceOrb> orbs = level.getEntitiesOfClass(ExperienceOrb.class, feet);
@@ -93,7 +95,7 @@ public class XpDrainBlockEntity extends BlockEntity {
         ExperienceUtil.consume(player, finallyXp);
         if (level.getGameTime() % 4 == 0) {
             level.playSound(null, pos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS,
-                    0.1F, 0.5F * ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.8F));
+                    0.1F, 0.5F * ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7F + 1.8F));
         }
     }
 }

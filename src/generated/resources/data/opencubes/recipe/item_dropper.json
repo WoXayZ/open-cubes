@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "d": {
-      "item": "minecraft:dropper"
-    },
-    "g": {
-      "tag": "c:ingots/gold"
-    }
+    "d": "minecraft:dropper",
+    "g": "#c:ingots/gold"
   },
   "pattern": [
     " g ",

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/light_blue_elevator",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 3847130
+      }
+    ]
+  }
+}

@@ -4,41 +4,50 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.opencubes.content.heightmap.CartographerEntity;
 import dev.opencubes.registry.OCItems;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-/** MVP: floating item model for the cartographer drone. */
-public class CartographerRenderer extends EntityRenderer<CartographerEntity> {
+/** Floating item model for the cartographer drone. */
+public class CartographerRenderer extends EntityRenderer<CartographerEntity, CartographerRenderState> {
 
-    private final ItemRenderer itemRenderer;
-    private final ItemStack stack = new ItemStack(OCItems.CARTOGRAPHER.get());
+    private final ItemModelResolver itemModelResolver;
+    private ItemStack stack;
 
     public CartographerRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.itemRenderer = context.getItemRenderer();
+        this.itemModelResolver = context.getItemModelResolver();
         this.shadowRadius = 0.2F;
     }
 
     @Override
-    public void render(CartographerEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int packedLight) {
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
-        poseStack.scale(0.8F, 0.8F, 0.8F);
-        itemRenderer.renderStatic(stack, ItemDisplayContext.GROUND, packedLight, OverlayTexture.NO_OVERLAY,
-                poseStack, buffers, entity.level(), entity.getId());
-        poseStack.popPose();
-        super.render(entity, entityYaw, partialTick, poseStack, buffers, packedLight);
+    public CartographerRenderState createRenderState() {
+        return new CartographerRenderState();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CartographerEntity entity) {
-        return ResourceLocation.withDefaultNamespace("textures/misc/white.png");
+    public void extractRenderState(CartographerEntity entity, CartographerRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.yaw = entity.getYRot(partialTicks);
+        if (this.stack == null) {
+            this.stack = new ItemStack(OCItems.CARTOGRAPHER.get());
+        }
+        this.itemModelResolver.updateForNonLiving(state.item, this.stack, ItemDisplayContext.GROUND, entity);
+    }
+
+    @Override
+    public void submit(CartographerRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.yaw));
+        poseStack.scale(0.8F, 0.8F, 0.8F);
+        state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+        poseStack.popPose();
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
 }

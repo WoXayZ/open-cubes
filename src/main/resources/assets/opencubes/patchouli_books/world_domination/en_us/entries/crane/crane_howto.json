@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "4. Left-click (air, block, or entity) while holding the control to toggle the magnet: grab mobs, items, or blocks, then left-click again to release.$(br2)The tip hangs ~2 blocks ahead of you at yaw height — lower it onto the target before grabbing."
+      "text": "4. Left-click (air, block, or entity) while holding the control to toggle the magnet: grab mobs, items, or blocks, then left-click again to release.$(br2)The tip hangs ~2 blocks ahead of you at yaw height. Lower it onto the target before grabbing."
     },
     {
       "type": "patchouli:crafting",

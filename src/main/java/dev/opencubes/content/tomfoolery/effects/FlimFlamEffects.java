@@ -1,5 +1,7 @@
 package dev.opencubes.content.tomfoolery.effects;
 
+import dev.opencubes.util.ServerLevels;
+
 import dev.opencubes.content.tomfoolery.FlimFlamDescription;
 import dev.opencubes.content.tomfoolery.FlimFlamRegistry;
 import dev.opencubes.content.tomfoolery.LoreGenerator;
@@ -20,12 +22,12 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Sheep;
-import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.projectile.Snowball;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,12 +70,12 @@ public final class FlimFlamEffects {
             return false;
         }
         List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < player.getInventory().items.size(); i++) {
-            stacks.add(player.getInventory().items.get(i));
+        for (int i = 0; i < 36; i++) {
+            stacks.add(player.getInventory().getItem(i));
         }
         Collections.shuffle(stacks, new java.util.Random(player.getRandom().nextLong()));
         for (int i = 0; i < stacks.size(); i++) {
-            player.getInventory().items.set(i, stacks.get(i));
+            player.getInventory().setItem(i, stacks.get(i));
         }
         player.getInventory().setChanged();
         return true;
@@ -99,7 +101,8 @@ public final class FlimFlamEffects {
         if (holder.isEmpty()) {
             return false;
         }
-        for (ItemStack stack : player.getInventory().items) {
+        for (int slot = 0; slot < 36; slot++) {
+            ItemStack stack = player.getInventory().getItem(slot);
             if (stack.getCount() == 1 && !stack.isEnchanted() && stack.isEnchantable()) {
                 stack.enchant(holder.get(), 5);
                 return true;
@@ -113,7 +116,7 @@ public final class FlimFlamEffects {
         if (target.isEmpty()) {
             return false;
         }
-        String lore = LoreGenerator.generateLore(player.getGameProfile().getName(),
+        String lore = LoreGenerator.generateLore(player.getGameProfile().name(),
                 target.getHoverName().getString());
         target.set(OCDataComponents.EPIC_LORE.get(), lore);
         List<Component> lines = List.of(Component.literal(lore).withStyle(style -> style.withItalic(true).withColor(0x55FF55)));
@@ -138,12 +141,14 @@ public final class FlimFlamEffects {
         if (player.isPassenger()) {
             return false;
         }
-        ServerLevel level = player.serverLevel();
-        Squid squid = EntityType.SQUID.create(level);
+        ServerLevel level = ServerLevels.of(player);
+        Squid squid = EntityType.SQUID.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
         if (squid == null) {
             return false;
         }
-        squid.moveTo(player.getX(), player.getY(), player.getZ(), 0.0F, 0.0F);
+        squid.setPos(player.getX(), player.getY(), player.getZ());
+        squid.setYRot(0.0F);
+        squid.setXRot(0.0F);
         squid.setCustomName(Component.literal(LoreGenerator.generateName()));
         level.addFreshEntity(squid);
         return true;
@@ -174,17 +179,18 @@ public final class FlimFlamEffects {
     }
 
     private static boolean sound(ServerPlayer player) {
-        player.playNotifySound(SoundEvents.CREEPER_PRIMED, SoundSource.HOSTILE, 1.0F, 1.0F);
+        player.playSound(SoundEvents.CREEPER_PRIMED, 1.0F, 1.0F);
         return true;
     }
 
     private static boolean snowballs(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
         for (int i = 0; i < 200; i++) {
             Snowball ball = new Snowball(level,
                     player.getX() + (player.getRandom().nextDouble() - 0.5D) * 4.0D,
                     player.getY() + 10.0D + player.getRandom().nextDouble() * 4.0D,
-                    player.getZ() + (player.getRandom().nextDouble() - 0.5D) * 4.0D);
+                    player.getZ() + (player.getRandom().nextDouble() - 0.5D) * 4.0D,
+                    new ItemStack(Items.SNOWBALL));
             ball.setOwner(player);
             ball.setDeltaMovement(0.0D, -0.2D, 0.0D);
             level.addFreshEntity(ball);
@@ -193,8 +199,8 @@ public final class FlimFlamEffects {
     }
 
     private static boolean teleport(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
-        ThrownEnderpearl pearl = new ThrownEnderpearl(level, player);
+        ServerLevel level = ServerLevels.of(player);
+        ThrownEnderpearl pearl = new ThrownEnderpearl(level, player, new ItemStack(Items.ENDER_PEARL));
         pearl.setPos(player.getX(), player.getEyeY(), player.getZ());
         float yaw = player.getRandom().nextFloat() * 360.0F;
         float pitch = -10.0F - player.getRandom().nextFloat() * 50.0F;
@@ -212,11 +218,11 @@ public final class FlimFlamEffects {
             return false;
         }
         LivingEntity mount = candidates.get(player.getRandom().nextInt(candidates.size()));
-        return player.startRiding(mount, true);
+        return player.startRiding(mount, true, true);
     }
 
     private static boolean encase(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
         BlockPos origin = player.blockPosition();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = 0; dy <= 2; dy++) {
@@ -241,19 +247,20 @@ public final class FlimFlamEffects {
     }
 
     private static boolean creepers(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
         for (int i = 0; i < 15; i++) {
-            Creeper creeper = EntityType.CREEPER.create(level);
+            Creeper creeper = EntityType.CREEPER.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
             if (creeper == null) {
                 continue;
             }
             double angle = player.getRandom().nextDouble() * Math.PI * 2.0D;
             double dist = 2.0D + player.getRandom().nextDouble() * 3.0D;
-            creeper.moveTo(
+            creeper.setPos(
                     player.getX() + Math.cos(angle) * dist,
                     player.getY(),
-                    player.getZ() + Math.sin(angle) * dist,
-                    player.getRandom().nextFloat() * 360.0F, 0.0F);
+                    player.getZ() + Math.sin(angle) * dist);
+            creeper.setYRot(player.getRandom().nextFloat() * 360.0F);
+            creeper.setXRot(0.0F);
             // Harmless lookalike: no AI target, tiny explosion power via no ignition.
             creeper.setNoAi(true);
             creeper.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 20, 0));
@@ -261,9 +268,9 @@ public final class FlimFlamEffects {
             level.addFreshEntity(creeper);
         }
         int when = level.getServer().getTickCount() + 400;
-        level.getServer().tell(new net.minecraft.server.TickTask(when, () -> {
+        level.getServer().schedule(new net.minecraft.server.TickTask(when, () -> {
             for (Creeper c : level.getEntitiesOfClass(Creeper.class, player.getBoundingBox().inflate(48.0D))) {
-                if (c.getPersistentData().getBoolean("opencubesDummyCreeper")) {
+                if (c.getPersistentData().getBooleanOr("opencubesDummyCreeper", false)) {
                     c.discard();
                 }
             }
@@ -294,9 +301,9 @@ public final class FlimFlamEffects {
     private static boolean effect(ServerPlayer player) {
         MobEffectInstance[] pool = {
                 new MobEffectInstance(MobEffects.BLINDNESS, 20 * 15, 0),
-                new MobEffectInstance(MobEffects.CONFUSION, 20 * 15, 0),
-                new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20 * 30, 2),
-                new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 20, 1),
+                new MobEffectInstance(MobEffects.NAUSEA, 20 * 15, 0),
+                new MobEffectInstance(MobEffects.MINING_FATIGUE, 20 * 30, 2),
+                new MobEffectInstance(MobEffects.SLOWNESS, 20 * 20, 1),
                 new MobEffectInstance(MobEffects.HUNGER, 20 * 30, 1),
                 new MobEffectInstance(MobEffects.WEAKNESS, 20 * 20, 1)
         };
@@ -309,7 +316,7 @@ public final class FlimFlamEffects {
         if (player.level().dimension() == Level.NETHER) {
             return false;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
         BlockPos dest = player.blockPosition().above(150);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {

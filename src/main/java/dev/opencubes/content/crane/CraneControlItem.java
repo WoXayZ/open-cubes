@@ -1,18 +1,20 @@
 package dev.opencubes.content.crane;
 
 import dev.opencubes.config.OCCommonConfig;
-import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 /**
  * Remote for the crane: hold right-click to lower the magnet, sneak+hold to raise it;
@@ -25,21 +27,21 @@ public class CraneControlItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!CraneBackpackItem.isWearing(player)) {
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
         CraneRegistry.Data data = CraneRegistry.INSTANCE.getData(player, true);
         if (data != null) {
-            // shiftControl: hold = lower (extend), sneak+hold = raise. Magnet starts high —
-            // lowering first is what players try. Otherwise each use toggles direction.
+            // shiftControl: hold = lower (extend), sneak+hold = raise.
+            // Without it, each use toggles direction. The magnet starts high.
             data.isExtending = OCCommonConfig.CRANE_SHIFT_CONTROL.get()
                     ? !player.isShiftKeyDown()
                     : !data.isExtending;
         }
         player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -61,13 +63,13 @@ public class CraneControlItem extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BOW;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
-        tooltip.add(Component.translatable("opencubes.tooltip.crane_control"));
+        tooltip.accept(Component.translatable("opencubes.tooltip.crane_control"));
     }
 }

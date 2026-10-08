@@ -32,16 +32,16 @@ public class BlockPlacerBlock extends BlockManipulatorBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof BlockPlacerBlockEntity placer
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof BlockPlacerBlockEntity placer
                 && player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(placer, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof BlockPlacerBlockEntity placer) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof BlockPlacerBlockEntity placer) {
             if (level instanceof ServerLevel) {
                 for (int i = 0; i < placer.getItems().getSlots(); i++) {
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
@@ -49,7 +49,7 @@ public class BlockPlacerBlock extends BlockManipulatorBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable
@@ -62,7 +62,7 @@ public class BlockPlacerBlock extends BlockManipulatorBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.BLOCK_PLACER.get(),
                         BlockManipulatorBlockEntity::serverTick);
     }

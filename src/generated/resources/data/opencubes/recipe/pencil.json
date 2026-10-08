@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "tag": "minecraft:coals"
-    },
-    {
-      "tag": "c:rods/wooden"
-    },
-    {
-      "item": "minecraft:ender_eye"
-    },
-    {
-      "tag": "c:slime_balls"
-    }
+    "#minecraft:coals",
+    "#c:rods/wooden",
+    "minecraft:ender_eye",
+    "#c:slime_balls"
   ],
   "result": {
     "count": 1,

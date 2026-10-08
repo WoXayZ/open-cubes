@@ -93,8 +93,8 @@ public class EnhancedBuildingGuideBlockEntity extends BuildingGuideBlockEntity {
                 || !(held.getItem() instanceof BlockItem blockItem)) {
             return false;
         }
-        int minY = serverLevel.getMinBuildHeight();
-        int maxY = serverLevel.getMaxBuildHeight();
+        int minY = serverLevel.getMinY();
+        int maxY = serverLevel.getMaxY();
 
         for (BlockPos rel : shapeCoords()) {
             BlockPos abs = worldPosition.offset(rel);
@@ -134,7 +134,7 @@ public class EnhancedBuildingGuideBlockEntity extends BuildingGuideBlockEntity {
                         double px = dx + 0.3 * random.nextDouble();
                         double py = dy + 0.3 * random.nextDouble();
                         double pz = dz + 0.3 * random.nextDouble();
-                        level.sendParticles(ParticleTypes.PORTAL, px, py, pz, 1, 0, 0, 0, 0);
+                        level.sendParticles(ParticleTypes.PORTAL, true, true, px, py, pz, 8, 0.25, 0.45, 0.25, 1.0);
                         level.sendParticles(
                                 new BlockParticleOption(ParticleTypes.BLOCK, state),
                                 px, py, pz, 1, 0, 0, 0, 0);

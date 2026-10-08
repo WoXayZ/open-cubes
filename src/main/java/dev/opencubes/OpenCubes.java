@@ -2,7 +2,6 @@ package dev.opencubes;
 
 import dev.opencubes.config.OCClientConfig;
 import dev.opencubes.config.OCCommonConfig;
-import dev.opencubes.registry.OCArmorMaterials;
 import dev.opencubes.registry.OCAttachments;
 import dev.opencubes.registry.OCBlockEntities;
 import dev.opencubes.registry.OCBlocks;
@@ -10,8 +9,8 @@ import dev.opencubes.registry.OCCreativeTabs;
 import dev.opencubes.registry.OCCriteria;
 import dev.opencubes.registry.OCDataComponents;
 import dev.opencubes.registry.OCEntities;
+import dev.opencubes.registry.OCEntityData;
 import dev.opencubes.registry.OCFluids;
-import dev.opencubes.registry.OCGameRules;
 import dev.opencubes.registry.OCItems;
 import dev.opencubes.registry.OCLootModifiers;
 import dev.opencubes.registry.OCMenus;
@@ -29,11 +28,10 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 public final class OpenCubes {
 
     public OpenCubes(IEventBus modBus, ModContainer container) {
-        OCGameRules.bootstrap();
+        OCEntityData.register(modBus);
         OCDataComponents.register(modBus);
         OCAttachments.register(modBus);
         OCTrophyBehaviors.register(modBus);
-        OCArmorMaterials.register(modBus);
         OCFluids.register(modBus);
         OCBlocks.register(modBus);
         OCItems.register(modBus);

@@ -5,7 +5,7 @@ import dev.opencubes.registry.OCEntities;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +16,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class LuggageItem extends Item {
 
@@ -38,7 +41,7 @@ public class LuggageItem extends Item {
         ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
         if (contents != null) {
             java.util.concurrent.atomic.AtomicInteger i = new java.util.concurrent.atomic.AtomicInteger();
-            contents.stream().forEach(item -> {
+            contents.allItemsCopyStream().forEach(item -> {
                 int slot = i.getAndIncrement();
                 if (slot < handler.getSlots()) {
                     handler.setStackInSlot(slot, item.copy());
@@ -71,7 +74,7 @@ public class LuggageItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         InventoryData data = loadInventory(stack);
         List<ItemStack> filled = new ArrayList<>();
         for (int i = 0; i < data.handler().getSlots(); i++) {
@@ -86,34 +89,36 @@ public class LuggageItem extends Item {
         int shown = Math.min(5, filled.size());
         for (int i = 0; i < shown; i++) {
             ItemStack slot = filled.get(i);
-            tooltip.add(Component.translatable("opencubes.luggage.tooltip.entry",
+            tooltip.accept(Component.translatable("opencubes.luggage.tooltip.entry",
                     slot.getCount(), slot.getHoverName()));
         }
         int remaining = filled.size() - shown;
         if (remaining > 0) {
-            tooltip.add(Component.translatable("opencubes.luggage.tooltip.more", remaining));
+            tooltip.accept(Component.translatable("opencubes.luggage.tooltip.more", remaining));
         }
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Vec3 look = player.getLookAngle();
             Vec3 spawn = player.position().add(look.x * 2.0D, 0.0D, look.z * 2.0D);
-            LuggageEntity luggage = OCEntities.LUGGAGE.get().create(level);
+            LuggageEntity luggage = OCEntities.LUGGAGE.get().create(level, net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE);
             if (luggage != null) {
-                luggage.moveTo(spawn.x, player.getY(), spawn.z, player.getYRot(), 0.0F);
+                luggage.setPos(spawn.x, player.getY(), spawn.z);
+                luggage.setYRot(player.getYRot());
+                luggage.setXRot(0.0F);
                 luggage.tame(player);
-                luggage.setOwnerUUID(player.getUUID());
+                luggage.setOwner(player);
                 luggage.restoreFromStack(stack);
                 level.addFreshEntity(luggage);
                 stack.shrink(1);
             }
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 }

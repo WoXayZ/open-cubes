@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:mangrove_button"
-    }
+    "b": "minecraft:mangrove_button"
   },
   "pattern": [
     "bb",

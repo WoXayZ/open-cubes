@@ -7,7 +7,7 @@ import java.util.function.UnaryOperator;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
@@ -24,10 +24,10 @@ public final class OCDataComponents {
                     .persistent(SimpleFluidContent.CODEC)
                     .networkSynchronized(SimpleFluidContent.STREAM_CODEC));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> TROPHY_ID =
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Identifier>> TROPHY_ID =
             register("trophy_id", builder -> builder
-                    .persistent(ResourceLocation.CODEC)
-                    .networkSynchronized(ResourceLocation.STREAM_CODEC));
+                    .persistent(Identifier.CODEC)
+                    .networkSynchronized(Identifier.STREAM_CODEC));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SLIMALYZER_ACTIVE =
             register("slimalyzer_active", builder -> builder

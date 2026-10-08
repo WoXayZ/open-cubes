@@ -1,109 +1,107 @@
 package dev.opencubes.client.egg;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.opencubes.content.egg.GoldenEggBlockEntity;
 import java.util.Random;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import org.joml.Matrix4f;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * OpenBlocks golden egg visuals: accelerating spin, rise, translucent phantom, and rainbow star
- * beams while floating / falling.
+ * beams while floating or falling.
+ *
+ * <p>The star used to draw with an immediate additive triangle fan. The submit pipeline has no
+ * custom blend, so each beam is a pair of dragon-ray triangles (additive, depth write off),
+ * emitted both ways so the beam stays visible from either side.
  */
-public class GoldenEggRenderer implements BlockEntityRenderer<GoldenEggBlockEntity> {
+public class GoldenEggRenderer implements BlockEntityRenderer<GoldenEggBlockEntity, GoldenEggRenderState> {
 
     private static final float PHANTOM_SCALE = 1.5F;
-    private static final float BEAM_START_DISTANCE = 2.0F;
     private static final float BEAM_END_DISTANCE = 10.0F;
+    private static final float BEAM_START_DISTANCE = 2.0F;
     private static final float MAX_OPACITY = 192.0F;
     private static final Random STAR_RANDOM = new Random(432L);
 
-    private final BlockEntityRendererProvider.Context context;
-    private final RandomSource modelRandom = RandomSource.create();
+    private final BlockModelResolver blockModelResolver;
+    private final BlockModelRenderState eggModel = new BlockModelRenderState();
 
     public GoldenEggRenderer(BlockEntityRendererProvider.Context context) {
-        this.context = context;
+        this.blockModelResolver = context.blockModelResolver();
     }
 
     @Override
-    public void render(GoldenEggBlockEntity egg, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int packedLight, int packedOverlay) {
-        BlockState state = egg.getBlockState();
-        float rotation = egg.isIdle() ? 0.0F : egg.getRotation(partialTick);
-        float progress = egg.isIdle() ? 0.0F : egg.getRiseProgress(partialTick);
-        float offset = egg.isIdle() ? 0.0F : egg.getOffset(partialTick);
+    public GoldenEggRenderState createRenderState() {
+        return new GoldenEggRenderState();
+    }
 
+    @Override
+    public void extractRenderState(
+            GoldenEggBlockEntity blockEntity,
+            GoldenEggRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        state.blockState = blockEntity.getBlockState();
+        state.idle = blockEntity.isIdle();
+        state.rotation = state.idle ? 0.0F : blockEntity.getRotation(partialTicks);
+        state.progress = state.idle ? 0.0F : blockEntity.getRiseProgress(partialTicks);
+        state.offset = state.idle ? 0.0F : blockEntity.getOffset(partialTicks);
+        state.specialEffects = blockEntity.phase().specialEffects;
+    }
+
+    @Override
+    public void submit(GoldenEggRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
         poseStack.pushPose();
-        poseStack.translate(0.5D, offset, 0.5D);
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.translate(0.5D, state.offset, 0.5D);
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.rotation));
 
-        renderEggModel(state, poseStack, buffers, packedLight, packedOverlay);
+        submitEgg(state.blockState, poseStack, submitNodeCollector, state.lightCoords);
 
-        if (egg.phase().specialEffects) {
-            renderPhantom(state, poseStack, buffers, packedLight, packedOverlay, progress);
-            renderStar(poseStack, rotation, progress);
+        if (state.specialEffects) {
+            float scale = PHANTOM_SCALE * (0.2F + state.progress * 0.8F);
+            poseStack.pushPose();
+            poseStack.translate(0.0D, -0.1D * state.progress, 0.0D);
+            poseStack.scale(scale, scale, scale);
+            submitEgg(state.blockState, poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT);
+            poseStack.popPose();
+            renderStar(poseStack, submitNodeCollector, state.rotation, state.progress);
         }
 
         poseStack.popPose();
     }
 
-    private void renderEggModel(BlockState state, PoseStack poseStack, MultiBufferSource buffers,
-                                int packedLight, int packedOverlay) {
+    private void submitEgg(BlockState blockState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light) {
         poseStack.pushPose();
         poseStack.translate(-0.5D, 0.0D, -0.5D);
-        BakedModel model = context.getBlockRenderDispatcher().getBlockModel(state);
-        ModelBlockRenderer modelRenderer = context.getBlockRenderDispatcher().getModelRenderer();
-        for (var renderType : model.getRenderTypes(state, modelRandom, ModelData.EMPTY)) {
-            modelRenderer.renderModel(
-                    poseStack.last(),
-                    buffers.getBuffer(renderType),
-                    state,
-                    model,
-                    1.0F, 1.0F, 1.0F,
-                    packedLight,
-                    packedOverlay,
-                    ModelData.EMPTY,
-                    renderType);
-        }
-        poseStack.popPose();
-    }
-
-    private void renderPhantom(BlockState state, PoseStack poseStack, MultiBufferSource buffers,
-                               int packedLight, int packedOverlay, float progress) {
-        float scale = PHANTOM_SCALE * (0.2F + progress * 0.8F);
-        poseStack.pushPose();
-        poseStack.translate(0.0D, -0.1D * progress, 0.0D);
-        poseStack.scale(scale, scale, scale);
-        // Slightly brighten via light boost; alpha is handled by translucent cutout layers poorly,
-        // so we just draw a larger second egg for the glowing shell look.
-        renderEggModel(state, poseStack, buffers, 0xF000F0, packedOverlay);
+        this.blockModelResolver.update(this.eggModel, blockState, BlockDisplayContext.create());
+        this.eggModel.submitMultiLayer(poseStack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
     }
 
     /**
-     * Port of OpenBlocks {@code renderStar} (same math as the dragon death burst).
+     * Port of OpenBlocks renderStar (same math as the dragon death burst).
      */
-    private static void renderStar(PoseStack poseStack, float rotation, float progress) {
+    private static void renderStar(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float rotation, float progress) {
         poseStack.pushPose();
         poseStack.translate(0.0D, 0.5D, 0.0D);
-        // Opposite spin at ~20% speed, slightly tilted (OpenBlocks star burst).
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation * -0.2F));
         poseStack.mulPose(Axis.XP.rotationDegrees(20.0F));
 
@@ -114,15 +112,7 @@ public class GoldenEggRenderer implements BlockEntityRenderer<GoldenEggBlockEnti
         int alpha = (int) (MAX_OPACITY * (1.0F - fade));
         int beams = (int) ((progress + progress * progress) / 2.0F * 60.0F);
 
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE);
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
         STAR_RANDOM.setSeed(432L);
-        Matrix4f matrix = poseStack.last().pose();
-
         for (int i = 0; i < beams; i++) {
             poseStack.mulPose(Axis.XP.rotationDegrees(STAR_RANDOM.nextFloat() * 360.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(STAR_RANDOM.nextFloat() * 360.0F));
@@ -130,34 +120,43 @@ public class GoldenEggRenderer implements BlockEntityRenderer<GoldenEggBlockEnti
             poseStack.mulPose(Axis.XP.rotationDegrees(STAR_RANDOM.nextFloat() * 360.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(STAR_RANDOM.nextFloat() * 360.0F));
             poseStack.mulPose(Axis.ZP.rotationDegrees(STAR_RANDOM.nextFloat() * 360.0F + progress * 90.0F));
-            matrix = poseStack.last().pose();
 
             float length = STAR_RANDOM.nextFloat() * BEAM_END_DISTANCE + 5.0F + fade * 10.0F;
             float width = STAR_RANDOM.nextFloat() * BEAM_START_DISTANCE + 1.0F + fade * 2.0F;
-
-            BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN,
-                    DefaultVertexFormat.POSITION_COLOR);
-            buffer.addVertex(matrix, 0.0F, 0.0F, 0.0F).setColor(255, 255, 255, alpha);
-            buffer.addVertex(matrix, (float) (-0.866D * width), length, -0.5F * width)
-                    .setColor(255, 0, 255, 0);
-            buffer.addVertex(matrix, (float) (0.866D * width), length, -0.5F * width)
-                    .setColor(255, 0, 255, 0);
-            buffer.addVertex(matrix, 0.0F, length, 1.0F * width).setColor(255, 0, 255, 0);
-            buffer.addVertex(matrix, (float) (-0.866D * width), length, -0.5F * width)
-                    .setColor(255, 0, 255, 0);
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
+            int beamAlpha = alpha;
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.dragonRays(), (pose, buffer) ->
+                    beam(buffer, pose, width, length, beamAlpha));
         }
 
-        RenderSystem.depthMask(true);
-        RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
         poseStack.popPose();
     }
 
+    private static void beam(VertexConsumer buffer, PoseStack.Pose pose, float width, float length, int alpha) {
+        float x0 = (float) (-0.866D * width);
+        float x1 = (float) (0.866D * width);
+        float z0 = -0.5F * width;
+        float z1 = width;
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, x0, length, z0, 255, 0, 255, 0, x1, length, z0, 255, 0, 255, 0);
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, x1, length, z0, 255, 0, 255, 0, 0.0F, length, z1, 255, 0, 255, 0);
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, 0.0F, length, z1, 255, 0, 255, 0, x0, length, z0, 255, 0, 255, 0);
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, x1, length, z0, 255, 0, 255, 0, x0, length, z0, 255, 0, 255, 0);
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, 0.0F, length, z1, 255, 0, 255, 0, x1, length, z0, 255, 0, 255, 0);
+        triangle(buffer, pose, 0.0F, 0.0F, 0.0F, 255, 255, 255, alpha, x0, length, z0, 255, 0, 255, 0, 0.0F, length, z1, 255, 0, 255, 0);
+    }
+
+    private static void triangle(VertexConsumer buffer, PoseStack.Pose pose,
+                                 float x0, float y0, float z0, int r0, int g0, int b0, int a0,
+                                 float x1, float y1, float z1, int r1, int g1, int b1, int a1,
+                                 float x2, float y2, float z2, int r2, int g2, int b2, int a2) {
+        buffer.addVertex(pose, x0, y0, z0).setColor(r0, g0, b0, a0);
+        buffer.addVertex(pose, x1, y1, z1).setColor(r1, g1, b1, a1);
+        buffer.addVertex(pose, x2, y2, z2).setColor(r2, g2, b2, a2);
+    }
+
     @Override
-    public boolean shouldRenderOffScreen(GoldenEggBlockEntity egg) {
-        return !egg.isIdle();
+    public boolean shouldRenderOffScreen() {
+        // The old check was per egg (!idle). Off-screen rendering no longer receives the block entity.
+        return true;
     }
 
     @Override

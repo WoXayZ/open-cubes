@@ -7,10 +7,11 @@ import dev.opencubes.content.guide.BuildingGuideBlockEntity;
 import dev.opencubes.content.guide.BuildingGuideMenu;
 import dev.opencubes.content.guide.GuideHalfAxis;
 import dev.opencubes.content.guide.GuideShape;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -31,23 +32,19 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
     private static final GuideHalfAxis[] RIGHT_AXES = {GuideHalfAxis.POS_X, GuideHalfAxis.POS_Y, GuideHalfAxis.POS_Z};
 
     public BuildingGuideScreen(BuildingGuideMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        this.imageWidth = CONTENT_WIDTH;
-        this.imageHeight = 178;
+        super(menu, inventory, title, CONTENT_WIDTH, 178);
         // No player inventory slots on this screen.
         this.inventoryLabelY = 10000;
     }
 
     @Override
     protected void init() {
-        imageWidth = CONTENT_WIDTH;
         super.init();
         BuildingGuideBlockEntity guide = menu.guide();
         GuideShape current = guide != null ? guide.shapeMode() : GuideShape.SPHERE;
 
-        addRenderableWidget(CycleButton.<GuideShape>builder(shape -> Component.translatable(shape.translationKey()))
+        addRenderableWidget(CycleButton.<GuideShape>builder(shape -> Component.translatable(shape.translationKey()), current)
                 .withValues(GuideShape.VALUES)
-                .withInitialValue(current)
                 .displayOnlyValue()
                 .create(leftPos + 8, topPos + 20, 140, 18,
                         Component.translatable("container.opencubes.building_guide.shape"),
@@ -103,7 +100,7 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
             return;
         }
         int id = buttonId;
-        if (hasShiftDown() && isAxisAdjust(buttonId)) {
+        if (minecraft.hasShiftDown() && isAxisAdjust(buttonId)) {
             id += BuildingGuideMenu.SHIFT_OFFSET;
         }
         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
@@ -117,16 +114,17 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.BUILDING_GUIDE,
                 leftPos, topPos, CONTENT_WIDTH, imageHeight);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         BuildingGuideBlockEntity guide = menu.guide();
-        graphics.drawString(font, title, 8, 7, TEXT, false);
-        graphics.drawString(font, Component.translatable("container.opencubes.building_guide.size"),
+        graphics.text(font, title, 8, 7, TEXT, false);
+        graphics.text(font, Component.translatable("container.opencubes.building_guide.size"),
                 8, 46, TEXT, false);
 
         for (int row = 0; row < 3; row++) {
@@ -135,24 +133,24 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
         }
 
         if (guide != null) {
-            graphics.drawString(font, Component.translatable("container.opencubes.building_guide.facing",
+            graphics.text(font, Component.translatable("container.opencubes.building_guide.facing",
                             Component.translatable("container.opencubes.direction."
                                     + guide.guideFacing().getSerializedName())),
                     8, 124, TEXT, false);
-            graphics.drawString(font, Component.translatable("container.opencubes.building_guide.blocks",
+            graphics.text(font, Component.translatable("container.opencubes.building_guide.blocks",
                             guide.markerCount()),
                     8, 136, TEXT, false);
         }
-        graphics.drawString(font, Component.translatable("container.opencubes.building_guide.colour"),
+        graphics.text(font, Component.translatable("container.opencubes.building_guide.colour"),
                 8, 146, TEXT, false);
     }
 
-    private void drawAxisLabel(GuiGraphics graphics, BuildingGuideBlockEntity guide, GuideHalfAxis axis,
+    private void drawAxisLabel(GuiGraphicsExtractor graphics, BuildingGuideBlockEntity guide, GuideHalfAxis axis,
                                int x, int y) {
-        graphics.drawString(font, axisName(axis), x, y, TEXT, false);
+        graphics.text(font, axisName(axis), x, y, TEXT, false);
         String value = guide == null ? "-" : Integer.toString(guide.halfExtent(axis));
         int centre = x + 40 + (24 - font.width(value)) / 2;
-        graphics.drawString(font, value, centre, y, TEXT, false);
+        graphics.text(font, value, centre, y, TEXT, false);
     }
 
     private static Component axisName(GuideHalfAxis axis) {
@@ -166,13 +164,6 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
         });
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
-    }
-
     private final class MarkerSwatch extends AbstractButton {
 
         private final DyeColor dye;
@@ -184,21 +175,21 @@ public class BuildingGuideScreen extends AbstractContainerScreen<BuildingGuideMe
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             press(BuildingGuideMenu.colourId(dye));
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             int rgb = 0xFF000000 | dye.getTextureDiffuseColor();
             graphics.fill(getX(), getY(), getX() + width, getY() + height, SideConfigScreenHelper.SLOT_SHADOW);
             graphics.fill(getX() + 1, getY() + 1, getX() + width - 1, getY() + height - 1, rgb);
             BuildingGuideBlockEntity guide = menu.guide();
             boolean selected = guide != null && guide.markerDye() == dye;
             if (selected) {
-                graphics.renderOutline(getX(), getY(), width, height, 0xFFFFFFFF);
+                graphics.outline(getX(), getY(), width, height, 0xFFFFFFFF);
             } else if (isHovered()) {
-                graphics.renderOutline(getX(), getY(), width, height, 0xFF8B8B8B);
+                graphics.outline(getX(), getY(), width, height, 0xFF8B8B8B);
             }
         }
 

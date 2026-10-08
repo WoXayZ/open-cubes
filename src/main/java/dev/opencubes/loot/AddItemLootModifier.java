@@ -24,8 +24,8 @@ public class AddItemLootModifier extends LootModifier {
     private final float chance;
     private final boolean respectConfig;
 
-    public AddItemLootModifier(LootItemCondition[] conditions, ItemStack item, float chance, boolean respectConfig) {
-        super(conditions);
+    public AddItemLootModifier(LootItemCondition[] conditions, int priority, ItemStack item, float chance, boolean respectConfig) {
+        super(conditions, priority);
         this.item = item;
         this.chance = chance;
         this.respectConfig = respectConfig;

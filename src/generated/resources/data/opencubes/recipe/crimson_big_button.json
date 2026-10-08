@@ -3,9 +3,7 @@
   "category": "redstone",
   "group": "opencubes:big_button",
   "key": {
-    "b": {
-      "item": "minecraft:crimson_button"
-    }
+    "b": "minecraft:crimson_button"
   },
   "pattern": [
     "bb",

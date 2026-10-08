@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "e": {
-      "item": "minecraft:ender_eye"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "e": "minecraft:ender_eye",
+    "i": "#c:ingots/iron",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "iri",

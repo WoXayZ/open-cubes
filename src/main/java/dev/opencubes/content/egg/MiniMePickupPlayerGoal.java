@@ -23,10 +23,10 @@ public class MiniMePickupPlayerGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (miniMe.pickupCooldown() > 0 || !miniMe.getNavigation().isDone()) {
+        if (miniMe.pickupCooldown() > 0) {
             return false;
         }
-        if (miniMe.level().isClientSide) {
+        if (miniMe.level().isClientSide()) {
             return false;
         }
         targetPlayer = findOwnerPlayer();
@@ -66,17 +66,17 @@ public class MiniMePickupPlayerGoal extends Goal {
             return;
         }
         if (!targetPlayer.isPassenger()) {
-            targetPlayer.startRiding(miniMe, true);
+            targetPlayer.startRiding(miniMe, true, true);
         }
     }
 
     @Nullable
     private Player findOwnerPlayer() {
         GameProfile owner = miniMe.ownerProfile();
-        if (owner == null || owner.getId() == null) {
+        if (owner == null) {
             return null;
         }
-        Player player = miniMe.level().getPlayerByUUID(owner.getId());
+        Player player = miniMe.level().getPlayerByUUID(owner.id());
         if (player == null || !player.isAlive()) {
             return null;
         }
@@ -89,8 +89,7 @@ public class MiniMePickupPlayerGoal extends Goal {
     private boolean canOfferRide(Player player) {
         GameProfile owner = miniMe.ownerProfile();
         return owner != null
-                && owner.getId() != null
-                && owner.getId().equals(player.getUUID())
+                && owner.id().equals(player.getUUID())
                 && !player.isPassenger()
                 && miniMe.pickupCooldown() <= 0
                 && !miniMe.isVehicle();

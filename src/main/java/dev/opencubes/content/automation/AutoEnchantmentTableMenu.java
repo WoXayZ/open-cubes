@@ -141,7 +141,7 @@ public class AutoEnchantmentTableMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (table.getLevel() == null || table.getLevel().isClientSide) {
+        if (table.getLevel() == null || table.getLevel().isClientSide()) {
             return false;
         }
         boolean shift = id >= SHIFT_OFFSET;

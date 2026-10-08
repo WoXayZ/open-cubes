@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "opencubes:flag",
   "key": {
-    "c": {
-      "item": "minecraft:brown_carpet"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "c": "minecraft:brown_carpet",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "scc",

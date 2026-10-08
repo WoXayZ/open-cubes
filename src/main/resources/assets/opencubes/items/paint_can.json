@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/paint_can",
+    "tints": [
+      {
+        "type": "opencubes:paint"
+      }
+    ]
+  }
+}

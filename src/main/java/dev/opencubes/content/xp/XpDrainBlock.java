@@ -50,7 +50,7 @@ public class XpDrainBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.XP_DRAIN.get(), XpDrainBlockEntity::serverTick);
     }
 }

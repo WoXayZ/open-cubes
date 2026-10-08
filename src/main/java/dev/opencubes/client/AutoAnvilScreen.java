@@ -2,7 +2,7 @@ package dev.opencubes.client;
 
 import dev.opencubes.client.sideconfig.SideConfigPanel;
 import dev.opencubes.content.automation.AutoAnvilMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,15 +14,18 @@ public class AutoAnvilScreen extends AbstractContainerScreen<AutoAnvilMenu> {
     private SideConfigPanel panel;
 
     public AutoAnvilScreen(AutoAnvilMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageHeight = 166;
-        imageWidth = CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoAnvilMenu.class);
+        super(menu, inventory, title, CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoAnvilMenu.class), 166);
+    }
+
+    @Override
+    public int getImageWidth() {
+        return CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoAnvilMenu.class);
     }
 
     @Override
     protected void init() {
-        imageWidth = CONTENT_WIDTH + SideConfigPanel.exclusiveWidth(AutoAnvilMenu.class);
         super.init();
+        this.leftPos = (this.width - getImageWidth()) / 2;
         panel = new SideConfigPanel(AutoAnvilMenu.class,
                 id -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id))
                 .onToggle(this::rebuildWidgets)
@@ -49,20 +52,21 @@ public class AutoAnvilScreen extends AbstractContainerScreen<AutoAnvilMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         SideConfigScreenHelper.blitContainer(graphics, MachineGuiTextures.AUTO_ANVIL, x, y, CONTENT_WIDTH, imageHeight);
         SideConfigScreenHelper.drawFluidGauge(graphics, x + 8, y + 17, 10, 52,
                 menu.getFluidAmount(), menu.getFluidCapacity());
 
-        graphics.drawString(font, "+", x + 58, y + 51, SideConfigScreenHelper.TEXT, false);
+        graphics.text(font, "+", x + 58, y + 51, SideConfigScreenHelper.TEXT, false);
         drawProgressArrow(graphics, x + 100, y + 51, menu.getProgress(), menu.getMaxProgress());
 
         panel.render(graphics, font);
     }
 
-    static void drawProgressArrow(GuiGraphics graphics, int x, int y, int progress, int maxProgress) {
+    static void drawProgressArrow(GuiGraphicsExtractor graphics, int x, int y, int progress, int maxProgress) {
         graphics.fill(x, y + 2, x + 20, y + 6, SideConfigScreenHelper.SLOT_SHADOW);
         for (int i = 0; i < 5; i++) {
             graphics.fill(x + 20 + i, y + i, x + 21 + i, y + 9 - i, SideConfigScreenHelper.SLOT_SHADOW);
@@ -80,21 +84,21 @@ public class AutoAnvilScreen extends AbstractContainerScreen<AutoAnvilMenu> {
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int button) {
-        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, button)
-                && !panel.isMouseOver(mouseX, mouseY);
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop) {
+        boolean outside = mouseX < guiLeft || mouseY < guiTop
+                || mouseX >= guiLeft + getImageWidth() || mouseY >= guiTop + imageHeight;
+        return outside && !panel.isMouseOver(mouseX, mouseY);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (isHovering(7, 16, 12, 54, mouseX, mouseY)) {
-            graphics.renderTooltip(font,
+            graphics.setTooltipForNextFrame(font,
                     Component.translatable("container.opencubes.xp_bottler.fluid",
                             menu.getFluidAmount(), menu.getFluidCapacity()),
                     mouseX, mouseY);
+            return;
         }
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 }

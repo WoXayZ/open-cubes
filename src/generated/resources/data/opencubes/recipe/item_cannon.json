@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "c": {
-      "tag": "c:ingots/copper"
-    },
-    "p": {
-      "item": "minecraft:piston"
-    }
+    "c": "#c:ingots/copper",
+    "p": "minecraft:piston"
   },
   "pattern": [
     "ccc",

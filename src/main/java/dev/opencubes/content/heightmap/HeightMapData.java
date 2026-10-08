@@ -1,15 +1,16 @@
 package dev.opencubes.content.heightmap;
 
-import net.minecraft.core.HolderLookup;
+import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 /**
  * 64×64 two-layer terrain scan stored in dimension SavedData as {@code height_map_<id>}.
- * Height bytes are relative to the world's min build height (clamped 0–255).
+ * Height bytes are relative to the world's min build height (clamped 0-255).
  */
 public class HeightMapData extends SavedData {
 
@@ -43,9 +44,9 @@ public class HeightMapData extends SavedData {
         public final byte[] colorMap = new byte[SIZE * SIZE];
 
         public void read(CompoundTag tag) {
-            alpha = tag.getByte("Alpha");
-            copyInto(tag.getByteArray("Height"), heightMap);
-            copyInto(tag.getByteArray("Color"), colorMap);
+            alpha = tag.getByteOr("Alpha", (byte) 0);
+            copyInto(tag.getByteArray("Height").orElse(new byte[0]), heightMap);
+            copyInto(tag.getByteArray("Color").orElse(new byte[0]), colorMap);
         }
 
         public void write(CompoundTag tag) {
@@ -107,34 +108,35 @@ public class HeightMapData extends SavedData {
         return false;
     }
 
-    public static Factory<HeightMapData> factory(int mapId) {
-        return new Factory<>(
-                () -> new HeightMapData(mapId, false),
-                (tag, provider) -> load(mapId, tag, provider));
+    public static SavedDataType<HeightMapData> type(int mapId) {
+        Codec<HeightMapData> codec = CompoundTag.CODEC.xmap(
+                tag -> load(mapId, tag),
+                HeightMapData::saveTag);
+        return new SavedDataType<>(Identifier.withDefaultNamespace(storageName(mapId)), () -> new HeightMapData(mapId), codec);
     }
 
-    public static HeightMapData load(int mapId, CompoundTag tag, HolderLookup.Provider provider) {
+    public static HeightMapData load(int mapId, CompoundTag tag) {
         HeightMapData data = new HeightMapData(mapId, false);
         data.read(tag);
         return data;
     }
 
     public void read(CompoundTag tag) {
-        dimension = tag.getString("Dimension");
-        centerX = tag.getInt("CenterX");
-        centerZ = tag.getInt("CenterZ");
-        scale = tag.getByte("Scale");
-        ListTag layersTag = tag.getList("Layers", Tag.TAG_COMPOUND);
+        dimension = tag.getStringOr("Dimension", "");
+        centerX = tag.getIntOr("CenterX", 0);
+        centerZ = tag.getIntOr("CenterZ", 0);
+        scale = tag.getByteOr("Scale", (byte) 0);
+        ListTag layersTag = tag.getListOrEmpty("Layers");
         layers = new LayerData[layersTag.size()];
         for (int i = 0; i < layersTag.size(); i++) {
             LayerData layer = new LayerData();
-            layer.read(layersTag.getCompound(i));
+            layer.read(layersTag.getCompoundOrEmpty(i));
             layers[i] = layer;
         }
     }
 
-    @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+    public CompoundTag saveTag() {
+        CompoundTag tag = new CompoundTag();
         tag.putString("Dimension", dimension);
         tag.putInt("CenterX", centerX);
         tag.putInt("CenterZ", centerZ);

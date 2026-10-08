@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "d": {
-      "item": "minecraft:golden_apple"
-    },
-    "g": {
-      "tag": "c:ingots/gold"
-    }
+    "d": "minecraft:golden_apple",
+    "g": "#c:ingots/gold"
   },
   "pattern": [
     "ggg",

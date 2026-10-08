@@ -20,7 +20,7 @@ public class XpJuiceFluidType extends FluidType {
                 .canConvertToSource(false)
                 .fallDistanceModifier(0.0F)
                 .supportsBoating(false)
-                .pathType(PathType.DAMAGE_OTHER)
+                .pathType(PathType.DAMAGING)
                 .adjacentPathType(null)
                 .canHydrate(false)
                 .lightLevel(10)

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "opencubes:item/green_flag",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 6192150
+      }
+    ]
+  }
+}

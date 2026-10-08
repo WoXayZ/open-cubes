@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "o": {
-      "tag": "c:obsidians"
-    }
+    "i": "#c:ingots/iron",
+    "o": "#c:obsidians"
   },
   "pattern": [
     "iii",

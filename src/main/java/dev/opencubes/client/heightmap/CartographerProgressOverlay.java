@@ -5,7 +5,7 @@ import dev.opencubes.content.heightmap.CartographerEntity;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
@@ -43,13 +43,13 @@ public final class CartographerProgressOverlay {
 
         int done = cartographer.mappingJobsDone();
         int percent = cartographer.mappingPercent();
-        GuiGraphics graphics = event.getGuiGraphics();
+        GuiGraphicsExtractor graphics = event.getGuiGraphics();
         int x = mc.getWindow().getGuiScaledWidth() / 2;
         int y = mc.getWindow().getGuiScaledHeight() - 59;
 
         Component label = Component.translatable("opencubes.misc.cartographer_progress", percent);
         int textWidth = mc.font.width(label);
-        graphics.drawString(mc.font, label, x - textWidth / 2, y, 0xFFFFFF, true);
+        graphics.text(mc.font, label, x - textWidth / 2, y, 0xFFFFFFFF, true);
 
         int gridWidth = GRID_SIZE * CELL;
         int gridX = x - gridWidth / 2;

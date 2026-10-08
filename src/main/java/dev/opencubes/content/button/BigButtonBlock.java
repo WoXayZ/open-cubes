@@ -8,7 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -90,10 +90,10 @@ public class BigButtonBlock extends ButtonBlock implements EntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         if (player.isSecondaryUseActive()) {
-            if (!level.isClientSide && level.getBlockEntity(pos) instanceof BigButtonBlockEntity button) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof BigButtonBlockEntity button) {
                 player.openMenu(button);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return super.useWithoutItem(state, level, pos, player, hit);
     }
@@ -116,8 +116,8 @@ public class BigButtonBlock extends ButtonBlock implements EntityBlock {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (!level.isClientSide && setType.canButtonBeActivatedByArrows() && !state.getValue(POWERED)) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        if (!level.isClientSide() && setType.canButtonBeActivatedByArrows() && !state.getValue(POWERED)) {
             checkPressed(state, level, pos);
         }
     }

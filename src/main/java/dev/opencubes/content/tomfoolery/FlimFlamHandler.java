@@ -1,5 +1,7 @@
 package dev.opencubes.content.tomfoolery;
 
+import dev.opencubes.util.PlayerFeedback;
+
 import dev.opencubes.OCConstants;
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCAttachments;
@@ -40,7 +42,7 @@ public final class FlimFlamHandler {
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer target) || target.level().isClientSide) {
+        if (!(event.getEntity() instanceof ServerPlayer target) || target.level().isClientSide()) {
             return;
         }
         if (!(event.getSource().getEntity() instanceof ServerPlayer source) || source == target) {
@@ -74,7 +76,7 @@ public final class FlimFlamHandler {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player.level().isClientSide) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || player.level().isClientSide()) {
             return;
         }
         if (!OCCommonConfig.TOMFOOLERY_ENABLED.get()) {
@@ -120,9 +122,9 @@ public final class FlimFlamHandler {
                         if (meta.action().execute(player)) {
                             property.luck -= meta.cost();
                             LOGGER.debug("Player {} flim-flammed with {}, luck={}",
-                                    player.getGameProfile().getName(), meta.name(), property.luck);
+                                    player.getGameProfile().name(), meta.name(), property.luck);
                             if (!meta.silent()) {
-                                player.displayClientMessage(Component.translatable("opencubes.misc.flim_flammed"), true);
+                                PlayerFeedback.tell(player, Component.translatable("opencubes.misc.flim_flammed"), true);
                             }
                             return true;
                         }
@@ -172,7 +174,7 @@ public final class FlimFlamHandler {
                 LuckState luck = player.getData(OCAttachments.LUCK.get());
                 luck.luck -= meta.cost();
                 if (!meta.silent()) {
-                    player.displayClientMessage(Component.translatable("opencubes.misc.flim_flammed"), true);
+                    PlayerFeedback.tell(player, Component.translatable("opencubes.misc.flim_flammed"), true);
                 }
                 return true;
             }

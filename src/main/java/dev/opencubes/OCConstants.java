@@ -1,6 +1,6 @@
 package dev.opencubes;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class OCConstants {
 
@@ -8,7 +8,7 @@ public final class OCConstants {
 
     private OCConstants() {}
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

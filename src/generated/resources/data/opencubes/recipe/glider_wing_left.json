@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "d": {
-      "tag": "c:dyes/purple"
-    },
-    "l": {
-      "tag": "c:leathers"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "d": "#c:dyes/purple",
+    "l": "#c:leathers",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "dsl",

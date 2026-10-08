@@ -6,11 +6,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 /**
- * Matching pickups fill the /dev/null filter stack; overflow of a full match is deleted.
+ * The slot keeps one example of the item. A matching pickup is deleted instead of stored.
  */
 @EventBusSubscriber(modid = OCConstants.MOD_ID)
 public final class DevNullPickupHandler {
@@ -35,20 +35,9 @@ public final class DevNullPickupHandler {
                 continue;
             }
 
-            int space = filter.getMaxStackSize() - filter.getCount();
-            if (space > 0) {
-                int moved = Math.min(space, pickup.getCount());
-                filter.grow(moved);
-                pickup.shrink(moved);
-                DevNullItem.setContained(stack, filter);
-            }
-            if (!pickup.isEmpty() && ItemStack.isSameItemSameComponents(filter, pickup)) {
-                pickup.setCount(0);
-            }
-            if (pickup.isEmpty()) {
-                // Zeroed stack + deny pickup; do not discard mid-event (that crashed).
-                event.setCanPickup(TriState.FALSE);
-            }
+            pickup.setCount(0);
+            // Zeroed stack + deny pickup; do not discard mid-event (that crashed).
+            event.setCanPickup(TriState.FALSE);
             return;
         }
     }

@@ -44,155 +44,155 @@ public final class OCBlockEntities {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, OCConstants.MOD_ID);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BigButtonBlockEntity>> BIG_BUTTON =
-            REGISTRY.register("big_button", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("big_button", () -> new BlockEntityType<>(
                     BigButtonBlockEntity::new,
                     OCBlocks.BIG_BUTTONS.values().stream().map(holder -> (Block) holder.get()).toArray(Block[]::new)
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FanBlockEntity>> FAN =
-            REGISTRY.register("fan", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("fan", () -> new BlockEntityType<>(
                     FanBlockEntity::new, OCBlocks.FAN.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BearTrapBlockEntity>> BEAR_TRAP =
-            REGISTRY.register("bear_trap", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("bear_trap", () -> new BlockEntityType<>(
                     BearTrapBlockEntity::new, OCBlocks.BEAR_TRAP.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TankBlockEntity>> TANK =
-            REGISTRY.register("tank", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("tank", () -> new BlockEntityType<>(
                     TankBlockEntity::new, OCBlocks.TANK.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<XpDrainBlockEntity>> XP_DRAIN =
-            REGISTRY.register("xp_drain", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("xp_drain", () -> new BlockEntityType<>(
                     XpDrainBlockEntity::new, OCBlocks.XP_DRAIN.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<XpShowerBlockEntity>> XP_SHOWER =
-            REGISTRY.register("xp_shower", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("xp_shower", () -> new BlockEntityType<>(
                     XpShowerBlockEntity::new, OCBlocks.XP_SHOWER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<XpBottlerBlockEntity>> XP_BOTTLER =
-            REGISTRY.register("xp_bottler", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("xp_bottler", () -> new BlockEntityType<>(
                     XpBottlerBlockEntity::new, OCBlocks.XP_BOTTLER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VacuumHopperBlockEntity>> VACUUM_HOPPER =
-            REGISTRY.register("vacuum_hopper", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("vacuum_hopper", () -> new BlockEntityType<>(
                     VacuumHopperBlockEntity::new, OCBlocks.VACUUM_HOPPER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemDropperBlockEntity>> ITEM_DROPPER =
-            REGISTRY.register("item_dropper", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("item_dropper", () -> new BlockEntityType<>(
                     ItemDropperBlockEntity::new, OCBlocks.ITEM_DROPPER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BlockBreakerBlockEntity>> BLOCK_BREAKER =
-            REGISTRY.register("block_breaker", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("block_breaker", () -> new BlockEntityType<>(
                     BlockBreakerBlockEntity::new, OCBlocks.BLOCK_BREAKER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BlockPlacerBlockEntity>> BLOCK_PLACER =
-            REGISTRY.register("block_placer", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("block_placer", () -> new BlockEntityType<>(
                     BlockPlacerBlockEntity::new, OCBlocks.BLOCK_PLACER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutoAnvilBlockEntity>> AUTO_ANVIL =
-            REGISTRY.register("auto_anvil", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("auto_anvil", () -> new BlockEntityType<>(
                     AutoAnvilBlockEntity::new, OCBlocks.AUTO_ANVIL.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutoEnchantmentTableBlockEntity>> AUTO_ENCHANTMENT_TABLE =
-            REGISTRY.register("auto_enchanting_table", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("auto_enchanting_table", () -> new BlockEntityType<>(
                     AutoEnchantmentTableBlockEntity::new, OCBlocks.AUTO_ENCHANTMENT_TABLE.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GraveBlockEntity>> GRAVE =
-            REGISTRY.register("grave", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("grave", () -> new BlockEntityType<>(
                     GraveBlockEntity::new, OCBlocks.GRAVE.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TrophyBlockEntity>> TROPHY =
-            REGISTRY.register("trophy", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("trophy", () -> new BlockEntityType<>(
                     TrophyBlockEntity::new, OCBlocks.TROPHY.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CanvasBlockEntity>> CANVAS =
-            REGISTRY.register("canvas", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("canvas", () -> new BlockEntityType<>(
                     CanvasBlockEntity::new, OCBlocks.CANVAS.get(), OCBlocks.GLASS_CANVAS.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PaintCanBlockEntity>> PAINT_CAN =
-            REGISTRY.register("paint_can", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("paint_can", () -> new BlockEntityType<>(
                     PaintCanBlockEntity::new, OCBlocks.PAINT_CAN.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PaintMixerBlockEntity>> PAINT_MIXER =
-            REGISTRY.register("paint_mixer", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("paint_mixer", () -> new BlockEntityType<>(
                     PaintMixerBlockEntity::new, OCBlocks.PAINT_MIXER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DrawingTableBlockEntity>> DRAWING_TABLE =
-            REGISTRY.register("drawing_table", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("drawing_table", () -> new BlockEntityType<>(
                     DrawingTableBlockEntity::new, OCBlocks.DRAWING_TABLE.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BuildingGuideBlockEntity>> BUILDING_GUIDE =
-            REGISTRY.register("building_guide", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("building_guide", () -> new BlockEntityType<>(
                     BuildingGuideBlockEntity::new, OCBlocks.BUILDING_GUIDE.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnhancedBuildingGuideBlockEntity>> ENHANCED_BUILDING_GUIDE =
-            REGISTRY.register("enhanced_building_guide", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("enhanced_building_guide", () -> new BlockEntityType<>(
                     EnhancedBuildingGuideBlockEntity::new, OCBlocks.ENHANCED_BUILDING_GUIDE.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HeightMapProjectorBlockEntity>> HEIGHT_MAP_PROJECTOR =
-            REGISTRY.register("height_map_projector", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("height_map_projector", () -> new BlockEntityType<>(
                     HeightMapProjectorBlockEntity::new, OCBlocks.HEIGHT_MAP_PROJECTOR.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ImaginaryBlockEntity>> IMAGINARY =
-            REGISTRY.register("imaginary", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("imaginary", () -> new BlockEntityType<>(
                     ImaginaryBlockEntity::new, OCBlocks.IMAGINARY.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HealerBlockEntity>> HEALER =
-            REGISTRY.register("healer", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("healer", () -> new BlockEntityType<>(
                     HealerBlockEntity::new, OCBlocks.HEALER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SprinklerBlockEntity>> SPRINKLER =
-            REGISTRY.register("sprinkler", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("sprinkler", () -> new BlockEntityType<>(
                     SprinklerBlockEntity::new, OCBlocks.SPRINKLER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ArcheryTargetBlockEntity>> ARCHERY_TARGET =
-            REGISTRY.register("archery_target", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("archery_target", () -> new BlockEntityType<>(
                     ArcheryTargetBlockEntity::new, OCBlocks.ARCHERY_TARGET.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemCannonBlockEntity>> ITEM_CANNON =
-            REGISTRY.register("item_cannon", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("item_cannon", () -> new BlockEntityType<>(
                     ItemCannonBlockEntity::new, OCBlocks.ITEM_CANNON.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GoldenEggBlockEntity>> GOLDEN_EGG =
-            REGISTRY.register("golden_egg", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("golden_egg", () -> new BlockEntityType<>(
                     GoldenEggBlockEntity::new, OCBlocks.GOLDEN_EGG.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VillageHighlighterBlockEntity>> VILLAGE_HIGHLIGHTER =
-            REGISTRY.register("village_highlighter", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("village_highlighter", () -> new BlockEntityType<>(
                     VillageHighlighterBlockEntity::new, OCBlocks.VILLAGE_HIGHLIGHTER.get()
-            ).build(null));
+            ));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkyBlockEntity>> SKY_BLOCK =
-            REGISTRY.register("sky_block", () -> BlockEntityType.Builder.of(
+            REGISTRY.register("sky_block", () -> new BlockEntityType<>(
                     SkyBlockEntity::new, OCBlocks.SKY_BLOCK.get(), OCBlocks.INVERTED_SKY_BLOCK.get()
-            ).build(null));
+            ));
 
     private OCBlockEntities() {}
 

@@ -15,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class ImaginaryBlockEntity extends BlockEntity {
@@ -90,8 +92,8 @@ public class ImaginaryBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         if (colour != null) {
             tag.putInt("Color", colour);
         }
@@ -100,11 +102,11 @@ public class ImaginaryBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        colour = tag.contains("Color") ? tag.getInt("Color") : null;
-        inverted = tag.getBoolean("IsInverted");
-        int shapeId = tag.getByte("Shape");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        colour = tag.keySet().contains("Color") ? tag.getIntOr("Color", 0) : null;
+        inverted = tag.getBooleanOr("IsInverted", false);
+        int shapeId = tag.getByteOr("Shape", (byte) 0);
         shape = shapeId >= 0 && shapeId < ImaginaryShape.VALUES.length
                 ? ImaginaryShape.VALUES[shapeId]
                 : ImaginaryShape.BLOCK;

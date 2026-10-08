@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "4. Clic gauche (air, bloc ou entité) avec le contrôle pour basculer l'aimant : saisir mobs, objets ou blocs, puis recliquer pour lâcher.$(br2)La pointe pend ~2 blocs devant vous — descendez-la sur la cible avant de grab."
+      "text": "4. Clic gauche (air, bloc ou entité) avec le contrôle pour basculer l'aimant : saisir mobs, objets ou blocs, puis recliquer pour lâcher.$(br2)La pointe pend ~2 blocs devant vous. Descendez-la sur la cible avant de grab."
     },
     {
       "type": "patchouli:crafting",

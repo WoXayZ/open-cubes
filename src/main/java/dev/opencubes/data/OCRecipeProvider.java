@@ -20,7 +20,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -73,7 +73,7 @@ public class OCRecipeProvider extends RecipeProvider {
             }
 
             @Override
-            public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement,
+            public void accept(Identifier id, Recipe<?> recipe, @Nullable AdvancementHolder advancement,
                                ICondition... conditions) {
                 output.accept(id, new ColouredShapelessRecipe((ShapelessRecipe) recipe), advancement, conditions);
             }
@@ -90,7 +90,7 @@ public class OCRecipeProvider extends RecipeProvider {
             }
 
             @Override
-            public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement,
+            public void accept(Identifier id, Recipe<?> recipe, @Nullable AdvancementHolder advancement,
                                ICondition... conditions) {
                 output.accept(id, new PaintedSmithingRecipe(template, base, addition, result), advancement, conditions);
             }
@@ -838,7 +838,7 @@ public class OCRecipeProvider extends RecipeProvider {
     private void flags(RecipeOutput output) {
         for (DyeColor colour : DyeColor.values()) {
             Block carpet = BuiltInRegistries.BLOCK.get(
-                    ResourceLocation.withDefaultNamespace(colour.getName() + "_carpet"));
+                    Identifier.withDefaultNamespace(colour.getName() + "_carpet"));
             ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, OCBlocks.FLAGS.get(colour).get())
                     .pattern("scc")
                     .pattern("sc ")
@@ -856,6 +856,6 @@ public class OCRecipeProvider extends RecipeProvider {
     }
 
     private static Block woolFor(DyeColor colour) {
-        return BuiltInRegistries.BLOCK.get(ResourceLocation.withDefaultNamespace(colour.getName() + "_wool"));
+        return BuiltInRegistries.BLOCK.get(Identifier.withDefaultNamespace(colour.getName() + "_wool"));
     }
 }

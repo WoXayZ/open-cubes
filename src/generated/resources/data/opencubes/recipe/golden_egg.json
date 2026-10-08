@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "e": {
-      "item": "minecraft:egg"
-    },
-    "g": {
-      "tag": "c:ingots/gold"
-    }
+    "e": "minecraft:egg",
+    "g": "#c:ingots/gold"
   },
   "pattern": [
     "ggg",

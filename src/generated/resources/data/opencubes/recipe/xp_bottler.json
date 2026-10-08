@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "b": {
-      "item": "minecraft:glass_bottle"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    }
+    "b": "minecraft:glass_bottle",
+    "i": "#c:ingots/iron"
   },
   "pattern": [
     "iii",

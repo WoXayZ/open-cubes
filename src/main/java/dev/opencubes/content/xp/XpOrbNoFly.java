@@ -25,7 +25,7 @@ public final class XpOrbNoFly {
     private XpOrbNoFly() {}
 
     public static ExperienceOrb spawn(Level level, double x, double y, double z, int xp) {
-        return spawn(level, x, y, z, xp, new Vec3(0.0D, -0.1D * level.random.nextFloat(), 0.0D));
+        return spawn(level, x, y, z, xp, new Vec3(0.0D, -0.1D * level.getRandom().nextFloat(), 0.0D));
     }
 
     public static ExperienceOrb spawn(Level level, double x, double y, double z, int xp, Vec3 motion) {
@@ -41,7 +41,7 @@ public final class XpOrbNoFly {
     }
 
     public static boolean isNoFly(ExperienceOrb orb) {
-        return orb.getPersistentData().getBoolean(TAG);
+        return orb.getPersistentData().getBooleanOr(TAG, false);
     }
 
     @SubscribeEvent

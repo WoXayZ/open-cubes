@@ -18,7 +18,7 @@ public final class PufferfishTrophyBehavior implements TrophyBehavior {
     public int onActivate(TrophyBlockEntity trophy, Player player, TrophyDefinition definition) {
         player.addEffect(new MobEffectInstance(MobEffects.POISON, DURATION, 1));
         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, DURATION, 2));
-        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, DURATION, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, DURATION, 0));
         if (trophy.getLevel() != null) {
             trophy.getLevel().playSound(null, trophy.getBlockPos(), SoundEvents.PUFFER_FISH_STING,
                     SoundSource.BLOCKS, 1.0F, 1.0F);

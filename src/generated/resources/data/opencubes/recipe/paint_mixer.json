@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "b": {
-      "item": "opencubes:paint_brush"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "o": {
-      "tag": "c:obsidians"
-    }
+    "b": "opencubes:paint_brush",
+    "i": "#c:ingots/iron",
+    "o": "#c:obsidians"
   },
   "pattern": [
     "oio",

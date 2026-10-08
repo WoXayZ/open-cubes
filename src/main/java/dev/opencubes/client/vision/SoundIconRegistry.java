@@ -1,7 +1,7 @@
 package dev.opencubes.client.vision;
 
 import dev.opencubes.OCConstants;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Maps sound event ids to small category icons for the Sonic Glasses HUD.
@@ -20,20 +20,20 @@ public final class SoundIconRegistry {
         AMBIENT("ambient"),
         DEFAULT("default");
 
-        private final ResourceLocation texture;
+        private final Identifier texture;
 
         Category(String file) {
             this.texture = OCConstants.id("textures/gui/sounds/" + file + ".png");
         }
 
-        public ResourceLocation texture() {
+        public Identifier texture() {
             return texture;
         }
     }
 
     private SoundIconRegistry() {}
 
-    public static Category resolve(ResourceLocation sound) {
+    public static Category resolve(Identifier sound) {
         if (sound == null) {
             return Category.DEFAULT;
         }

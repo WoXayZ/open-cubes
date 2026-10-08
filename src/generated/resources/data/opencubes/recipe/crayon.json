@@ -2,12 +2,8 @@
   "type": "opencubes:coloured_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "item": "opencubes:pencil"
-    },
-    {
-      "tag": "c:dyes"
-    }
+    "opencubes:pencil",
+    "#c:dyes"
   ],
   "result": {
     "count": 1,

@@ -1,10 +1,11 @@
 package dev.opencubes.content.goldeneye;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCItems;
-import dev.opencubes.registry.OCRecipeSerializers;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -16,9 +17,17 @@ import net.minecraft.world.level.Level;
 /** Shapeless: golden eye + N ender pearls → eye with damage reduced by 10N. */
 public class GoldenEyeRechargeRecipe extends CustomRecipe {
 
-    public GoldenEyeRechargeRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+    public static final GoldenEyeRechargeRecipe INSTANCE = new GoldenEyeRechargeRecipe();
+    public static final MapCodec<GoldenEyeRechargeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC)
+                    .forGetter(recipe -> CraftingBookCategory.MISC)
+    ).apply(instance, category -> INSTANCE));
+    public static final StreamCodec<RegistryFriendlyByteBuf, GoldenEyeRechargeRecipe> STREAM_CODEC =
+            StreamCodec.unit(INSTANCE);
+    public static final RecipeSerializer<GoldenEyeRechargeRecipe> SERIALIZER =
+            new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+
+    private GoldenEyeRechargeRecipe() {}
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
@@ -44,7 +53,7 @@ public class GoldenEyeRechargeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         ItemStack eye = ItemStack.EMPTY;
         int pearls = 0;
         for (int i = 0; i < input.size(); i++) {
@@ -65,12 +74,7 @@ public class GoldenEyeRechargeRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return OCRecipeSerializers.GOLDEN_EYE_RECHARGE.get();
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
+        return SERIALIZER;
     }
 }

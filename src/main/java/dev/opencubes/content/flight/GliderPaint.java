@@ -1,10 +1,10 @@
 package dev.opencubes.content.flight;
 
 import dev.opencubes.registry.OCDataComponents;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import java.util.function.Consumer;
 
 /**
  * Sail colour of the hang glider and thermal elytra, applied from a paint can. The fabric
@@ -26,10 +26,10 @@ public final class GliderPaint {
         return colour == null ? DEFAULT_COLOUR : colour & 0xFFFFFF;
     }
 
-    public static void appendTooltip(ItemStack stack, List<Component> tooltip) {
+    public static void appendTooltip(ItemStack stack, Consumer<Component> tooltip) {
         Integer colour = stack.get(OCDataComponents.PAINT_COLOR.get());
         if (colour != null) {
-            tooltip.add(Component.literal(String.format("#%06X", colour & 0xFFFFFF)).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal(String.format("#%06X", colour & 0xFFFFFF)).withStyle(ChatFormatting.GRAY));
         }
     }
 }

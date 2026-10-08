@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "f": {
-      "tag": "c:strings"
-    },
-    "p": {
-      "item": "minecraft:paper"
-    }
+    "f": "#c:strings",
+    "p": "minecraft:paper"
   },
   "pattern": [
     "ppp",

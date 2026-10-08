@@ -2,6 +2,7 @@ package dev.opencubes.content.cannon;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCBlockEntities;
+import dev.opencubes.util.ItemHandlerBridge;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,6 +19,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.items.IItemHandler;
 
 public class ItemCannonBlockEntity extends BlockEntity implements Pointable {
@@ -86,11 +89,11 @@ public class ItemCannonBlockEntity extends BlockEntity implements Pointable {
 
     private static ItemStack extractFromNeighbors(ServerLevel level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            IItemHandler handler =
-                    level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(dir), dir.getOpposite());
-            if (handler == null) {
+            var found = level.getCapability(Capabilities.Item.BLOCK, pos.relative(dir), dir.getOpposite());
+            if (found == null) {
                 continue;
             }
+            IItemHandler handler = ItemHandlerBridge.asSlots(found);
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack extracted = handler.extractItem(slot, 64, false);
                 if (!extracted.isEmpty()) {
@@ -117,8 +120,8 @@ public class ItemCannonBlockEntity extends BlockEntity implements Pointable {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         if (target != null) {
             tag.putLong("Target", target.asLong());
         }
@@ -128,12 +131,12 @@ public class ItemCannonBlockEntity extends BlockEntity implements Pointable {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        target = tag.contains("Target") ? BlockPos.of(tag.getLong("Target")) : null;
-        yaw = tag.getFloat("Yaw");
-        pitch = tag.getFloat("Pitch");
-        speed = tag.contains("Speed") ? tag.getFloat("Speed") : 0.55F;
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        target = tag.keySet().contains("Target") ? BlockPos.of(tag.getLongOr("Target", 0L)) : null;
+        yaw = tag.getFloatOr("Yaw", 0.0F);
+        pitch = tag.getFloatOr("Pitch", 0.0F);
+        speed = tag.keySet().contains("Speed") ? tag.getFloatOr("Speed", 0.0F) : 0.55F;
     }
 
     @Override
@@ -147,17 +150,4 @@ public class ItemCannonBlockEntity extends BlockEntity implements Pointable {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-        loadAdditional(tag, registries);
-    }
-
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        CompoundTag tag = packet.getTag();
-        if (tag != null) {
-            loadAdditional(tag, registries);
-        }
-    }
 }

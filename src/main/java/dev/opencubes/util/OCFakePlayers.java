@@ -54,7 +54,7 @@ public final class OCFakePlayers {
             return false;
         }
         var result = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
-                new net.neoforged.neoforge.event.level.BlockEvent.BreakEvent(level, pos, state, player));
+                new net.neoforged.neoforge.event.level.block.BreakBlockEvent(level, pos, state, player));
         if (result.isCanceled()) {
             return false;
         }
@@ -117,7 +117,9 @@ public final class OCFakePlayers {
         Vec3 delta = lookAt.subtract(eye);
         float yaw = (float) (Math.toDegrees(Math.atan2(-delta.x, delta.z)));
         float pitch = (float) (Math.toDegrees(-Math.asin(delta.normalize().y)));
-        player.moveTo(eye.x, eye.y, eye.z, yaw, pitch);
+        player.setPos(eye.x, eye.y, eye.z);
+        player.setYRot(yaw);
+        player.setXRot(pitch);
 
         BlockHitResult hit = new BlockHitResult(lookAt, clickedFace, target, false);
         InteractionResult result = held.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));

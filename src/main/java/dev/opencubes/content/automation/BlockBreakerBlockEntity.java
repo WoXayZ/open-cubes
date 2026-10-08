@@ -2,6 +2,7 @@ package dev.opencubes.content.automation;
 
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCBlockEntities;
+import dev.opencubes.util.ItemHandlerBridge;
 import dev.opencubes.util.OCFakePlayers;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -49,8 +50,9 @@ public class BlockBreakerBlockEntity extends BlockManipulatorBlockEntity {
         }
 
         Direction back = facing.getOpposite();
-        IItemHandler inventory = level.getCapability(
-                Capabilities.ItemHandler.BLOCK, worldPosition.relative(back), facing);
+        var found = level.getCapability(
+                Capabilities.Item.BLOCK, worldPosition.relative(back), facing);
+        IItemHandler inventory = found == null ? null : ItemHandlerBridge.asSlots(found);
 
         for (ItemStack drop : drops) {
             ItemStack leftover = inventory == null ? drop

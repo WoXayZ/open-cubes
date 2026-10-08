@@ -20,14 +20,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemDropperBlock extends BaseEntityBlock {
 
     public static final MapCodec<ItemDropperBlock> CODEC = simpleCodec(ItemDropperBlock::new);
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
     public ItemDropperBlock(Properties properties) {
         super(properties);
@@ -56,9 +57,8 @@ public class ItemDropperBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour,
-                                   BlockPos neighbourPos, boolean movedByPiston) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbour, net.minecraft.world.level.redstone.Orientation neighbourPos, boolean movedByPiston) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper) {
             dropper.onRedstoneChanged(level.getBestNeighborSignal(pos));
         }
     }
@@ -66,16 +66,16 @@ public class ItemDropperBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper
                 && player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(dropper, buf -> buf.writeBlockPos(pos));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof ItemDropperBlockEntity dropper) {
             if (level instanceof ServerLevel) {
                 for (int i = 0; i < dropper.getItems().getSlots(); i++) {
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
@@ -83,7 +83,7 @@ public class ItemDropperBlock extends BaseEntityBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable

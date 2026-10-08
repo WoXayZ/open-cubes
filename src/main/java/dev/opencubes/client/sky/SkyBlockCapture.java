@@ -1,122 +1,100 @@
 package dev.opencubes.client.sky;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.textures.TextureFormat;
 import dev.opencubes.OCConstants;
-import net.minecraft.client.Camera;
-import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Copies the colour buffer right after the vanilla sky pass, before terrain, so active sky blocks
- * can show it. Vanilla draws clouds at the very end of the frame, so they are drawn a second time
- * into the copy, on an empty depth buffer so terrain does not hide them. Only runs while a sky
- * block asked for it during the previous frame.
+ * Copies the main colour target once the sky pass has closed, so the sky window can sample
+ * that picture at the fragment's screen position after the terrain has been drawn on top.
  */
 @EventBusSubscriber(modid = OCConstants.MOD_ID, value = Dist.CLIENT)
 public final class SkyBlockCapture {
 
-    private static TextureTarget skyTarget;
+    public static final Identifier TEXTURE = OCConstants.id("sky_capture");
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SkyBlockCapture.class);
+    private static final int TEXTURE_USAGE = GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_TEXTURE_BINDING;
+    private static final CaptureTexture CAPTURE = new CaptureTexture();
+
+    private static boolean wanted;
     private static boolean ready;
-    private static boolean requested;
+    private static boolean registered;
+    private static boolean loggedFailure;
 
     private SkyBlockCapture() {}
 
     public static void requestCapture() {
-        requested = true;
+        wanted = true;
     }
 
     public static boolean isReady() {
-        return ready && skyTarget != null;
-    }
-
-    public static int colorTextureId() {
-        return skyTarget != null ? skyTarget.getColorTextureId() : 0;
+        return ready;
     }
 
     @SubscribeEvent
-    public static void afterSky(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) {
+    public static void afterSky(RenderLevelStageEvent.AfterSky event) {
+        if (!wanted) {
             return;
         }
-        ready = false;
-        if (!requested) {
+        wanted = false;
+        GpuTexture source = Minecraft.getInstance().getMainRenderTarget().getColorTexture();
+        if (source == null) {
             return;
         }
-        requested = false;
-
-        Minecraft minecraft = Minecraft.getInstance();
-        RenderTarget main = minecraft.getMainRenderTarget();
-        ensureTarget(main.width, main.height);
-        RenderSystem.assertOnRenderThread();
-        skyTarget.clear(Minecraft.ON_OSX);
-        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId);
-        GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, skyTarget.frameBufferId);
-        GL30.glBlitFramebuffer(
-                0, 0, main.width, main.height,
-                0, 0, skyTarget.width, skyTarget.height,
-                GL11.GL_COLOR_BUFFER_BIT,
-                GL11.GL_NEAREST);
-        renderClouds(minecraft, event);
-        main.bindWrite(true);
-        ready = true;
-    }
-
-    private static void renderClouds(Minecraft minecraft, RenderLevelStageEvent event) {
-        if (minecraft.level == null || minecraft.options.getCloudsType() == CloudStatus.OFF) {
-            return;
-        }
-        Camera camera = event.getCamera();
-        Vec3 pos = camera.getPosition();
-        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-        boolean foggy = minecraft.level.effects().isFoggyAt(Mth.floor(pos.x), Mth.floor(pos.y))
-                || minecraft.gui.getBossOverlay().shouldCreateWorldFog();
-        // Same fog vanilla has active when it draws its own clouds; terrain fog comes right after this stage anyway.
-        FogRenderer.setupFog(camera, FogRenderer.FogMode.FOG_TERRAIN,
-                Math.max(minecraft.gameRenderer.getRenderDistance(), 32.0F), foggy, partialTick);
-
-        // Fabulous sends clouds to their own target; vanilla clears it again before its own cloud pass.
-        RenderTarget cloudsTarget = Minecraft.useShaderTransparency()
-                ? minecraft.levelRenderer.getCloudsTarget()
-                : null;
-        if (cloudsTarget != null) {
-            cloudsTarget.clear(Minecraft.ON_OSX);
-        } else {
-            skyTarget.bindWrite(true);
-        }
-        minecraft.levelRenderer.renderClouds(new PoseStack(), event.getModelViewMatrix(),
-                event.getProjectionMatrix(), partialTick, pos.x, pos.y, pos.z);
-
-        if (cloudsTarget != null) {
-            skyTarget.bindWrite(true);
-            RenderSystem.enableBlend();
-            // Translucent blending onto a cleared target leaves premultiplied colour.
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            cloudsTarget.blitToScreen(skyTarget.width, skyTarget.height, false);
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
-        }
-    }
-
-    private static void ensureTarget(int width, int height) {
-        if (skyTarget == null || skyTarget.width != width || skyTarget.height != height) {
-            if (skyTarget != null) {
-                skyTarget.destroyBuffers();
+        try {
+            if (!registered) {
+                Minecraft.getInstance().getTextureManager().register(TEXTURE, CAPTURE);
+                registered = true;
             }
-            skyTarget = new TextureTarget(width, height, true, Minecraft.ON_OSX);
-            skyTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+            CAPTURE.copyFrom(source);
+            ready = true;
+        } catch (RuntimeException exception) {
+            ready = false;
+            if (!loggedFailure) {
+                loggedFailure = true;
+                LOGGER.warn("Sky window capture failed", exception);
+            }
+        }
+    }
+
+    private static final class CaptureTexture extends AbstractTexture {
+        void copyFrom(GpuTexture source) {
+            // Class init runs before SamplerCache.initialize(), which leaves this null and the
+            // sky draw then fails with "Missing sampler Sampler0".
+            this.sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR);
+            int width = source.getWidth(0);
+            int height = source.getHeight(0);
+            if (this.texture == null || this.texture.getWidth(0) != width || this.texture.getHeight(0) != height) {
+                GpuTexture texture = RenderSystem.getDevice().createTexture(
+                        () -> "opencubes_sky_capture", TEXTURE_USAGE, TextureFormat.RGBA8, width, height, 1, 1);
+                replace(texture, RenderSystem.getDevice().createTextureView(texture));
+            }
+            RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(
+                    source, this.texture, 0, 0, 0, 0, 0, width, height);
+        }
+
+        void replace(GpuTexture texture, GpuTextureView view) {
+            if (this.texture != null) {
+                this.texture.close();
+            }
+            if (this.textureView != null) {
+                this.textureView.close();
+            }
+            this.texture = texture;
+            this.textureView = view;
         }
     }
 }

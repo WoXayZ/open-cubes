@@ -1,5 +1,7 @@
 package dev.opencubes.network;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import dev.opencubes.OCConstants;
 import dev.opencubes.content.heightmap.HeightMapManager;
 import io.netty.buffer.ByteBuf;
@@ -27,6 +29,6 @@ public record HeightMapDirtyPayload(int[] mapIds) implements CustomPacketPayload
 
     public static void handle(HeightMapDirtyPayload payload, IPayloadContext context) {
         HeightMapManager.handleDirtyClient(payload.mapIds());
-        PacketDistributor.sendToServer(new HeightMapRequestPayload(payload.mapIds()));
+        ClientPacketDistributor.sendToServer(new HeightMapRequestPayload(payload.mapIds()));
     }
 }

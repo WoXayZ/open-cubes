@@ -1,5 +1,7 @@
 package dev.opencubes.content.automation;
 
+import dev.opencubes.util.PlayerFeedback;
+
 import com.mojang.serialization.MapCodec;
 import dev.opencubes.registry.OCBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -110,7 +112,7 @@ public class VacuumHopperBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
@@ -127,11 +129,11 @@ public class VacuumHopperBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof VacuumHopperBlockEntity vacuum) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VacuumHopperBlockEntity vacuum) {
             if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
                 vacuum.toggleVacuum();
                 boolean on = !vacuum.isVacuumDisabled();
-                player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                PlayerFeedback.tell(player, net.minecraft.network.chat.Component.translatable(
                         on ? "opencubes.misc.vacuum_on" : "opencubes.misc.vacuum_off"), true);
                 level.playSound(null, pos,
                         on ? net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value()
@@ -143,19 +145,19 @@ public class VacuumHopperBlock extends BaseEntityBlock {
                 serverPlayer.openMenu(vacuum, buf -> buf.writeBlockPos(pos));
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (level.getBlockEntity(pos) instanceof VacuumHopperBlockEntity vacuum) {
             vacuum.onEntityCollided(entity);
         }
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof VacuumHopperBlockEntity vacuum) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof VacuumHopperBlockEntity vacuum) {
             if (level instanceof ServerLevel) {
                 for (int i = 0; i < vacuum.getItems().getSlots(); i++) {
                     Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
@@ -163,7 +165,7 @@ public class VacuumHopperBlock extends BaseEntityBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable

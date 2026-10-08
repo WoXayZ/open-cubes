@@ -13,7 +13,9 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -75,12 +77,12 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
-                                     LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+                                     Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, direction, neighbourState, level, pos, neighbourPos);
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbourState, random);
     }
 
     @Override
@@ -106,7 +108,7 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
                                                BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof TrophyBlockEntity trophy) {
             trophy.onActivated(player);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return InteractionResult.PASS;
     }
@@ -121,7 +123,7 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         if (level.getBlockEntity(pos) instanceof TrophyBlockEntity trophy) {
             return trophy.asItem();
         }
@@ -149,7 +151,7 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.TROPHY.get(), TrophyBlockEntity::serverTick);
     }
 }

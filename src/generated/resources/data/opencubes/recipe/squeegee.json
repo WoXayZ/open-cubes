@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "s": {
-      "item": "minecraft:sponge"
-    },
-    "t": {
-      "tag": "c:rods/wooden"
-    }
+    "s": "minecraft:sponge",
+    "t": "#c:rods/wooden"
   },
   "pattern": [
     "sss",

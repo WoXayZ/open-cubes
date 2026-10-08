@@ -7,7 +7,7 @@ import dev.opencubes.util.XpFluidUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -50,7 +50,7 @@ public class TankBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
@@ -69,10 +69,10 @@ public class TankBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof TankBlockEntity tank)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (!stack.isEmpty()) {
@@ -80,23 +80,24 @@ public class TankBlock extends BaseEntityBlock {
             // what tank.allowBucketDrain gates.
             boolean holdsFluid = FluidUtil.getFluidContained(stack).isPresent();
             if ((holdsFluid || OCCommonConfig.TANK_ALLOW_BUCKET_DRAIN.get())
-                    && FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
-                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                    && net.neoforged.neoforge.transfer.fluid.FluidUtil.interactWithFluidHandler(
+                            player, hand, level, pos, hit.getDirection())) {
+                return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
             }
         }
 
         if (stack.isEmpty()) {
             // Client must acknowledge so the interact packet is trusted; drink only runs server-side.
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 if (XpFluidUtil.isXpJuice(tank.getTank().getFluid())) {
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             } else if (tank.drink(player)) {
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             }
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -119,7 +120,7 @@ public class TankBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return level.getBlockEntity(pos) instanceof TankBlockEntity tank ? tank.comparatorSignal() : 0;
     }
 
@@ -133,7 +134,7 @@ public class TankBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.TANK.get(), TankBlockEntity::serverTick);
     }
 }

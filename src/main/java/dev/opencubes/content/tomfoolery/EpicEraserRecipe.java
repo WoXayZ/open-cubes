@@ -1,8 +1,10 @@
 package dev.opencubes.content.tomfoolery;
 
-import dev.opencubes.registry.OCRecipeSerializers;
-import net.minecraft.core.HolderLookup;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -15,9 +17,15 @@ import net.minecraft.world.level.Level;
  */
 public class EpicEraserRecipe extends CustomRecipe {
 
-    public EpicEraserRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+    public static final EpicEraserRecipe INSTANCE = new EpicEraserRecipe();
+    public static final MapCodec<EpicEraserRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC)
+                    .forGetter(recipe -> CraftingBookCategory.MISC)
+    ).apply(instance, category -> INSTANCE));
+    public static final StreamCodec<RegistryFriendlyByteBuf, EpicEraserRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final RecipeSerializer<EpicEraserRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+
+    private EpicEraserRecipe() {}
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
@@ -44,7 +52,7 @@ public class EpicEraserRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         ItemStack target = ItemStack.EMPTY;
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
@@ -77,12 +85,7 @@ public class EpicEraserRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return OCRecipeSerializers.EPIC_ERASER.get();
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
+        return SERIALIZER;
     }
 }

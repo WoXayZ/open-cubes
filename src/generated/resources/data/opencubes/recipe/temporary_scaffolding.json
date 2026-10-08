@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "f": {
-      "item": "minecraft:scaffolding"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "f": "minecraft:scaffolding",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     " s ",

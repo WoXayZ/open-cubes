@@ -3,7 +3,7 @@ package dev.opencubes.client;
 import dev.opencubes.client.sideconfig.MachineInfoButton;
 import dev.opencubes.client.sideconfig.OptionToggleButton;
 import dev.opencubes.content.automation.ItemDropperMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -16,7 +16,6 @@ public class ItemDropperScreen extends DispenserLikeScreen<ItemDropperMenu> {
 
     public ItemDropperScreen(ItemDropperMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, MachineGuiTextures.ITEM_DROPPER);
-        inventoryLabelY = imageHeight - 94;
     }
 
     @Override
@@ -51,7 +50,7 @@ public class ItemDropperScreen extends DispenserLikeScreen<ItemDropperMenu> {
             return;
         }
         int id = buttonId;
-        if (hasShiftDown() && (buttonId == ItemDropperMenu.BUTTON_SPEED_DOWN
+        if (minecraft.hasShiftDown() && (buttonId == ItemDropperMenu.BUTTON_SPEED_DOWN
                 || buttonId == ItemDropperMenu.BUTTON_SPEED_UP)) {
             id += ItemDropperMenu.SHIFT_OFFSET;
         }
@@ -59,14 +58,14 @@ public class ItemDropperScreen extends DispenserLikeScreen<ItemDropperMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(font, Component.translatable("container.opencubes.item_dropper.speed_label"),
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
+        graphics.text(font, Component.translatable("container.opencubes.item_dropper.speed_label"),
                 10, 22, SideConfigScreenHelper.TEXT, false);
         String speed = String.format("%.2f", menu.getItemSpeed());
-        graphics.drawString(font, speed, 32 - font.width(speed) / 2, 52,
+        graphics.text(font, speed, 32 - font.width(speed) / 2, 52,
                 SideConfigScreenHelper.TEXT, false);
-        graphics.drawString(font, Component.translatable("container.opencubes.item_dropper.redstone_label"),
+        graphics.text(font, Component.translatable("container.opencubes.item_dropper.redstone_label"),
                 124, 22, SideConfigScreenHelper.TEXT, false);
     }
 }

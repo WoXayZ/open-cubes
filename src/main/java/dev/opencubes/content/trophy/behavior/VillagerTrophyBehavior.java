@@ -6,7 +6,7 @@ import dev.opencubes.content.trophy.TrophyDefinition;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 
 /** Cycles the displayed villager / zombie villager profession. */

@@ -481,7 +481,7 @@ public final class OCCommonConfig {
 
         BUILDER.comment("Height map projector").push("height_map_projector");
         PROJECTOR_LIGHT_LEVEL = BUILDER
-                .comment("Block light emitted by an active projector (0–15).")
+                .comment("Block light emitted by an active projector (0-15).")
                 .defineInRange("lightLevel", 10, 0, 15);
         BUILDER.pop();
 

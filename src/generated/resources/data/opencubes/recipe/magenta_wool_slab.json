@@ -3,9 +3,7 @@
   "category": "building",
   "group": "opencubes:wool_slab",
   "key": {
-    "w": {
-      "item": "minecraft:magenta_wool"
-    }
+    "w": "minecraft:magenta_wool"
   },
   "pattern": [
     "www"

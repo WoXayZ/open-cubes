@@ -2,12 +2,8 @@
   "type": "opencubes:coloured_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "item": "opencubes:crayon"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "opencubes:crayon",
+    "minecraft:paper"
   ],
   "result": {
     "count": 1,

@@ -7,12 +7,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public record CursorTarget(ResourceLocation dimension, BlockPos pos, Direction side) {
+public record CursorTarget(Identifier dimension, BlockPos pos, Direction side) {
 
     public static final Codec<CursorTarget> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("dimension").forGetter(CursorTarget::dimension),
+            Identifier.CODEC.fieldOf("dimension").forGetter(CursorTarget::dimension),
             BlockPos.CODEC.fieldOf("pos").forGetter(CursorTarget::pos),
             Direction.CODEC.fieldOf("side").forGetter(CursorTarget::side)
     ).apply(instance, CursorTarget::new));
@@ -22,7 +22,7 @@ public record CursorTarget(ResourceLocation dimension, BlockPos pos, Direction s
                     .map(Direction::from3DDataValue, Direction::get3DDataValue);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CursorTarget> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, CursorTarget::dimension,
+            Identifier.STREAM_CODEC, CursorTarget::dimension,
             BlockPos.STREAM_CODEC, CursorTarget::pos,
             DIRECTION_STREAM, CursorTarget::side,
             CursorTarget::new);

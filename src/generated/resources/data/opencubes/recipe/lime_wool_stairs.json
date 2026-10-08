@@ -3,9 +3,7 @@
   "category": "building",
   "group": "opencubes:wool_stairs",
   "key": {
-    "w": {
-      "item": "minecraft:lime_wool"
-    }
+    "w": "minecraft:lime_wool"
   },
   "pattern": [
     "w  ",

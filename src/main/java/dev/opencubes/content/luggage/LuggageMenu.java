@@ -40,7 +40,7 @@ public class LuggageMenu extends AbstractContainerMenu {
             addSlot(new Slot(playerInv, col, 8 + col * 18, playerInvY + 58));
         }
 
-        if (!playerInv.player.level().isClientSide) {
+        if (!playerInv.player.level().isClientSide()) {
             luggage.startOpen();
         }
     }
@@ -48,7 +48,7 @@ public class LuggageMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
-        if (!player.level().isClientSide && luggage != null) {
+        if (!player.level().isClientSide() && luggage != null) {
             luggage.stopOpen();
         }
     }

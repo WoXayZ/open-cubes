@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import dev.opencubes.registry.OCBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.AttachFace;
@@ -302,8 +302,8 @@ public class OCBlockStateProvider extends BlockStateProvider {
         // Hand-authored multipart block + inventory model (body with preview ports).
         // Do not overwrite models/item/vacuum_hopper.json from datagen.
 
-        ResourceLocation furnaceSide = mcLoc("block/furnace_side");
-        ResourceLocation furnaceTop = mcLoc("block/furnace_top");
+        Identifier furnaceSide = mcLoc("block/furnace_side");
+        Identifier furnaceTop = mcLoc("block/furnace_top");
 
         ModelFile dropper = models().orientable("block/item_dropper",
                 furnaceSide, modLoc("block/advanced_dropper_front"), furnaceTop);
@@ -394,7 +394,7 @@ public class OCBlockStateProvider extends BlockStateProvider {
     private void bigButtons() {
         for (BigButtonMaterial material : BigButtonMaterial.ALL) {
             Block block = OCBlocks.BIG_BUTTONS.get(material).get();
-            ResourceLocation texture = ResourceLocation.parse(material.texture());
+            Identifier texture = Identifier.parse(material.texture());
 
             ModelFile raised = models()
                     .withExistingParent("block/" + material.blockId(), OCConstants.id("block/big_button"))
@@ -433,7 +433,7 @@ public class OCBlockStateProvider extends BlockStateProvider {
     /** Plain vanilla wool cut into slabs and stairs, so they borrow the vanilla wool textures. */
     private void woolSlabsAndStairs() {
         for (DyeColor colour : DyeColor.values()) {
-            ResourceLocation texture = mcLoc("block/" + colour.getName() + "_wool");
+            Identifier texture = mcLoc("block/" + colour.getName() + "_wool");
 
             slabBlock(OCBlocks.WOOL_SLABS.get(colour).get(), texture, texture);
             itemModels().withExistingParent(colour.getName() + "_wool_slab",

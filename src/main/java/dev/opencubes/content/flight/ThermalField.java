@@ -46,7 +46,7 @@ public final class ThermalField {
         noise *= Math.min(Math.max(THERMAL_HEIGHT_MAX + bonus - y, 0.0D)
                 / (THERMAL_HEIGHT_MAX - THERMAL_HEIGHT_OPT + bonus / 4.0D), 1.0D);
 
-        int worldTime = (int) (level.getDayTime() % 24000L);
+        int worldTime = (int) (level.getDefaultClockTime() % 24000L);
         noise *= Math.min(worldTime / 1000.0D, 1.0D);
         noise *= Math.min(Math.max(12000 - worldTime, 0) / 1000.0D, 1.0D);
 

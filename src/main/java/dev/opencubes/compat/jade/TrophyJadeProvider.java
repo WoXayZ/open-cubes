@@ -7,7 +7,7 @@ import java.util.Optional;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,16 +17,25 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum TrophyJadeProvider implements IBlockComponentProvider {
     INSTANCE;
 
     private static final String TAG_COOLDOWN = "Cooldown";
-    public static final ResourceLocation UID = OCConstants.id("trophy");
+    public static final Identifier UID = OCConstants.id("trophy");
 
-    @Override
-    public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-        if (accessor.getBlockEntity() instanceof TrophyBlockEntity trophy) {
-            data.putInt(TAG_COOLDOWN, trophy.getCooldown());
+    public enum Data implements IServerDataProvider<BlockAccessor> {
+        INSTANCE;
+
+        @Override
+        public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+            if (accessor.getBlockEntity() instanceof TrophyBlockEntity trophy) {
+                data.putInt(TAG_COOLDOWN, trophy.getCooldown());
+            }
+        }
+
+        @Override
+        public Identifier getUid() {
+            return UID;
         }
     }
 
@@ -37,7 +46,7 @@ public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataPr
         }
         Optional<TrophyDefinition> definition = trophy.definition();
         if (definition.isEmpty()) {
-            ResourceLocation id = trophy.getTrophyId();
+            Identifier id = trophy.getTrophyId();
             if (id != null) {
                 tooltip.add(Component.translatable("opencubes.jade.trophy.type", id.getPath()));
             }
@@ -46,7 +55,7 @@ public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataPr
         }
 
         TrophyDefinition def = definition.get();
-        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(def.entity());
+        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(def.entity()).map(net.minecraft.core.Holder.Reference::value).orElse(null);
         Component typeName = entityType != null
                 ? entityType.getDescription()
                 : Component.literal(def.entity().toString());
@@ -55,7 +64,7 @@ public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataPr
         appendCooldown(tooltip, accessor);
 
         def.drop().ifPresent(drop -> {
-            Item item = BuiltInRegistries.ITEM.get(drop.item());
+            Item item = BuiltInRegistries.ITEM.get(drop.item()).map(net.minecraft.core.Holder.Reference::value).orElse(null);
             if (item == null) {
                 return;
             }
@@ -70,7 +79,7 @@ public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataPr
         if (!data.contains(TAG_COOLDOWN)) {
             return;
         }
-        int cooldown = data.getInt(TAG_COOLDOWN);
+        int cooldown = data.getIntOr(TAG_COOLDOWN, 0);
         if (cooldown <= 0) {
             tooltip.add(Component.translatable("opencubes.jade.trophy.ready"));
         } else {
@@ -81,7 +90,7 @@ public enum TrophyJadeProvider implements IBlockComponentProvider, IServerDataPr
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return UID;
     }
 }

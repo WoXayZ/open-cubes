@@ -4,44 +4,67 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.opencubes.content.sky.SkyBlock;
 import dev.opencubes.content.sky.SkyBlockEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Active sky blocks draw their faces with the sky captured after the sky pass, sampled at the
  * fragment's screen position, so each face shows exactly the sky behind it.
  */
-public class SkyBlockRenderer implements BlockEntityRenderer<SkyBlockEntity> {
+public class SkyBlockRenderer implements BlockEntityRenderer<SkyBlockEntity, SkyBlockRenderState> {
 
     private static final float OVERLAP = 0.002F;
 
     public SkyBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(SkyBlockEntity blockEntity, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int packedLight, int packedOverlay) {
+    public SkyBlockRenderState createRenderState() {
+        return new SkyBlockRenderState();
+    }
+
+    @Override
+    public void extractRenderState(
+            SkyBlockEntity blockEntity,
+            SkyBlockRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
         Level level = blockEntity.getLevel();
-        if (level == null || !SkyBlock.isActive(blockEntity.getBlockState())) {
+        state.draw = level != null && SkyBlock.isActive(blockEntity.getBlockState());
+        if (!state.draw) {
             return;
         }
         SkyBlockCapture.requestCapture();
-        if (!SkyBlockCapture.isReady() || SkyShaders.skyWindow() == null) {
+        BlockPos pos = blockEntity.getBlockPos();
+        for (Direction direction : Direction.values()) {
+            state.faces[direction.ordinal()] = !hideFace(level, pos, direction);
+        }
+    }
+
+    @Override
+    public void submit(SkyBlockRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
+        if (!state.draw || !SkyBlockCapture.isReady()) {
             return;
         }
-
-        BlockPos pos = blockEntity.getBlockPos();
-        VertexConsumer consumer = buffers.getBuffer(SkyRenderTypes.SKY_WINDOW);
-        PoseStack.Pose pose = poseStack.last();
-        for (Direction direction : Direction.values()) {
-            if (!hideFace(level, pos, direction)) {
-                emitFace(consumer, pose, direction);
+        boolean[] faces = state.faces.clone();
+        submitNodeCollector.submitCustomGeometry(poseStack, SkyRenderTypes.SKY_WINDOW, (pose, buffer) -> {
+            for (Direction direction : Direction.values()) {
+                if (faces[direction.ordinal()]) {
+                    emitFace(buffer, pose, direction);
+                }
             }
-        }
+        });
     }
 
     private static boolean hideFace(Level level, BlockPos pos, Direction direction) {
@@ -50,7 +73,7 @@ public class SkyBlockRenderer implements BlockEntityRenderer<SkyBlockEntity> {
         if (neighbour.getBlock() instanceof SkyBlock && SkyBlock.isActive(neighbour)) {
             return true;
         }
-        return neighbour.isSolidRender(level, neighbourPos);
+        return neighbour.isSolidRender();
     }
 
     private static void emitFace(VertexConsumer consumer, PoseStack.Pose pose, Direction direction) {
@@ -78,7 +101,7 @@ public class SkyBlockRenderer implements BlockEntityRenderer<SkyBlockEntity> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(SkyBlockEntity blockEntity) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

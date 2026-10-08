@@ -1,5 +1,7 @@
 package dev.opencubes.content.village;
 
+import dev.opencubes.util.PlayerFeedback;
+
 import dev.opencubes.registry.OCBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -11,12 +13,14 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class VillageHighlighterBlockEntity extends BlockEntity {
@@ -83,7 +87,7 @@ public class VillageHighlighterBlockEntity extends BlockEntity {
     }
 
     public void reportTo(Player player) {
-        player.displayClientMessage(Component.translatable(
+        PlayerFeedback.tell(player, Component.translatable(
                 "opencubes.misc.village_highlighter.status",
                 villagerCount,
                 bedCount,
@@ -187,8 +191,8 @@ public class VillageHighlighterBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putInt("VillagerCount", villagerCount);
         tag.putInt("BedCount", bedCount);
         tag.putBoolean("HasBounds", hasBounds);
@@ -203,24 +207,24 @@ public class VillageHighlighterBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("VillagerCount")) {
-            villagerCount = tag.getInt("VillagerCount");
-            bedCount = tag.getInt("BedCount");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        if (tag.keySet().contains("VillagerCount")) {
+            villagerCount = tag.getIntOr("VillagerCount", 0);
+            bedCount = tag.getIntOr("BedCount", 0);
         } else {
             // Legacy saves stored meeting POI counts under MeetingPoints.
             villagerCount = 0;
-            bedCount = tag.getInt("MeetingPoints");
+            bedCount = tag.getIntOr("MeetingPoints", 0);
         }
-        hasBounds = tag.getBoolean("HasBounds");
+        hasBounds = tag.getBooleanOr("HasBounds", false);
         if (hasBounds) {
-            minX = tag.getInt("MinX");
-            minY = tag.getInt("MinY");
-            minZ = tag.getInt("MinZ");
-            maxX = tag.getInt("MaxX");
-            maxY = tag.getInt("MaxY");
-            maxZ = tag.getInt("MaxZ");
+            minX = tag.getIntOr("MinX", 0);
+            minY = tag.getIntOr("MinY", 0);
+            minZ = tag.getIntOr("MinZ", 0);
+            maxX = tag.getIntOr("MaxX", 0);
+            maxY = tag.getIntOr("MaxY", 0);
+            maxZ = tag.getIntOr("MaxZ", 0);
         } else {
             clearBounds();
         }

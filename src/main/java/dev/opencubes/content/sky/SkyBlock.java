@@ -60,8 +60,8 @@ public class SkyBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, net.minecraft.world.level.redstone.Orientation fromPos, boolean isMoving) {
+        if (!level.isClientSide()) {
             boolean powered = level.hasNeighborSignal(pos);
             if (state.getValue(POWERED) != powered) {
                 level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_ALL);
@@ -80,7 +80,7 @@ public class SkyBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return isActive(state);
     }
 

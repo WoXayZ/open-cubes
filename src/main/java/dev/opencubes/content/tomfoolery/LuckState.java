@@ -1,6 +1,7 @@
 package dev.opencubes.content.tomfoolery;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -8,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 
 public class LuckState {
 
-    public static final Codec<LuckState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<LuckState> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("luck").forGetter(s -> s.luck),
             Codec.INT.fieldOf("cooldown").forGetter(s -> s.cooldown),
             Codec.BOOL.fieldOf("forceNext").forGetter(s -> s.forceNext)

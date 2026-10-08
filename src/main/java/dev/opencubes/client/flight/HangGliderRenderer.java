@@ -3,10 +3,10 @@ package dev.opencubes.client.flight;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.opencubes.OCConstants;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Vector3f;
 
 /**
@@ -16,7 +16,7 @@ import org.joml.Vector3f;
  */
 public final class HangGliderRenderer {
 
-    public static final ResourceLocation TEXTURE = OCConstants.id("textures/entity/hang_glider.png");
+    public static final Identifier TEXTURE = OCConstants.id("textures/entity/hang_glider.png");
     private static final float TEX_W = 128.0F;
     private static final float TEX_H = 64.0F;
 
@@ -50,11 +50,12 @@ public final class HangGliderRenderer {
      * {@code poseStack} must be at the player model origin, in block units. {@code sailColour}
      * tints the greyscale canvas and hem; the frame and strap keep their texture colours.
      */
-    public static void render(PoseStack poseStack, MultiBufferSource buffer, int light, int sailColour) {
+    public static void render(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, int sailColour) {
         int underside = scale(sailColour, 0x9A);
         poseStack.pushPose();
         poseStack.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
-        Mesh mesh = new Mesh(buffer.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), poseStack.last(), light);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
+        Mesh mesh = new Mesh(buffer, pose, light);
 
         Vector3f nose = new Vector3f(0, NOSE_Y, KEEL_Z);
         Vector3f tail = new Vector3f(0, TAIL_Y, KEEL_Z);
@@ -82,6 +83,7 @@ public final class HangGliderRenderer {
         mesh.beam(new Vector3f(-BAR_HALF - 0.4F, barY, barZ), new Vector3f(BAR_HALF + 0.4F, barY, barZ),
                 0.9F, CELL_WOOD_DARK, WHITE);
         mesh.beam(new Vector3f(0, HANG_Y, KEEL_Z - 1.0F), new Vector3f(0, HANG_Y, BACK_Z), 0.6F, CELL_STRAP, WHITE);
+        });
 
         poseStack.popPose();
     }
@@ -111,10 +113,12 @@ public final class HangGliderRenderer {
         /** One sail triangle, UV-mapped top-down onto the sail art; lower skin is offset and darker. */
         void sail(Vector3f a, Vector3f b, Vector3f c, float offset, int colour) {
             Vector3f normal = new Vector3f(b).sub(a).cross(new Vector3f(c).sub(a)).normalize();
-            if (normal.z < 0) {
-                normal.negate();
-            }
-            if (offset < 0) {
+            // +z is up. Flip the mirrored wing so both top faces take the light.
+            boolean facesUp = normal.z >= 0.0F;
+            if (facesUp != offset >= 0.0F) {
+                Vector3f swap = b;
+                b = c;
+                c = swap;
                 normal.negate();
             }
             Vector3f[] points = {a, b, c, c};

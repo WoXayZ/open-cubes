@@ -25,6 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class BuildingGuideBlockEntity extends BlockEntity {
@@ -323,14 +325,14 @@ public class BuildingGuideBlockEntity extends BlockEntity {
     }
 
     protected void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         for (GuideHalfAxis axis : GuideHalfAxis.values()) {
             tag.putInt(axis.commandName(), halfExtents.get(axis));
         }
@@ -342,27 +344,27 @@ public class BuildingGuideBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
         for (GuideHalfAxis axis : GuideHalfAxis.values()) {
-            if (tag.contains(axis.commandName())) {
-                halfExtents.put(axis, Mth.clamp(tag.getInt(axis.commandName()), 0, 64));
+            if (tag.keySet().contains(axis.commandName())) {
+                halfExtents.put(axis, Mth.clamp(tag.getIntOr(axis.commandName(), 0), 0, 64));
             }
         }
-        if (tag.contains("Shape")) {
-            shapeMode = GuideShape.byId(tag.getString("Shape"));
+        if (tag.keySet().contains("Shape")) {
+            shapeMode = GuideShape.byId(tag.getStringOr("Shape", ""));
         }
-        if (tag.contains("MarkerDye")) {
-            DyeColor loaded = DyeColor.byName(tag.getString("MarkerDye"), null);
+        if (tag.keySet().contains("MarkerDye")) {
+            DyeColor loaded = DyeColor.byName(tag.getStringOr("MarkerDye", ""), null);
             if (loaded != null) {
                 markerDye = loaded;
             }
-        } else if (tag.contains("Color")) {
-            markerDye = closestDye(tag.getInt("Color"));
+        } else if (tag.keySet().contains("Color")) {
+            markerDye = closestDye(tag.getIntOr("Color", 0));
         }
-        redstonePowered = tag.getBoolean("Powered");
-        if (tag.contains("Facing")) {
-            Direction loaded = Direction.byName(tag.getString("Facing"));
+        redstonePowered = tag.getBooleanOr("Powered", false);
+        if (tag.keySet().contains("Facing")) {
+            Direction loaded = Direction.byName(tag.getStringOr("Facing", ""));
             if (loaded != null && loaded.getAxis().isHorizontal()) {
                 facing = loaded;
             }

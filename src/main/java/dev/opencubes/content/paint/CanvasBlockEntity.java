@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 public class CanvasBlockEntity extends BlockEntity {
@@ -113,32 +115,31 @@ public class CanvasBlockEntity extends BlockEntity {
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("PaintedBlock", NbtUtils.writeBlockState(paintedBlock));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        tag.store("PaintedBlock", CompoundTag.CODEC, NbtUtils.writeBlockState(paintedBlock));
         CompoundTag facesTag = new CompoundTag();
         for (Direction direction : Direction.values()) {
             facesTag.put(direction.getSerializedName(), faces.get(direction).save());
         }
-        tag.put("Faces", facesTag);
+        tag.store("Faces", CompoundTag.CODEC, facesTag);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("PaintedBlock")) {
-            paintedBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("PaintedBlock"));
-        }
-        CompoundTag facesTag = tag.getCompound("Faces");
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        tag.read("PaintedBlock", CompoundTag.CODEC).ifPresent(compound ->
+                paintedBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, compound));
+        CompoundTag facesTag = tag.read("Faces", CompoundTag.CODEC).orElseGet(CompoundTag::new);
         for (Direction direction : Direction.values()) {
-            if (facesTag.contains(direction.getSerializedName())) {
-                faces.put(direction, CanvasFaceData.load(facesTag.getCompound(direction.getSerializedName())));
+            if (facesTag.keySet().contains(direction.getSerializedName())) {
+                faces.put(direction, CanvasFaceData.load(facesTag.getCompoundOrEmpty(direction.getSerializedName())));
             }
         }
     }
@@ -153,9 +154,4 @@ public class CanvasBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,
-                             HolderLookup.Provider registries) {
-        loadAdditional(packet.getTag(), registries);
-    }
 }

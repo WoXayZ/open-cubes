@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    {
-      "tag": "c:cobblestones"
-    },
-    {
-      "item": "minecraft:apple"
-    }
+    "#c:cobblestones",
+    "minecraft:apple"
   ],
   "result": {
     "count": 1,

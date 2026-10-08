@@ -2,6 +2,7 @@ package dev.opencubes.client.flight;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.opencubes.OCConstants;
+import dev.opencubes.client.OCKeys;
 import dev.opencubes.content.flight.GliderState;
 import dev.opencubes.content.flight.HangGliderItem;
 import dev.opencubes.content.flight.HangGliderPhysics;
@@ -29,23 +30,23 @@ public final class VariometerClient {
             "key.opencubes.variometer",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_V,
-            "key.categories.opencubes");
+            OCKeys.CATEGORY);
 
     public static final KeyMapping VOLUME_UP = new KeyMapping(
             "key.opencubes.variometer_volume_up",
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            "key.categories.opencubes");
+            OCKeys.CATEGORY);
 
     public static final KeyMapping VOLUME_DOWN = new KeyMapping(
             "key.opencubes.variometer_volume_down",
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            "key.categories.opencubes");
+            OCKeys.CATEGORY);
 
     private static boolean enabled;
     private static int beepCooldown;
-    /** 0.0–1.0, OpenBlocks-style volume steps via unbound keys. */
+    /** Volume from 0.0 to 1.0, stepped with unbound keys. */
     private static float volume = 0.6F;
 
     private VariometerClient() {}
@@ -67,17 +68,17 @@ public final class VariometerClient {
 
         while (TOGGLE.consumeClick()) {
             enabled = !enabled;
-            player.displayClientMessage(Component.translatable(
+            mc.gui.setOverlayMessage(Component.translatable(
                     enabled ? "opencubes.misc.variometer_on" : "opencubes.misc.variometer_off"), true);
         }
         while (VOLUME_UP.consumeClick()) {
             volume = Mth.clamp(volume + 0.1F, 0.0F, 1.0F);
-            player.displayClientMessage(Component.translatable("opencubes.misc.variometer_volume",
+            mc.gui.setOverlayMessage(Component.translatable("opencubes.misc.variometer_volume",
                     Math.round(volume * 100.0F)), true);
         }
         while (VOLUME_DOWN.consumeClick()) {
             volume = Mth.clamp(volume - 0.1F, 0.0F, 1.0F);
-            player.displayClientMessage(Component.translatable("opencubes.misc.variometer_volume",
+            mc.gui.setOverlayMessage(Component.translatable("opencubes.misc.variometer_volume",
                     Math.round(volume * 100.0F)), true);
         }
 

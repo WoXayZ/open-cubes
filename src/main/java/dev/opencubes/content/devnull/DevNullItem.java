@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -17,6 +16,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class DevNullItem extends Item {
 
@@ -61,22 +63,22 @@ public class DevNullItem extends Item {
     public record NestResult(ItemStack innermost, int depth) {}
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         if (dev.opencubes.config.OCCommonConfig.DEV_NULL_SNEAK_TO_OPEN.get() && !player.isShiftKeyDown()) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            int slot = player.getInventory().selected;
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            int slot = player.getInventory().getSelectedSlot();
             serverPlayer.openMenu(new SimpleMenuProvider(
                     (id, inv, p) -> new DevNullMenu(id, inv, slot),
                     Component.translatable("container.opencubes.dev_null")),
                     buf -> buf.writeVarInt(slot));
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     @Override
@@ -102,15 +104,15 @@ public class DevNullItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         NestResult nest = nest(stack);
         if (nest.depth() >= STACK_LIMIT) {
-            tooltip.add(Component.literal("§kWHOOPS"));
+            tooltip.accept(Component.literal("§kWHOOPS"));
             return;
         }
         ItemStack inner = nest.innermost();
         if (!inner.isEmpty()) {
-            tooltip.add(Component.literal("┌ ").append(inner.getHoverName().copy()
+            tooltip.accept(Component.literal("┌ ").append(inner.getHoverName().copy()
                     .append(Component.literal(" ×" + inner.getCount()))));
         }
     }

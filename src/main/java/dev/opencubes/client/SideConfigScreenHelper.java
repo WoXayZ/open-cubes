@@ -1,14 +1,15 @@
 package dev.opencubes.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.opencubes.OCConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -32,10 +33,11 @@ public final class SideConfigScreenHelper {
     public static final int DARK_EDGE = 0xFF555555;
     public static final int SLOT_BODY = 0xFF8B8B8B;
     public static final int SLOT_SHADOW = 0xFF373737;
-    public static final int TEXT = 0x404040;
+    /** Full ARGB. {@code text()} skips a colour whose alpha byte is 0. */
+    public static final int TEXT = 0xFF404040;
 
-    public static final ResourceLocation XP_STILL = OCConstants.id("block/xp_juice_still");
-    public static final ResourceLocation WATER_STILL = ResourceLocation.withDefaultNamespace("block/water_still");
+    public static final Identifier XP_STILL = OCConstants.id("block/xp_juice_still");
+    public static final Identifier WATER_STILL = Identifier.withDefaultNamespace("block/water_still");
 
     private SideConfigScreenHelper() {}
 
@@ -44,13 +46,13 @@ public final class SideConfigScreenHelper {
      * (artwork in the top-left); stretching a full sheet into {@code width}×{@code height}
      * was shifting inventory frames over the labels on dispenser-like GUIs.
      */
-    public static void blitContainer(GuiGraphics graphics, ResourceLocation texture,
+    public static void blitContainer(GuiGraphicsExtractor graphics, Identifier texture,
                                    int x, int y, int width, int height) {
-        graphics.blit(texture, x, y, 0, 0, width, height, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0.0F, 0.0F, width, height, 256, 256);
     }
 
     /** Grey body with the vanilla two pixel bevel. */
-    public static void drawContainerBody(GuiGraphics graphics, int x, int y, int width, int height) {
+    public static void drawContainerBody(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         graphics.fill(x, y, x + width, y + height, BODY);
         graphics.fill(x, y, x + width - 2, y + 2, LIGHT_EDGE);
         graphics.fill(x, y, x + 2, y + height - 2, LIGHT_EDGE);
@@ -59,7 +61,7 @@ public final class SideConfigScreenHelper {
     }
 
     /** Draws the 18x18 frame around a slot; pass the slot position minus one pixel. */
-    public static void drawSlot(GuiGraphics graphics, int x, int y) {
+    public static void drawSlot(GuiGraphicsExtractor graphics, int x, int y) {
         graphics.fill(x, y, x + 18, y + 18, SLOT_BODY);
         graphics.fill(x, y, x + 18, y + 1, SLOT_SHADOW);
         graphics.fill(x, y, x + 1, y + 18, SLOT_SHADOW);
@@ -68,7 +70,7 @@ public final class SideConfigScreenHelper {
     }
 
     /** Frames for a rectangular block of slots, given the top left slot position. */
-    public static void drawSlotGrid(GuiGraphics graphics, int x, int y, int columns, int rows) {
+    public static void drawSlotGrid(GuiGraphicsExtractor graphics, int x, int y, int columns, int rows) {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 drawSlot(graphics, x + col * 18, y + row * 18);
@@ -77,57 +79,42 @@ public final class SideConfigScreenHelper {
     }
 
     /** The three rows plus hotbar every machine menu places at 8/84 and 8/142. */
-    public static void drawPlayerInventory(GuiGraphics graphics, int left, int top) {
+    public static void drawPlayerInventory(GuiGraphicsExtractor graphics, int left, int top) {
         drawSlotGrid(graphics, left + 7, top + 83, 9, 3);
         drawSlotGrid(graphics, left + 7, top + 141, 9, 1);
     }
 
     /** Vertical gauge filled with the liquid XP still sprite. */
-    public static void drawFluidGauge(GuiGraphics graphics, int x, int y, int width, int height,
+    public static void drawFluidGauge(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
                                       int amount, int capacity) {
-        int tint = IClientFluidTypeExtensions.of(dev.opencubes.registry.OCFluids.XP_JUICE_TYPE.get())
-                .getTintColor();
+        int tint = 0xFF8BFF4A;
         drawFluidGauge(graphics, x, y, width, height, amount, capacity, XP_STILL, tint);
     }
 
     /** Vertical gauge filled with the vanilla water still sprite. */
-    public static void drawWaterFluidGauge(GuiGraphics graphics, int x, int y, int width, int height,
+    public static void drawWaterFluidGauge(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
                                            int amount, int capacity) {
-        FluidStack water = new FluidStack(Fluids.WATER, 1000);
-        IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(water.getFluidType());
-        ResourceLocation still = extensions.getStillTexture(water);
-        if (still == null) {
-            still = WATER_STILL;
-        }
-        drawFluidGauge(graphics, x, y, width, height, amount, capacity, still, extensions.getTintColor(water));
+        drawFluidGauge(graphics, x, y, width, height, amount, capacity, WATER_STILL, 0xFF3F76E4);
     }
 
     /** Vertical fluid gauge tiled from a block-atlas still texture. */
-    public static void drawFluidGauge(GuiGraphics graphics, int x, int y, int width, int height,
-                                      int amount, int capacity, ResourceLocation stillTexture, int argb) {
+    public static void drawFluidGauge(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
+                                      int amount, int capacity, Identifier stillTexture, int argb) {
         graphics.fill(x, y, x + width, y + height, 0xFF20201E);
         int filled = capacity <= 0 ? 0 : Math.min(height, amount * height / capacity);
         if (filled > 0) {
             TextureAtlasSprite sprite = Minecraft.getInstance()
-                    .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                    .apply(stillTexture);
+                    .getAtlasManager()
+                    .getAtlasOrThrow(AtlasIds.BLOCKS)
+                    .getSprite(stillTexture);
             blitTiledFluid(graphics, sprite, x, y + height - filled, width, filled, argb);
         }
-        graphics.renderOutline(x - 1, y - 1, width + 2, height + 2, 0xFF373737);
+        graphics.outline(x - 1, y - 1, width + 2, height + 2, 0xFF373737);
     }
 
-    private static void blitTiledFluid(GuiGraphics graphics, TextureAtlasSprite sprite,
+    private static void blitTiledFluid(GuiGraphicsExtractor graphics, TextureAtlasSprite sprite,
                                        int x, int y, int width, int height, int argb) {
-        float a = ((argb >> 24) & 0xFF) / 255.0F;
-        if (a <= 0.0F) {
-            a = 1.0F;
-        }
-        float r = ((argb >> 16) & 0xFF) / 255.0F;
-        float g = ((argb >> 8) & 0xFF) / 255.0F;
-        float b = (argb & 0xFF) / 255.0F;
-
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(r, g, b, a);
+        int color = ARGB.alpha(argb) <= 0 ? ARGB.opaque(argb) : argb;
         graphics.enableScissor(x, y, x + width, y + height);
 
         int tileW = Math.max(1, sprite.contents().width());
@@ -137,12 +124,11 @@ public final class SideConfigScreenHelper {
             for (int tx = x; tx < x + width; tx += tileW) {
                 int drawW = Math.min(tileW, x + width - tx);
                 int drawH = tileH;
-                graphics.blit(tx, ty, 0, drawW, drawH, sprite);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, tx, ty, drawW, drawH, color);
             }
         }
 
         graphics.disableScissor();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static int lighten(int colour, int amount) {

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "f": {
-      "item": "minecraft:iron_bars"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "s": {
-      "item": "minecraft:smooth_stone_slab"
-    }
+    "f": "minecraft:iron_bars",
+    "i": "#c:ingots/iron",
+    "s": "minecraft:smooth_stone_slab"
   },
   "pattern": [
     "f",

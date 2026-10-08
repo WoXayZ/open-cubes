@@ -3,15 +3,20 @@ package dev.opencubes.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.opencubes.OCConstants;
+import dev.opencubes.client.sprinkler.SprinklerRenderer;
 import dev.opencubes.content.fan.FanBlockEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
+import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the head of the fan: the hoop and the blades inside it.
@@ -20,46 +25,66 @@ import net.neoforged.neoforge.client.model.data.ModelData;
  * baked into the blockstate file. Both are drawn here off the same hub so they cannot drift
  * apart; only the base plate and its post stay behind as a static block model, and those are
  * rotationally symmetric so they do not need the yaw.
+ *
+ * <p>Register both models on {@code ModelEvent.RegisterStandalone}:
+ * {@code event.register(BLADES_MODEL, BLADES_BAKER)} and the same for the frame.
  */
-public class FanRenderer implements BlockEntityRenderer<FanBlockEntity> {
+public class FanRenderer implements BlockEntityRenderer<FanBlockEntity, FanRenderState> {
 
-    public static final ModelResourceLocation BLADES_MODEL =
-            ModelResourceLocation.standalone(OCConstants.id("block/fan_blades"));
-    public static final ModelResourceLocation FRAME_MODEL =
-            ModelResourceLocation.standalone(OCConstants.id("block/fan_frame"));
+    public static final Identifier BLADES_LOCATION = OCConstants.id("block/fan_blades");
+    public static final Identifier FRAME_LOCATION = OCConstants.id("block/fan_frame");
+    public static final StandaloneModelKey<BlockStateModel> BLADES_MODEL =
+            new StandaloneModelKey<>(BLADES_LOCATION::toString);
+    public static final StandaloneModelKey<BlockStateModel> FRAME_MODEL =
+            new StandaloneModelKey<>(FRAME_LOCATION::toString);
+    public static final SimpleUnbakedStandaloneModel<BlockStateModel> BLADES_BAKER =
+            SimpleUnbakedStandaloneModel.blockStateModel(BLADES_LOCATION);
+    public static final SimpleUnbakedStandaloneModel<BlockStateModel> FRAME_BAKER =
+            SimpleUnbakedStandaloneModel.blockStateModel(FRAME_LOCATION);
 
     /** Height of the blade axle above the block floor, matching the models. */
     private static final double HUB_HEIGHT = 10.0D / 16.0D;
 
-    private final BlockEntityRendererProvider.Context context;
+    public FanRenderer(BlockEntityRendererProvider.Context context) {}
 
-    public FanRenderer(BlockEntityRendererProvider.Context context) {
-        this.context = context;
+    @Override
+    public FanRenderState createRenderState() {
+        return new FanRenderState();
     }
 
     @Override
-    public void render(FanBlockEntity fan, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int light, int overlay) {
-        BakedModel frame = model(FRAME_MODEL);
-        BakedModel blades = model(BLADES_MODEL);
+    public void extractRenderState(
+            FanBlockEntity blockEntity,
+            FanRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        state.blockState = blockEntity.getBlockState();
+        state.yaw = blockEntity.getYaw();
+        state.bladeRotation = blockEntity.getBladeRotation(partialTicks);
+    }
+
+    @Override
+    public void submit(FanRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       CameraRenderState camera) {
+        BlockStateModel frame = Minecraft.getInstance().getModelManager().getStandaloneModel(FRAME_MODEL);
+        BlockStateModel blades = Minecraft.getInstance().getModelManager().getStandaloneModel(BLADES_MODEL);
         if (frame == null || blades == null) {
             return;
         }
 
-        BlockState state = fan.getBlockState();
-        float yaw = fan.getYaw();
-
         poseStack.pushPose();
-        hub(poseStack, yaw);
-        draw(poseStack, buffers, state, frame, light, overlay);
+        hub(poseStack, state.yaw);
+        SprinklerRenderer.submitBlockModel(poseStack, submitNodeCollector, state.blockState, frame, state.lightCoords);
         poseStack.popPose();
 
         poseStack.pushPose();
-        hub(poseStack, yaw);
+        hub(poseStack, state.yaw);
         poseStack.translate(0.5D, HUB_HEIGHT, 0.5D);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(fan.getBladeRotation(partialTick)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.bladeRotation));
         poseStack.translate(-0.5D, -HUB_HEIGHT, -0.5D);
-        draw(poseStack, buffers, state, blades, light, overlay);
+        SprinklerRenderer.submitBlockModel(poseStack, submitNodeCollector, state.blockState, blades, state.lightCoords);
         poseStack.popPose();
     }
 
@@ -67,22 +92,5 @@ public class FanRenderer implements BlockEntityRenderer<FanBlockEntity> {
         poseStack.translate(0.5D, HUB_HEIGHT, 0.5D);
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
         poseStack.translate(-0.5D, -HUB_HEIGHT, -0.5D);
-    }
-
-    private void draw(PoseStack poseStack, MultiBufferSource buffers, BlockState state, BakedModel model,
-                      int light, int overlay) {
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(
-                poseStack.last(),
-                buffers.getBuffer(RenderType.cutout()),
-                state,
-                model,
-                1.0F, 1.0F, 1.0F,
-                light, overlay,
-                ModelData.EMPTY,
-                RenderType.cutout());
-    }
-
-    private BakedModel model(ModelResourceLocation location) {
-        return context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(location);
     }
 }

@@ -1,5 +1,7 @@
 package dev.opencubes.client.tomfoolery;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.opencubes.OCConstants;
 import dev.opencubes.network.BrickDropPayload;
@@ -20,7 +22,7 @@ public final class BrickKeyHandler {
             "key.opencubes.drop_brick",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_B,
-            "key.categories.opencubes");
+            dev.opencubes.client.OCKeys.CATEGORY);
 
     private BrickKeyHandler() {}
 
@@ -37,7 +39,7 @@ public final class BrickKeyHandler {
         }
         // Config is server-authoritative for behaviour; client only gates the key spam.
         while (DROP_BRICK.consumeClick()) {
-            PacketDistributor.sendToServer(new BrickDropPayload());
+            ClientPacketDistributor.sendToServer(new BrickDropPayload());
         }
     }
 }

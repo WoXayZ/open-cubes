@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "c": {
-      "item": "minecraft:clock"
-    },
-    "i": {
-      "tag": "c:ingots/copper"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "c": "minecraft:clock",
+    "i": "#c:ingots/copper",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "iii",

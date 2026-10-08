@@ -52,7 +52,7 @@ public class ItemDropperMenu extends SimpleMachineMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (dropper.getLevel() == null || dropper.getLevel().isClientSide) {
+        if (dropper.getLevel() == null || dropper.getLevel().isClientSide()) {
             return false;
         }
         boolean shift = id >= SHIFT_OFFSET;

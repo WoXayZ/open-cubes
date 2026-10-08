@@ -17,7 +17,7 @@ public final class RabbitTrophyBehavior implements TrophyBehavior {
             trophy.getLevel().playSound(null, trophy.getBlockPos(), SoundEvents.RABBIT_AMBIENT,
                     SoundSource.BLOCKS, 1.0F, 1.0F);
         }
-        player.addEffect(new MobEffectInstance(MobEffects.JUMP, 60, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 60, 0));
         return 80;
     }
 }

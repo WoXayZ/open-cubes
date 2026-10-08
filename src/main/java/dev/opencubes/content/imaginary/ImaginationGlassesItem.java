@@ -2,20 +2,21 @@ package dev.opencubes.content.imaginary;
 
 import dev.opencubes.registry.OCArmorMaterials;
 import dev.opencubes.registry.OCDataComponents;
-import java.util.List;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
-public class ImaginationGlassesItem extends ArmorItem {
+public class ImaginationGlassesItem extends Item {
 
     private final ImaginationGlassesKind kind;
 
     public ImaginationGlassesItem(Properties properties, ImaginationGlassesKind kind) {
-        super(OCArmorMaterials.GLASSES, Type.HELMET, properties.stacksTo(1));
+        super(properties.stacksTo(1).humanoidArmor(OCArmorMaterials.GLASSES, ArmorType.HELMET));
         this.kind = kind;
     }
 
@@ -35,11 +36,11 @@ public class ImaginationGlassesItem extends ArmorItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         if (kind == ImaginationGlassesKind.CRAYON) {
             Integer colour = getCrayonColour(stack);
             if (colour != null) {
-                tooltip.add(Component.translatable("opencubes.misc.color", String.format("#%06X", colour)));
+                tooltip.accept(Component.translatable("opencubes.misc.color", String.format("#%06X", colour)));
             }
         }
     }

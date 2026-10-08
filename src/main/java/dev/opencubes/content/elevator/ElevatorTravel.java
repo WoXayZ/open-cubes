@@ -1,5 +1,7 @@
 package dev.opencubes.content.elevator;
 
+import dev.opencubes.util.ServerLevels;
+
 import dev.opencubes.config.OCCommonConfig;
 import dev.opencubes.registry.OCSounds;
 import dev.opencubes.registry.OCTags;
@@ -33,7 +35,7 @@ public final class ElevatorTravel {
             return;
         }
 
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ServerLevels.of(player);
         BlockPos origin = standingOn(player);
 
         BlockState originState = level.getBlockState(origin);
@@ -57,7 +59,7 @@ public final class ElevatorTravel {
         double y = destination.pos().getY() + 1.0D;
         float yaw = destination.facing() != null ? destination.facing().toYRot() : player.getYRot();
 
-        player.teleportTo(level, x, y, z, Set.of(), yaw, player.getXRot());
+        player.teleportTo(level, x, y, z, Set.of(), yaw, player.getXRot(), false);
         player.resetFallDistance();
         level.playSound(null, destination.pos(), OCSounds.ELEVATOR_ACTIVATE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
     }

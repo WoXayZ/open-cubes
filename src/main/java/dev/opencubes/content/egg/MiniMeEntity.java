@@ -1,16 +1,20 @@
 package dev.opencubes.content.egg;
 
 import com.mojang.authlib.GameProfile;
+import dev.opencubes.registry.OCEntityData;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -21,12 +25,14 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class MiniMeEntity extends PathfinderMob {
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
-            SynchedEntityData.defineId(MiniMeEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+            SynchedEntityData.defineId(MiniMeEntity.class, OCEntityData.OPTIONAL_UUID);
     private static final EntityDataAccessor<String> OWNER_NAME =
             SynchedEntityData.defineId(MiniMeEntity.class, EntityDataSerializers.STRING);
 
@@ -95,9 +101,31 @@ public class MiniMeEntity extends PathfinderMob {
         return pickupCooldown <= 0 && super.canAddPassenger(passenger);
     }
 
+    /**
+     * {@link #isBaby()} would also halve the hitbox, which left a full player model on a tiny box
+     * nobody could click. The renderer applies the small scale itself.
+     */
+    @Override
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        return getType().getDimensions();
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        GameProfile owner = ownerProfile();
+        if (owner == null || !owner.id().equals(player.getUUID()) || player.getVehicle() == this) {
+            return InteractionResult.PASS;
+        }
+        if (level().isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        pickupCooldown = 0;
+        return player.startRiding(this, true, true) ? InteractionResult.SUCCESS_SERVER : InteractionResult.PASS;
+    }
+
     public void setOwner(GameProfile profile) {
-        entityData.set(OWNER_UUID, Optional.ofNullable(profile.getId()));
-        entityData.set(OWNER_NAME, profile.getName() == null ? "Steve" : profile.getName());
+        entityData.set(OWNER_UUID, Optional.of(profile.id()));
+        entityData.set(OWNER_NAME, profile.name());
         setCustomName(Component.literal(entityData.get(OWNER_NAME)));
         setCustomNameVisible(true);
     }
@@ -114,18 +142,17 @@ public class MiniMeEntity extends PathfinderMob {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
-        entityData.get(OWNER_UUID).ifPresent(uuid -> tag.putUUID("OwnerUUID", uuid));
+        entityData.get(OWNER_UUID).ifPresent(uuid -> tag.store("OwnerUUID", UUIDUtil.CODEC, uuid));
         tag.putString("OwnerName", entityData.get(OWNER_NAME));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.hasUUID("OwnerUUID")) {
-            setOwner(new GameProfile(tag.getUUID("OwnerUUID"), tag.getString("OwnerName")));
-        }
+        tag.read("OwnerUUID", UUIDUtil.CODEC).ifPresent(uuid ->
+                setOwner(new GameProfile(uuid, tag.getStringOr("OwnerName", ""))));
     }
 
     @Override

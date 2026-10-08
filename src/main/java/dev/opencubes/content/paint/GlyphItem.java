@@ -18,7 +18,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.Item.TooltipContext;
+import java.util.function.Consumer;
 
 public class GlyphItem extends Item {
 
@@ -60,8 +62,8 @@ public class GlyphItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("opencubes.misc.glyph_place_tip").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable("opencubes.misc.glyph_place_tip").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
@@ -82,13 +84,13 @@ public class GlyphItem extends Item {
         if (!glyph.survives()) {
             return InteractionResult.CONSUME;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             glyph.playPlacementSound();
             level.gameEvent(player, GameEvent.ENTITY_PLACE, glyph.position());
             level.addFreshEntity(glyph);
         }
         stack.consume(1, player);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
     }
 
     /**

@@ -6,7 +6,7 @@ import dev.opencubes.registry.OCBlocks;
 import dev.opencubes.registry.OCRegistries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -31,23 +31,23 @@ public final class TrophyDropHandler {
             return;
         }
         LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide) {
+        if (entity.level().isClientSide()) {
             return;
         }
-        ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         if (entityId == null) {
             return;
         }
 
-        var registry = entity.level().registryAccess().registry(OCRegistries.TROPHY).orElse(null);
+        var registry = entity.level().registryAccess().lookup(OCRegistries.TROPHY).orElse(null);
         if (registry == null) {
             return;
         }
 
-        ResourceLocation trophyId = null;
+        Identifier trophyId = null;
         for (var entry : registry.entrySet()) {
             if (entry.getValue().entity().equals(entityId)) {
-                trophyId = entry.getKey().location();
+                trophyId = entry.getKey().identifier();
                 break;
             }
         }

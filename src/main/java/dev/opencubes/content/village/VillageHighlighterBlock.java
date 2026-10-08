@@ -21,7 +21,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import dev.opencubes.registry.OCBlockEntities;
 
@@ -33,7 +34,7 @@ public class VillageHighlighterBlock extends BaseEntityBlock {
 
     public static final MapCodec<VillageHighlighterBlock> CODEC = simpleCodec(VillageHighlighterBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public VillageHighlighterBlock(Properties properties) {
         super(properties);
@@ -69,8 +70,8 @@ public class VillageHighlighterBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, net.minecraft.world.level.redstone.Orientation fromPos, boolean isMoving) {
+        if (!level.isClientSide()) {
             boolean powered = level.hasNeighborSignal(pos);
             if (state.getValue(POWERED) != powered) {
                 level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_ALL);
@@ -100,7 +101,7 @@ public class VillageHighlighterBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         if (!state.getValue(POWERED)) {
             return 0;
         }
@@ -114,10 +115,10 @@ public class VillageHighlighterBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof VillageHighlighterBlockEntity highlighter) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 highlighter.reportTo(player);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return (level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER);
         }
         return InteractionResult.PASS;
     }
@@ -131,7 +132,7 @@ public class VillageHighlighterBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null
+        return level.isClientSide() ? null
                 : createTickerHelper(type, OCBlockEntities.VILLAGE_HIGHLIGHTER.get(), VillageHighlighterBlockEntity::serverTick);
     }
 

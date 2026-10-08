@@ -1,15 +1,14 @@
 package dev.opencubes.compat.patchouli;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.UnaryOperator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import org.slf4j.Logger;
 import vazkii.patchouli.api.IComponentRenderContext;
@@ -38,7 +37,7 @@ public class FittedImageComponent implements ICustomComponent {
 
     String image;
 
-    private transient ResourceLocation texture;
+    private transient Identifier texture;
     private transient int top;
     private transient int textureWidth;
     private transient int textureHeight;
@@ -58,7 +57,7 @@ public class FittedImageComponent implements ICustomComponent {
     @Override
     public void build(int componentX, int componentY, int pageNum) {
         top = componentY;
-        texture = ResourceLocation.tryParse(image);
+        texture = Identifier.tryParse(image);
         if (texture == null || !measure(texture)) {
             textureWidth = textureHeight = cropWidth = cropHeight = 256;
             cropX = cropY = 0;
@@ -69,7 +68,7 @@ public class FittedImageComponent implements ICustomComponent {
         filtered = false;
     }
 
-    private boolean measure(ResourceLocation location) {
+    private boolean measure(Identifier location) {
         Resource resource = Minecraft.getInstance().getResourceManager().getResource(location).orElse(null);
         if (resource == null) {
             return false;
@@ -83,7 +82,7 @@ public class FittedImageComponent implements ICustomComponent {
             int maxY = -1;
             for (int y = 0; y < textureHeight; y++) {
                 for (int x = 0; x < textureWidth; x++) {
-                    if ((pixels.getPixelRGBA(x, y) >>> 24) != 0) {
+                    if ((pixels.getPixel(x, y) >>> 24) != 0) {
                         minX = Math.min(minX, x);
                         minY = Math.min(minY, y);
                         maxX = Math.max(maxX, x);
@@ -108,28 +107,22 @@ public class FittedImageComponent implements ICustomComponent {
     }
 
     @Override
-    public void render(GuiGraphics graphics, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
         if (texture == null) {
             return;
-        }
-        if (!filtered) {
-            // Screenshots are shrunk a lot; nearest sampling would turn them to noise.
-            Minecraft.getInstance().getTextureManager().getTexture(texture).setFilter(true, false);
-            filtered = true;
         }
         int frameWidth = drawWidth + 2 * BORDER_INSET;
         int frameHeight = drawHeight + 2 * BORDER_INSET;
         int frameX = (PAGE_WIDTH - frameWidth) / 2;
         int frameY = top + (BORDER_SIZE - frameHeight) / 2;
 
-        graphics.setColor(1F, 1F, 1F, 1F);
-        RenderSystem.enableBlend();
-        graphics.blit(texture, frameX + BORDER_INSET, frameY + BORDER_INSET, drawWidth, drawHeight,
-                cropX, cropY, cropWidth, cropHeight, textureWidth, textureHeight);
+        graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, texture,
+                frameX + BORDER_INSET, frameY + BORDER_INSET, cropX, cropY, drawWidth, drawHeight,
+                cropWidth, cropHeight, textureWidth, textureHeight);
         drawFrame(graphics, context.getBookTexture(), frameX, frameY, frameWidth, frameHeight);
     }
 
-    private static void drawFrame(GuiGraphics graphics, ResourceLocation book, int x, int y, int width, int height) {
+    private static void drawFrame(GuiGraphicsExtractor graphics, Identifier book, int x, int y, int width, int height) {
         int left = width / 2;
         int right = width - left;
         int upper = height / 2;
@@ -142,7 +135,8 @@ public class FittedImageComponent implements ICustomComponent {
         blitBorder(graphics, book, x + left, y + upper, farU, farV, right, lower);
     }
 
-    private static void blitBorder(GuiGraphics graphics, ResourceLocation book, int x, int y, int u, int v, int w, int h) {
-        graphics.blit(book, x, y, u, v, w, h, BOOK_TEXTURE_WIDTH, BOOK_TEXTURE_HEIGHT);
+    private static void blitBorder(GuiGraphicsExtractor graphics, Identifier book, int x, int y, int u, int v, int w, int h) {
+        graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, book, x, y, u, v, w, h,
+                BOOK_TEXTURE_WIDTH, BOOK_TEXTURE_HEIGHT);
     }
 }

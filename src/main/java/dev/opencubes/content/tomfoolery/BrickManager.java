@@ -45,7 +45,7 @@ public final class BrickManager {
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) {
             return;
         }
         if (OCCommonConfig.WE_ARE_SERIOUS_PEOPLE.get()) {
@@ -55,7 +55,7 @@ public final class BrickManager {
         int drop = Math.min(16, count);
         player.setData(OCAttachments.BOWEL.get(), 0);
         for (int i = 0; i < drop; i++) {
-            player.spawnAtLocation(new ItemStack(Items.BRICK));
+            player.spawnAtLocation(dev.opencubes.util.ServerLevels.of(player), new ItemStack(Items.BRICK));
         }
     }
 }
