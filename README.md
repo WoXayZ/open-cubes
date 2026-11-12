@@ -1,6 +1,6 @@
 # OpenCubes
 
-The OpenBlocks toolbox, rewritten for Minecraft **1.21.1** / **NeoForge 21.1.247**. Version **1.0**.
+The OpenBlocks toolbox, rewritten for Minecraft **1.21.1** / **NeoForge 21.1.247**. Version **1.0-fix**.
 
 Hang gliders, elevators, tanks, graves, a chest that follows you, and a crane you wear. It is a new mod. It does not load a 1.12 world.
 
@@ -46,7 +46,7 @@ Built against NeoForge 21.1.247, Patchouli 1.21.1-93, Curios 9.5.1, JEI 19.43.0 
 
 On Windows: `gradlew.bat jar`.
 
-The jar lands in `build/libs/opencubes-1.0.jar`.
+The jar lands in `build/libs/opencubes-26.1.2-1.0-fix.jar`.
 
 ```bash
 ./gradlew runClient

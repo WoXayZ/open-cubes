@@ -86,7 +86,8 @@ public class SprinklerBlock extends BaseEntityBlock {
         if (FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
             return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         }
-        return InteractionResult.PASS;
+        // PASS skips useWithoutItem. TRY_WITH_EMPTY_HAND is what opens the GUI.
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
