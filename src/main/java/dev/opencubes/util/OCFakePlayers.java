@@ -6,15 +6,20 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -124,6 +129,60 @@ public final class OCFakePlayers {
         ItemStack leftover = player.getItemInHand(InteractionHand.MAIN_HAND);
         player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         return result.consumesAction() ? leftover : stack;
+    }
+
+    /**
+     * Places {@code stack} in the cell in front of {@code support}. The click hits the support
+     * face, the same way a player places against a block. Leftover stack is returned unchanged
+     * when the cell in front did not change.
+     */
+    public static ItemStack placeBlock(ServerLevel level, ItemStack stack, BlockPos support, Direction facing) {
+        if (stack.isEmpty()) {
+            return stack;
+        }
+        if (!(stack.getItem() instanceof BlockItem blockItem)) {
+            return useItemOn(level, stack, support.relative(facing.getOpposite()),
+                    support.relative(facing), facing.getOpposite());
+        }
+
+        FakePlayer player = get(level);
+        player.getAbilities().mayBuild = true;
+        Vec3 feet = Vec3.atBottomCenterOf(support.relative(facing.getOpposite()));
+        float yaw = facing.toYRot();
+        float pitch = facing.getAxis() == Direction.Axis.Y ? (facing == Direction.UP ? -90.0F : 90.0F) : 0.0F;
+        player.moveTo(feet.x, feet.y, feet.z, yaw, pitch);
+        player.setYHeadRot(yaw);
+        // Point box: the fake player must not count as standing in the target cell.
+        player.setBoundingBox(new AABB(feet.x, feet.y, feet.z, feet.x, feet.y, feet.z));
+
+        ItemStack held = stack.copy();
+        player.setItemInHand(InteractionHand.MAIN_HAND, held);
+        Vec3 hitLoc = Vec3.atCenterOf(support).relative(facing, 0.5D);
+        BlockHitResult hit = new BlockHitResult(hitLoc, facing, support, false);
+        BlockPos target = support.relative(facing);
+        BlockState before = level.getBlockState(target);
+        blockItem.place(new BlockPlaceContext(player, InteractionHand.MAIN_HAND, held, hit));
+        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+
+        if (!level.getBlockState(target).equals(before)) {
+            return held;
+        }
+
+        // place() can play the sound and still leave the cell untouched. Put the block there ourselves.
+        held.setCount(stack.getCount());
+        BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, held, hit);
+        BlockState placed = blockItem.getBlock().getStateForPlacement(context);
+        if (placed == null || !placed.canSurvive(level, target)
+                || !level.setBlock(target, placed, Block.UPDATE_ALL_IMMEDIATE)) {
+            return stack;
+        }
+        BlockItem.updateCustomBlockEntityTag(level, player, target, held);
+        level.getBlockState(target).getBlock().setPlacedBy(level, target, level.getBlockState(target), player, held);
+        held.shrink(1);
+        SoundType sound = placed.getSoundType(level, target, player);
+        level.playSound(null, target, sound.getPlaceSound(), SoundSource.BLOCKS,
+                (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+        return held;
     }
 
     /** Spawns a tossed item entity with exact velocity (no vanilla dropper cone). */

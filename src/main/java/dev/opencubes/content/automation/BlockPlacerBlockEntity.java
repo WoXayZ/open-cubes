@@ -77,10 +77,8 @@ public class BlockPlacerBlockEntity extends BlockManipulatorBlockEntity implemen
             return;
         }
 
-        BlockPos playerPos = target.relative(facing, 2);
         ItemStack before = stack.copy();
-        ItemStack after = OCFakePlayers.useItemOn(serverLevel, stack.copy(), playerPos, target,
-                facing.getOpposite());
+        ItemStack after = OCFakePlayers.placeBlock(serverLevel, stack.copy(), worldPosition, facing);
 
         if (!ItemStack.matches(before, after)) {
             skipInventoryTrigger = true;

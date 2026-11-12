@@ -179,19 +179,22 @@ public class SprinklerBlockEntity extends BlockEntity implements MenuProvider {
         }
         float sideX = nozzle.x / horizontal;
         float sideZ = nozzle.z / horizontal;
-        float strength = 0.12F + 0.28F * horizontal / Mth.sin(MAX_TILT_DEGREES * Mth.DEG_TO_RAD);
+        int range = OCCommonConfig.SPRINKLER_RANGE.get();
+        float reach = Mth.clamp(range * horizontal / Mth.sin(MAX_TILT_DEGREES * Mth.DEG_TO_RAD), 0.0F, range);
 
+        // Above the collision box. Splash spawned inside it dies after about a block.
         double originX = worldPosition.getX() + 0.5D;
-        double originY = worldPosition.getY() + PIVOT_Y + 0.08D;
+        double originY = worldPosition.getY() + 0.72D;
         double originZ = worldPosition.getZ() + 0.5D;
-        for (int i = 0; i < 6; i++) {
-            double outlet = (level.random.nextDouble() - 0.5D) * 0.7D;
-            double speed = strength * (0.6D + level.random.nextDouble() * 0.4D);
-            double scatter = (level.random.nextDouble() - 0.5D) * 0.06D;
-            // Splash keeps the horizontal velocity only when the vertical one is zero.
-            level.addParticle(ParticleTypes.SPLASH,
-                    originX + along.x * outlet, originY, originZ + along.z * outlet,
-                    sideX * speed + along.x * scatter, 0.0D, sideZ * speed + along.z * scatter);
+        for (int step = 1; step <= range; step++) {
+            double dist = reach * step / range;
+            double fall = dist * dist / (range * 1.6D);
+            double fan = (level.random.nextDouble() - 0.5D) * 0.7D;
+            double x = originX + sideX * dist + along.x * fan;
+            double y = originY - fall;
+            double z = originZ + sideZ * dist + along.z * fan;
+            level.addParticle(ParticleTypes.SPLASH, x, y, z, 0.0D, 0.0D, 0.0D);
+            level.addParticle(ParticleTypes.FALLING_WATER, x, y + 0.2D, z, 0.0D, -0.06D, 0.0D);
         }
     }
 
